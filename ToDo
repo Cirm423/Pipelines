@@ -41,11 +41,4 @@ mmkchu
 
 {'hpc2.ust.hk': ['tychanag', 'sloh', 'shdiu', 'lswilson', 'twsam', 'yoawong', 'hxubb', 'mchengac', 'cwwongbk', 'hjjung', 'mmkchu'], 'biocrfhpc1.ust.hk': ['efrangedakis', 'angelochan', 'cschee', 'tychanag', 'shdiu', 'lswilson', 'hxubb', 'mmkchu'], 'biocrfhpc2.ust.hk': ['hxubb', 'mmkchu']}
 
-Strainded PE long RNA
-
-Anotated genes diff is RSEM output > You get a treatment vs control tsv file (control needs to be specified in samples input)
-TE quant takes the genome assembly and a parameter as input, and outputs a signal file
-TE diff takes the signal file, runs R script and outputs a treatment vs control tsv file
-
-Use this command in both biocrfhpc1 and 2 when resources is empty:
-setfacl -R -d -m g::rwx resources/
+Put Fastqc into RNA-seq pipeline 

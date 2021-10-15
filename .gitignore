@@ -132,3 +132,17 @@ dmypy.json
 
 .snakemake
 ngs-test-data
+
+results
+results/*
+!analysis/README.md
+!config
+!config/*
+!resources
+!resources/*
+!workflow
+!workflow/**
+!.gitignore
+!README.md
+
+.test
