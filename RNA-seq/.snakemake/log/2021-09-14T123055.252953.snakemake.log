@@ -1,3 +1,0 @@
-SyntaxError in line 326 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk:
-invalid syntax
-  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 25, in <module>

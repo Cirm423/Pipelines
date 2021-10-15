@@ -1,3 +1,0 @@
-SyntaxError in line 78 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/ref.smk:
-positional argument follows keyword argument
-  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 26, in <module>

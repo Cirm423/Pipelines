@@ -1,3 +1,0 @@
-AssertionError in line 32 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk.
-  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 25, in <module>
-  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk", line 32, in <module>

@@ -1,4 +1,0 @@
-Workflow defines that rule get_genome is eligible for caching between workflows (use the --cache argument to enable this).
-Workflow defines that rule unzip_annotation is eligible for caching between workflows (use the --cache argument to enable this).
-Workflow defines that rule bwa_index is eligible for caching between workflows (use the --cache argument to enable this).
-Workflow defines that rule star_index is eligible for caching between workflows (use the --cache argument to enable this).
