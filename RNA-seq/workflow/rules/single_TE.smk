@@ -58,5 +58,5 @@ rule TE_single_diff:
             Rscript workflow/scripts/pois-test_uniq-TE-individual.R
             source deactivate
             """)
-            shell(r"""echo -e "Chr\tStart\tEnd\tRegion_ID\tMappability\tStrand\t${file_name}_NormalizedCounts\t${control_name}_NormalizedCounts\t${file_name}_rpkm\t${control_name}_rpkm\tFoldChange\tp-value\tFDR" > results/TE_single/{file_name}_vs_{control_name}.tsv""")
+            shell(r"""echo -e "Chr\tStart\tEnd\tRegion_ID\tMappability\tStrand\t{file_name}_NormalizedCounts\t{control_name}_NormalizedCounts\t{file_name}_rpkm\t{control_name}_rpkm\tFoldChange\tp-value\tFDR" > results/TE_single/{file_name}_vs_{control_name}.tsv""")
             shell("cat results/TE_single/counts_diff.temp >> results/TE_single/{file_name}_vs_{control_name}.tsv")

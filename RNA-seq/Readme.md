@@ -1,3 +1,19 @@
+# Table of contents
+
+- [Table of contents](#table-of-contents)
+- [Starting](#starting)
+- [Configuring Snakemake](#configuring-snakemake)
+  - [Input dataset](#input-dataset)
+  - [Assembly](#assembly)
+  - [Deseq2 Model](#deseq2-model)
+  - [Transposable Elements (TE)](#transposable-elements-te)
+  - [Single Sample](#single-sample)
+    - [Genes](#genes)
+    - [TEs](#tes)
+- [Running Snakemake](#running-snakemake)
+- [Output](#output)
+- [Acknowledgements](#acknowledgements)
+
 # Starting
 
 This readme provides instructions on how to run the snakemake RNA-seq pipeline on a cluster.
@@ -68,7 +84,7 @@ or a relative path from where snakemake is run, which is the directory where the
 
 This last approach is the preferred one.
 
-### **If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. SRA accession samples will always be run as paired end. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. SRA accession samples will always be run as paired end. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
 The last necessary column is strandedness, which **needs to be equal for all units**. The number equivalences can be found here:  
 
@@ -136,11 +152,19 @@ The other setting in this section is the filter, which will filter out elements 
 
 ## Single Sample
 
+### Genes
+
 To be used when you have no replicates for a sample. It is activated by turning the single option in config.yaml to True, and it will perform an alternative analysis to Deseq2. Therefore, the single option cannot be used at the same time at Deseq2 (and therefore pca), otherwise the pipeline will not work. Single mode also requires mergeReads to be activated, as it will be comparing samples and not units.
 
 Additionally, the treatment of one of the samples in samples.tsv **must be called `control`**. The other treatments do not matter, as every sample will be compared to the control sample.
 
 Once you run the pipeline in single mode with one sample as control, you can rerun it with another sample as control and new files comparing samples to the new control will be generated without needing to run the whole pipeline.
+
+### TEs
+
+In a similar way, you can obtain TE differential expression for samples with no replicates by turning *TE_single* to activate in the `config.yaml` file. TE_single shares the same requirements as single mode does, and both single and TE_single can be activated at the same time, producing output for both genes and TEs.
+
+The only difference for TE_single is the filter, which will remove from the analysis elements with less than the filter number of counts, similarly to the TE analysis with DEseq2.
 
 # Running Snakemake
 
@@ -162,16 +186,14 @@ Snakemake will store all the output files in a directory called results. The out
 
 In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which you can download and view in a browser. 
 
-If you activated deseq2, in the deseq2 results folder you can find `all.rds` which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2.
+If you activated deseq2, in the deseq2 results folder you can find `all.rds` which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
+
+For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}\_vs_{control}.tsv will be placed, comparing all the samples in `samples.tsv` against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.
 
 Additionally logs for each step will be stored in the logs folder. 
 
-## Acknowledgements
+# Acknowledgements
 
 This pipeline is based on the pipeline made by jafors:
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5245549.svg)](https://doi.org/10.5281/zenodo.5245549) [Snakemake workflow: rna-seq-star-deseq2](https://github.com/snakemake-workflows/rna-seq-star-deseq2)
-
-Script to convert rmsk.txt to a gtf file obtained from The Hammell lab from [this github issue](https://github.com/mhammell-laboratory/TEtranscripts/issues/21).
-
-[Script Link](http://labshare.cshl.edu/shares/mhammelllab/www-data/TEtranscripts/TE_GTF/makeTEgtf.pl.gz)
