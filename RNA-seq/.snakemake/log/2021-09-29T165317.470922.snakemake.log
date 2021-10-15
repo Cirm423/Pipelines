@@ -1,0 +1,3 @@
+SyntaxError in line 22 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/ref.smk:
+f-string: unmatched '[' (ref.smk, line 22)
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 30, in <module>

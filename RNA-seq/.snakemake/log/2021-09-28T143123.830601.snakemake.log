@@ -1,0 +1,19 @@
+WorkflowError:
+Error validating config file.
+ValidationError: 'species' is a required property
+
+Failed validating 'required' in schema['properties']['ref']:
+    OrderedDict([('type', 'object'),
+                 ('properties',
+                  OrderedDict([('species',
+                                OrderedDict([('type', 'string')])),
+                               ('release',
+                                OrderedDict([('type', 'integer')])),
+                               ('build',
+                                OrderedDict([('type', 'string')]))])),
+                 ('required', ['species', 'release', 'build'])])
+
+On instance['ref']:
+    {'assembly': 'hg38'}
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 28, in <module>
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk", line 9, in <module>

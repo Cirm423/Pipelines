@@ -1,0 +1,4 @@
+TokenError in line 25 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile:
+('EOF in multi-line statement', (202, 0))
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 25, in <module>
+  File "/home/cirm/miniconda3/envs/snakemake/lib/python3.9/tokenize.py", line 521, in _tokenize

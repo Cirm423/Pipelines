@@ -1,0 +1,51 @@
+Check for interactive slurm sessions
+Email ITSC closing accounts
+
+people_name = {'julieang': 'Julie','ignaciorm':'Ignacio','xzhouaw':'Xue Meng',
+'lftamaa':'Phoebe','kmtam':'Sabrina','jtmaw':'Jacqueline','cychengaj':'Clooney',
+'lgaoac':'Lin','kyliuae':'David','qh.jiang':'Qing Hong','vmathur':'Vrinda',
+'yhkan':'Ying Hei','efregadakis':'Eftychios','lhlaiaa':'Brian','extinction_kingdom':'Isaac',
+'tlytang':'Terence','psapkota':'Sapkota','angelochan':'Angelo','cschee':'Jason',
+'tychanag':'Jacky','sloh':'Sarah','shdiu':'David Iu','lswilson':'Lili','twsam':'Sara',
+'ylinby':'Yu Hsuan','yoawong':'Andy','ejyang':'Eunjeong','yshah':'Yashvi',
+'hxubb':'Heming','mchengac':'Muyang','cwwongbk':'Chun Wai','hjjung':'Hui Jeong',
+'vincyho':'Vincy','mfcheungeric':'Eric', 'gwai':'Geena', 'dcyleung':'Shared',
+'mmkchu': 'Maggi','qjiangac':'Qing Hong','aleehk':'Ah Young', 'luyanchan':'Lu Yan',
+'efrangedakis':'Efragedakis'
+}
+
+
+efregadakis or efrangedakis
+lhlaiaa
+extinction_kingdom
+tlytang
+psapkota
+angelochan
+cschee
+tychanag
+sloh
+shdiu
+lswilson
+twsam
+ylinby
+yoawong
+ejyang
+yshah
+hxubb
+mchengac
+cwwongbk
+hjjung
+mmkchu
+
+['efregadakis','efrangedakis','lhlaiaa','extinction_kingdom','tlytang,psapkota','angelochan','cschee','tychanag','sloh','shdiu','lswilson','twsam','ylinby','yoawong','ejyang','yshah','hxubb','mchengac','cwwongbk','hjjung','mmkchu']
+
+{'hpc2.ust.hk': ['tychanag', 'sloh', 'shdiu', 'lswilson', 'twsam', 'yoawong', 'hxubb', 'mchengac', 'cwwongbk', 'hjjung', 'mmkchu'], 'biocrfhpc1.ust.hk': ['efrangedakis', 'angelochan', 'cschee', 'tychanag', 'shdiu', 'lswilson', 'hxubb', 'mmkchu'], 'biocrfhpc2.ust.hk': ['hxubb', 'mmkchu']}
+
+Strainded PE long RNA
+
+Anotated genes diff is RSEM output > You get a treatment vs control tsv file (control needs to be specified in samples input)
+TE quant takes the genome assembly and a parameter as input, and outputs a signal file
+TE diff takes the signal file, runs R script and outputs a treatment vs control tsv file
+
+Use this command in both biocrfhpc1 and 2 when resources is empty:
+setfacl -R -d -m g::rwx resources/

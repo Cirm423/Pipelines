@@ -1,0 +1,16 @@
+Workflow defines that rule get_genome is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule get_annotation is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule genome_faidx is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule bwa_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule star_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule rsem_ref is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule twoBitInfo_sort is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule gene_name is eligible for caching between workflows (use the --cache argument to enable this).
+IndexError in line 35 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/single.smk:
+tuple index out of range
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 32, in <module>
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/single.smk", line 35, in <module>
+  File "/home/cirm/miniconda3/envs/snakemake/lib/python3.9/string.py", line 165, in vformat
+  File "/home/cirm/miniconda3/envs/snakemake/lib/python3.9/string.py", line 205, in _vformat
+  File "/home/cirm/miniconda3/envs/snakemake/lib/python3.9/string.py", line 270, in get_field
+  File "/home/cirm/miniconda3/envs/snakemake/lib/python3.9/string.py", line 225, in get_value

@@ -1,0 +1,124 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: snakemake configuration file
+
+type: object
+
+properties:
+  samples:
+    type: string
+  units:
+    type: string
+  resources:
+    type: string
+
+  ref:
+    type: object
+    properties:
+      assembly:
+        type: string
+    required:
+      - assembly
+
+  2nd_pass:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  trimming:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+  
+  mergeReads:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  pca:
+    type: object
+    properties:
+      activate:
+       type: boolean
+      labels:
+        type: array
+        items:
+          type: string
+    required:
+      - labels
+      - activate
+
+  diffexp:
+    type: object
+    properties:
+      activate:
+       type: boolean
+      TE:
+       type: object
+       properties:
+        activate:
+         type: boolean
+        filter:
+         type: integer
+      contrasts:
+        type: object
+      model:
+        type: string
+    required:
+      - contrasts
+      - activate
+
+  single:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
+  TE_single:
+    type: object
+    properties:
+      activate:
+        type: boolean
+      filter:
+       type: integer
+    required:
+      - activate
+      - filter
+
+  params:
+    type: object
+    properties:
+      cutadapt-pe:
+        type: string
+      cutadapt-se:
+        type: string
+      star: 
+        type: string
+    required:
+      - cutadapt-pe
+      - cutadapt-se
+      - star
+
+required:
+  - samples
+  - units
+  - ref
+  - pca
+  - diffexp
+  - params
+  - trimming
+  - mergeReads
+  - 2nd_pass
+  - single
+  - TE_single

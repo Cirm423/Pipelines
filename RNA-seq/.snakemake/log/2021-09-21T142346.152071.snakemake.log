@@ -1,0 +1,846 @@
+Workflow defines that rule get_genome is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule get_annotation is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule genome_faidx is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule bwa_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule star_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule rsem_ref is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule twoBitInfo_sort is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule gene_name is eligible for caching between workflows (use the --cache argument to enable this).
+Building DAG of jobs...
+Job stats:
+job                          count    min threads    max threads
+-------------------------  -------  -------------  -------------
+align_pe                         4              1              1
+align_pe_2pass                   4              1              1
+all                              1              1              1
+bedGraphToBigWig_str1            4              1              1
+bedGraphToBigWig_str2            4              1              1
+faToTwoBit_fa                    1              1              1
+get_annotation                   1              1              1
+get_genome                       1              1              1
+merge_fastqs                     8              1              1
+multiqc                          1              1              1
+prepare_single                   4              1              1
+rsem_pe                          4              1              1
+rsem_ref                         1              1              1
+rseqc_gtf2bed                    1              1              1
+rseqc_infer                      4              1              1
+rseqc_innerdis                   4              1              1
+rseqc_junction_annotation        4              1              1
+rseqc_junction_saturation        4              1              1
+rseqc_readdis                    4              1              1
+rseqc_readgc                     4              1              1
+rseqc_stat                       4              1              1
+samtools_index_pe                4              1              1
+samtools_index_pe_2              4              1              1
+samtools_sort_pe                 4              1              1
+samtools_sort_pe_2               4              1              1
+sort_bw_str                      4              1              1
+star_index                       1              1              1
+star_str_bw                      4              1              1
+twoBitInfo                       1              1              1
+twoBitInfo_sort                  1              1              1
+total                           94              1              1
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/B1_R2.fastq
+    log: logs/merge-fastqs/B1_R2.log
+    jobid: 17
+    wildcards: sample=B1, read=R2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/B2_R1.fastq
+    log: logs/merge-fastqs/B2_R1.log
+    jobid: 19
+    wildcards: sample=B2, read=R1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/A2_R2.fastq
+    log: logs/merge-fastqs/A2_R2.log
+    jobid: 7
+    wildcards: sample=A2, read=R2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule get_annotation:
+    output: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.gtf
+    log: logs/get_annotation_GRCm38_102.log
+    jobid: 10
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/A1_R2.fastq
+    log: logs/merge-fastqs/A1_R2.log
+    jobid: 14
+    wildcards: sample=A1, read=R2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/B2_R2.fastq
+    log: logs/merge-fastqs/B2_R2.log
+    jobid: 20
+    wildcards: sample=B2, read=R2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/B1_R1.fastq
+    log: logs/merge-fastqs/B1_R1.log
+    jobid: 16
+    wildcards: sample=B1, read=R1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/A2_R1.fastq
+    log: logs/merge-fastqs/A2_R1.log
+    jobid: 6
+    wildcards: sample=A2, read=R1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule get_genome:
+    output: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.fasta
+    log: logs/get-genome_GRCm38_102.log
+    jobid: 9
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/A1_R1.fastq
+    log: logs/merge-fastqs/A1_R1.log
+    jobid: 13
+    wildcards: sample=A1, read=R1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule star_index:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.fasta, /data1/share/dcyleung/Pipeline/resources/GRCm38_102.gtf
+    output: /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102
+    log: logs/star_index_genome_GRCm38_102.log
+    jobid: 8
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rsem_ref:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.gtf, /data1/share/dcyleung/Pipeline/resources/GRCm38_102.fasta
+    output: /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.seq, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.grp, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.ti
+    log: logs/rsem/prepare-reference_GRCm38_102.log
+    jobid: 28
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule faToTwoBit_fa:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.fasta
+    output: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.2bit
+    log: logs/browser/fa_to_2bit.log
+    jobid: 23
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_gtf2bed:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.gtf
+    output: results/qc/rseqc/annotation.bed, results/qc/rseqc/annotation.db
+    log: logs/rseqc_gtf2bed.log
+    jobid: 62
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe:
+    input: results/merged/B1_R1.fastq, results/merged/B1_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102
+    output: results/star/pe/B1/Aligned.out.bam, results/star/pe/B1/Aligned.toTranscriptome.out.bam, results/star/pe/B1/SJ.out.tab
+    log: logs/star-pe/B1.log
+    jobid: 15
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe:
+    input: results/merged/A2_R1.fastq, results/merged/A2_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102
+    output: results/star/pe/A2/Aligned.out.bam, results/star/pe/A2/Aligned.toTranscriptome.out.bam, results/star/pe/A2/SJ.out.tab
+    log: logs/star-pe/A2.log
+    jobid: 11
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe:
+    input: results/merged/B2_R1.fastq, results/merged/B2_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102
+    output: results/star/pe/B2/Aligned.out.bam, results/star/pe/B2/Aligned.toTranscriptome.out.bam, results/star/pe/B2/SJ.out.tab
+    log: logs/star-pe/B2.log
+    jobid: 18
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe:
+    input: results/merged/A1_R1.fastq, results/merged/A1_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102
+    output: results/star/pe/A1/Aligned.out.bam, results/star/pe/A1/Aligned.toTranscriptome.out.bam, results/star/pe/A1/SJ.out.tab
+    log: logs/star-pe/A1.log
+    jobid: 12
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule twoBitInfo:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.2bit
+    output: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.chrom.sizes.tmp
+    log: logs/browser/chrom.sizes.log
+    jobid: 22
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe:
+    input: results/star/pe/B1/Aligned.out.bam
+    output: results/star/pe/B1/Aligned.sortedByCoord.out.bam
+    jobid: 60
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe:
+    input: results/star/pe/A2/Aligned.out.bam
+    output: results/star/pe/A2/Aligned.sortedByCoord.out.bam
+    jobid: 58
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe_2pass:
+    input: results/merged/B2_R1.fastq, results/merged/B2_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102, results/star/pe/A2/SJ.out.tab, results/star/pe/A1/SJ.out.tab, results/star/pe/B1/SJ.out.tab, results/star/pe/B2/SJ.out.tab
+    output: results/star/pe2/B2/Aligned.out.bam, results/star/pe2/B2/Aligned.toTranscriptome.out.bam
+    log: logs/star-pe2/B2.log
+    jobid: 25
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe_2pass:
+    input: results/merged/B1_R1.fastq, results/merged/B1_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102, results/star/pe/A2/SJ.out.tab, results/star/pe/A1/SJ.out.tab, results/star/pe/B1/SJ.out.tab, results/star/pe/B2/SJ.out.tab
+    output: results/star/pe2/B1/Aligned.out.bam, results/star/pe2/B1/Aligned.toTranscriptome.out.bam
+    log: logs/star-pe2/B1.log
+    jobid: 34
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule twoBitInfo_sort:
+    input: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.chrom.sizes.tmp
+    output: /data1/share/dcyleung/Pipeline/resources/GRCm38_102.chrom.sizes
+    jobid: 21
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe:
+    input: results/star/pe/B2/Aligned.out.bam
+    output: results/star/pe/B2/Aligned.sortedByCoord.out.bam
+    jobid: 59
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe_2pass:
+    input: results/merged/A2_R1.fastq, results/merged/A2_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102, results/star/pe/A2/SJ.out.tab, results/star/pe/A1/SJ.out.tab, results/star/pe/B1/SJ.out.tab, results/star/pe/B2/SJ.out.tab
+    output: results/star/pe2/A2/Aligned.out.bam, results/star/pe2/A2/Aligned.toTranscriptome.out.bam
+    log: logs/star-pe2/A2.log
+    jobid: 5
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule align_pe_2pass:
+    input: results/merged/A1_R1.fastq, results/merged/A1_R2.fastq, /data1/share/dcyleung/Pipeline/resources/star_genome_GRCm38_102, results/star/pe/A2/SJ.out.tab, results/star/pe/A1/SJ.out.tab, results/star/pe/B1/SJ.out.tab, results/star/pe/B2/SJ.out.tab
+    output: results/star/pe2/A1/Aligned.out.bam, results/star/pe2/A1/Aligned.toTranscriptome.out.bam
+    log: logs/star-pe2/A1.log
+    jobid: 30
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe:
+    input: results/star/pe/A1/Aligned.out.bam
+    output: results/star/pe/A1/Aligned.sortedByCoord.out.bam
+    jobid: 57
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam
+    output: results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe/B2.log
+    jobid: 67
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe_2:
+    input: results/star/pe2/B2/Aligned.out.bam
+    output: results/star/pe2/B2/Aligned.sortedByCoord.out.bam
+    jobid: 27
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam
+    output: results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe/B1.log
+    jobid: 69
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam
+    output: results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe/A2.log
+    jobid: 63
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe_2:
+    input: results/star/pe2/B1/Aligned.out.bam
+    output: results/star/pe2/B1/Aligned.sortedByCoord.out.bam
+    jobid: 36
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe_2:
+    input: results/star/pe2/A2/Aligned.out.bam
+    output: results/star/pe2/A2/Aligned.sortedByCoord.out.bam
+    jobid: 4
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_sort_pe_2:
+    input: results/star/pe2/A1/Aligned.out.bam
+    output: results/star/pe2/A1/Aligned.sortedByCoord.out.bam
+    jobid: 32
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam
+    output: results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe/A1.log
+    jobid: 65
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_innerdis:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.inner_distance_freq.inner_distance.txt
+    log: logs/rseqc/rseqc_innerdis/B2.log
+    jobid: 84
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_infer:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.infer_experiment.txt
+    log: logs/rseqc/rseqc_infer/B1.log
+    jobid: 76
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_annotation:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.junctionanno.junction.bed
+    log: logs/rseqc/rseqc_junction_annotation/A2.log
+    jobid: 61
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule star_str_bw:
+    input: results/star/pe2/B1/Aligned.sortedByCoord.out.bam
+    output: results/bw_str/B1/Signal.Unique.str1.out.bg, results/bw_str/B1/Signal.Unique.str2.out.bg, results/bw_str/B1/Signal.UniqueMultiple.str1.out.bg, results/bw_str/B1/Signal.UniqueMultiple.str2.out.bg
+    log: logs/browser/star_str/B1.log
+    jobid: 47
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readgc:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.readgc.GC_plot.pdf
+    log: logs/rseqc/rseqc_readgc/A1.log
+    jobid: 91
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe_2:
+    input: results/star/pe2/B2/Aligned.sortedByCoord.out.bam
+    output: results/star/pe2/B2/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe2/B2.log
+    jobid: 26
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_saturation:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.junctionsat.junctionSaturation_plot.pdf
+    log: logs/rseqc/rseqc_junction_saturation/B1.log
+    jobid: 70
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule star_str_bw:
+    input: results/star/pe2/A2/Aligned.sortedByCoord.out.bam
+    output: results/bw_str/A2/Signal.Unique.str1.out.bg, results/bw_str/A2/Signal.Unique.str2.out.bg, results/bw_str/A2/Signal.UniqueMultiple.str1.out.bg, results/bw_str/A2/Signal.UniqueMultiple.str2.out.bg
+    log: logs/browser/star_str/A2.log
+    jobid: 3
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_infer:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.infer_experiment.txt
+    log: logs/rseqc/rseqc_infer/A1.log
+    jobid: 77
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_innerdis:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.inner_distance_freq.inner_distance.txt
+    log: logs/rseqc/rseqc_innerdis/A1.log
+    jobid: 85
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_saturation:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.junctionsat.junctionSaturation_plot.pdf
+    log: logs/rseqc/rseqc_junction_saturation/B2.log
+    jobid: 71
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readgc:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.readgc.GC_plot.pdf
+    log: logs/rseqc/rseqc_readgc/B2.log
+    jobid: 92
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_stat:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.stats.txt
+    log: logs/rseqc/rseqc_stat/A2.log
+    jobid: 78
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readdis:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.readdistribution.txt
+    log: logs/rseqc/rseqc_readdis/A1.log
+    jobid: 86
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readgc:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.readgc.GC_plot.pdf
+    log: logs/rseqc/rseqc_readgc/B1.log
+    jobid: 93
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_stat:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.stats.txt
+    log: logs/rseqc/rseqc_stat/B2.log
+    jobid: 79
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readdis:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.readdistribution.txt
+    log: logs/rseqc/rseqc_readdis/B2.log
+    jobid: 87
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe_2:
+    input: results/star/pe2/B1/Aligned.sortedByCoord.out.bam
+    output: results/star/pe2/B1/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe2/B1.log
+    jobid: 35
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe_2:
+    input: results/star/pe2/A2/Aligned.sortedByCoord.out.bam
+    output: results/star/pe2/A2/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe2/A2.log
+    jobid: 42
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_annotation:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.junctionanno.junction.bed
+    log: logs/rseqc/rseqc_junction_annotation/A1.log
+    jobid: 64
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_saturation:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.junctionsat.junctionSaturation_plot.pdf
+    log: logs/rseqc/rseqc_junction_saturation/A1.log
+    jobid: 72
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule star_str_bw:
+    input: results/star/pe2/B2/Aligned.sortedByCoord.out.bam
+    output: results/bw_str/B2/Signal.Unique.str1.out.bg, results/bw_str/B2/Signal.Unique.str2.out.bg, results/bw_str/B2/Signal.UniqueMultiple.str1.out.bg, results/bw_str/B2/Signal.UniqueMultiple.str2.out.bg
+    log: logs/browser/star_str/B2.log
+    jobid: 51
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_saturation:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.junctionsat.junctionSaturation_plot.pdf
+    log: logs/rseqc/rseqc_junction_saturation/A2.log
+    jobid: 73
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readdis:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.readdistribution.txt
+    log: logs/rseqc/rseqc_readdis/A2.log
+    jobid: 88
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_stat:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/star/pe/A1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A1.stats.txt
+    log: logs/rseqc/rseqc_stat/A1.log
+    jobid: 80
+    wildcards: sample=A1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_infer:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.infer_experiment.txt
+    log: logs/rseqc/rseqc_infer/B2.log
+    jobid: 74
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_annotation:
+    input: results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B2.junctionanno.junction.bed
+    log: logs/rseqc/rseqc_junction_annotation/B2.log
+    jobid: 66
+    wildcards: sample=B2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_stat:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.stats.txt
+    log: logs/rseqc/rseqc_stat/B1.log
+    jobid: 81
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readdis:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.readdistribution.txt
+    log: logs/rseqc/rseqc_readdis/B1.log
+    jobid: 89
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_infer:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.infer_experiment.txt
+    log: logs/rseqc/rseqc_infer/A2.log
+    jobid: 75
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_innerdis:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.inner_distance_freq.inner_distance.txt
+    log: logs/rseqc/rseqc_innerdis/A2.log
+    jobid: 82
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_readgc:
+    input: results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/star/pe/A2/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/A2.readgc.GC_plot.pdf
+    log: logs/rseqc/rseqc_readgc/A2.log
+    jobid: 90
+    wildcards: sample=A2
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule samtools_index_pe_2:
+    input: results/star/pe2/A1/Aligned.sortedByCoord.out.bam
+    output: results/star/pe2/A1/Aligned.sortedByCoord.out.bam.bai
+    log: logs/samtools_index/pe2/A1.log
+    jobid: 31
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_junction_annotation:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.junctionanno.junction.bed
+    log: logs/rseqc/rseqc_junction_annotation/B1.log
+    jobid: 68
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rseqc_innerdis:
+    input: results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/annotation.bed, results/star/pe/B1/Aligned.sortedByCoord.out.bam.bai
+    output: results/qc/rseqc/B1.inner_distance_freq.inner_distance.txt
+    log: logs/rseqc/rseqc_innerdis/B1.log
+    jobid: 83
+    wildcards: sample=B1
+    priority: 1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule star_str_bw:
+    input: results/star/pe2/A1/Aligned.sortedByCoord.out.bam
+    output: results/bw_str/A1/Signal.Unique.str1.out.bg, results/bw_str/A1/Signal.Unique.str2.out.bg, results/bw_str/A1/Signal.UniqueMultiple.str1.out.bg, results/bw_str/A1/Signal.UniqueMultiple.str2.out.bg
+    log: logs/browser/star_str/A1.log
+    jobid: 39
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+
+[Tue Sep 21 14:23:47 2021]
+rule rsem_pe:
+    input: results/star/pe2/A2/Aligned.toTranscriptome.out.bam, results/star/pe2/A2/Aligned.sortedByCoord.out.bam.bai, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.seq
+    output: results/rsem/pe2/A2/mapped.genes.results, results/rsem/pe2/A2/mapped.isoforms.results
+    log: logs/rsem/calculate_expression/A2.log
+    jobid: 41
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule sort_bw_str:
+    input: results/bw_str/B1/Signal.Unique.str1.out.bg, results/bw_str/B1/Signal.Unique.str2.out.bg
+    output: results/bw_str/B1/Signal.Unique.str1.out.bg.sorted, results/bw_str/B1/Signal.Unique.str2.out.bg.sorted
+    jobid: 46
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule sort_bw_str:
+    input: results/bw_str/A2/Signal.Unique.str1.out.bg, results/bw_str/A2/Signal.Unique.str2.out.bg
+    output: results/bw_str/A2/Signal.Unique.str1.out.bg.sorted, results/bw_str/A2/Signal.Unique.str2.out.bg.sorted
+    jobid: 2
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rsem_pe:
+    input: results/star/pe2/A1/Aligned.toTranscriptome.out.bam, results/star/pe2/A1/Aligned.sortedByCoord.out.bam.bai, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.seq
+    output: results/rsem/pe2/A1/mapped.genes.results, results/rsem/pe2/A1/mapped.isoforms.results
+    log: logs/rsem/calculate_expression/A1.log
+    jobid: 29
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule sort_bw_str:
+    input: results/bw_str/A1/Signal.Unique.str1.out.bg, results/bw_str/A1/Signal.Unique.str2.out.bg
+    output: results/bw_str/A1/Signal.Unique.str1.out.bg.sorted, results/bw_str/A1/Signal.Unique.str2.out.bg.sorted
+    jobid: 38
+    wildcards: sample=A1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rsem_pe:
+    input: results/star/pe2/B2/Aligned.toTranscriptome.out.bam, results/star/pe2/B2/Aligned.sortedByCoord.out.bam.bai, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.seq
+    output: results/rsem/pe2/B2/mapped.genes.results, results/rsem/pe2/B2/mapped.isoforms.results
+    log: logs/rsem/calculate_expression/B2.log
+    jobid: 24
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule rsem_pe:
+    input: results/star/pe2/B1/Aligned.toTranscriptome.out.bam, results/star/pe2/B1/Aligned.sortedByCoord.out.bam.bai, /data1/share/dcyleung/Pipeline/resources/rsem_reference_GRCm38_102.seq
+    output: results/rsem/pe2/B1/mapped.genes.results, results/rsem/pe2/B1/mapped.isoforms.results
+    log: logs/rsem/calculate_expression/B1.log
+    jobid: 33
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule sort_bw_str:
+    input: results/bw_str/B2/Signal.Unique.str1.out.bg, results/bw_str/B2/Signal.Unique.str2.out.bg
+    output: results/bw_str/B2/Signal.Unique.str1.out.bg.sorted, results/bw_str/B2/Signal.Unique.str2.out.bg.sorted
+    jobid: 50
+    wildcards: sample=B2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule multiqc:
+    input: results/star/pe/A1/Aligned.sortedByCoord.out.bam, results/star/pe/A2/Aligned.sortedByCoord.out.bam, results/star/pe/B2/Aligned.sortedByCoord.out.bam, results/star/pe/B1/Aligned.sortedByCoord.out.bam, results/qc/rseqc/A2.junctionanno.junction.bed, results/qc/rseqc/A1.junctionanno.junction.bed, results/qc/rseqc/B2.junctionanno.junction.bed, results/qc/rseqc/B1.junctionanno.junction.bed, results/qc/rseqc/B1.junctionsat.junctionSaturation_plot.pdf, results/qc/rseqc/B2.junctionsat.junctionSaturation_plot.pdf, results/qc/rseqc/A1.junctionsat.junctionSaturation_plot.pdf, results/qc/rseqc/A2.junctionsat.junctionSaturation_plot.pdf, results/qc/rseqc/B2.infer_experiment.txt, results/qc/rseqc/A2.infer_experiment.txt, results/qc/rseqc/B1.infer_experiment.txt, results/qc/rseqc/A1.infer_experiment.txt, results/qc/rseqc/A2.stats.txt, results/qc/rseqc/B2.stats.txt, results/qc/rseqc/A1.stats.txt, results/qc/rseqc/B1.stats.txt, results/qc/rseqc/A2.inner_distance_freq.inner_distance.txt, results/qc/rseqc/B1.inner_distance_freq.inner_distance.txt, results/qc/rseqc/B2.inner_distance_freq.inner_distance.txt, results/qc/rseqc/A1.inner_distance_freq.inner_distance.txt, results/qc/rseqc/A1.readdistribution.txt, results/qc/rseqc/B2.readdistribution.txt, results/qc/rseqc/A2.readdistribution.txt, results/qc/rseqc/B1.readdistribution.txt, results/qc/rseqc/A2.readgc.GC_plot.pdf, results/qc/rseqc/A1.readgc.GC_plot.pdf, results/qc/rseqc/B2.readgc.GC_plot.pdf, results/qc/rseqc/B1.readgc.GC_plot.pdf, logs/rseqc/rseqc_junction_annotation/A1.log, logs/rseqc/rseqc_junction_annotation/A2.log, logs/rseqc/rseqc_junction_annotation/B2.log, logs/rseqc/rseqc_junction_annotation/B1.log
+    output: results/qc/multiqc_report.html
+    log: logs/multiqc.log
+    jobid: 56
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule bedGraphToBigWig_str1:
+    input: results/bw_str/A2/Signal.Unique.str1.out.bg.sorted, /data1/share/dcyleung/Pipeline/resources/GRCm38_102.chrom.sizes
+    output: results/browser/A2.str1.bw
+    log: logs/browser/A2.bed-graph_to_big-wig_str1.log
+    jobid: 53
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule bedGraphToBigWig_str1:
+    input: results/bw_str/B1/Signal.Unique.str1.out.bg.sorted, /data1/share/dcyleung/Pipeline/resources/GRCm38_102.chrom.sizes
+    output: results/browser/B1.str1.bw
+    log: logs/browser/B1.bed-graph_to_big-wig_str1.log
+    jobid: 55
+    wildcards: sample=B1
+    resources: tmpdir=/tmp
+
+[Tue Sep 21 14:23:47 2021]
+rule prepare_single:
+    input: results/rsem/pe2/A2/mapped.genes.results
+    output: results/single/A2.signal
+    jobid: 40
+    wildcards: sample=A2
+    resources: tmpdir=/tmp
+

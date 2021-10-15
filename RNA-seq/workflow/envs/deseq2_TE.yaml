@@ -1,0 +1,10 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-deseq2 =1.32.0
+  - bioconductor-apeglm =1.14.0
+  - bioconductor-genomicfeatures =1.44.0
+  - bioconductor-genomicalignments =1.28.0
+  - bioconductor-rsamtools =2.8.0
+  - openssl =1.1

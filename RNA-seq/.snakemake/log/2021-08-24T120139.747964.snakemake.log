@@ -1,0 +1,15 @@
+WorkflowError in line 29 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk:
+Error validating row 0 of data frame.
+ValidationError: 1.0 is not of type 'integer'
+
+Failed validating 'type' in schema['properties']['strandedness']:
+    OrderedDict([('type', 'integer'),
+                 ('description',
+                  'one of the values 0.5 (not stranded), 1.0 (forward '
+                  'stranded) or 0.0 (reverse stranded) according to '
+                  'protocol strandedness')])
+
+On instance['strandedness']:
+    1.0
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 25, in <module>
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk", line 29, in <module>

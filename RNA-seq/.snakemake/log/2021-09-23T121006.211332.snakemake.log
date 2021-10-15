@@ -1,0 +1,4 @@
+AssertionError in line 12 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk:
+Pca cannot be activated without activating diffexp
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/Snakefile", line 25, in <module>
+  File "/home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/common.smk", line 12, in <module>

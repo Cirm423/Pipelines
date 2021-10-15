@@ -1,0 +1,84 @@
+# path to sample sheet
+samples: config/samples.tsv
+# path to sequencing unit sheet
+# Units are technical replicates (e.g. lanes, or resequencing of the same biological
+# sample).
+units: config/units.tsv
+#Path to the share resources folder for the pipeline, where common files (genomes, references) are stored.
+#Please do not change.
+resources: /data1/share/dcyleung/Pipeline/snakemake/resources/
+
+#Genomes are downloaded from Ensembl if a copy is not already present in resources.
+ref:
+  # Genecode or UCSC assembly name
+  assembly: GRCh38
+
+#Config marked as True is activated, config marked as False is deactivated
+
+#Activate a 2 pass star alignment. It improves novel splice junction quantification.
+#For more info see https://academic.oup.com/bioinformatics/article/32/1/43/1744001
+2nd_pass:
+  activate: True
+
+#Activate adapter trimming. For it to work the trimmer sequences must be set
+#in units.tsv
+trimming:
+  activate: False
+
+#Merge the units in units.tsv of the same sample. If activated, all R1 lanes will
+#be merged in the same file and the same for R2 of the sample. Usually leave on.
+mergeReads:
+  activate: True
+
+#Make a pca plot. It can only be used when diffexp is also activated.
+pca:
+  activate: False
+  labels:
+    # columns of sample sheet to use for PCA
+    - condition
+
+#Perform Deseq2 analysis. It cannot be activated at the same time of single.
+diffexp:
+  activate: False
+  # contrasts for the deseq2 results method. Only 2 conditions can be at the same time inside each contrast or the pipeline will fail.
+  TE:
+   activate: True
+   filter: 10
+  # You can add more contrasts, e.g control-vs-treatment: - control -treatment. inside the contrasts section.
+  contrasts:
+    treated-vs-untreated:
+      - treated
+      - untreated
+  model: ~condition
+
+#Perform single sample differential analysis. Cannot be activated with diffexp.
+single:
+  activate: True
+
+#Perform single sample TE differential analysis. As before, it cannot be activated with diffexp but you can activate both single and TE_single.
+TE_single:
+  activate: True
+  filter: 10
+
+
+#Pass additional parameters to certain steps of the pipeline. 
+#Cutadapt is used in adapter trimming.
+#Star is for alignment, recommended parameters are set.
+#The parameters necessary to run the pipeline are coded within the pipeline and
+#cannot be changed. These parameters are:
+#--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted
+#Bams are sorted by using samtools sort independently for star, which is identical to "--outSAMtype SortedByCoordinate" star parameter
+#Rsem is used for counts, recommended parameters are set.
+#The parameters necessary to run the pipeline are coded within the pipeline and
+#cannot be changed. These parameters are:
+#--bam --star
+#Rsem seed is set randomly by the system, and strandedness is set from units.tsv file
+
+params:
+  cutadapt-pe: ""
+  cutadapt-se: ""
+  star: "--outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04
+	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
+	--sjdbScore 1 --limitBAMsortRAM 60000000000 
+  --limitIObufferSize 330000000"
+  rsem: "--estimate-rspd --calc-ci --no-bam-output --ci-memory 70000"

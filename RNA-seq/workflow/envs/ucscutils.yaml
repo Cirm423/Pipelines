@@ -1,0 +1,6 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - ucsc-bedtogenepred =377
+  - ucsc-genepredtogtf =377

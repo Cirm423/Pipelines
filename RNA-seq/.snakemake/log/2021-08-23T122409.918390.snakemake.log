@@ -1,0 +1,154 @@
+Workflow defines that rule get_genome is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule get_annotation is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule genome_faidx is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule bwa_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule star_index is eligible for caching between workflows (use the --cache argument to enable this).
+Workflow defines that rule rsem_ref is eligible for caching between workflows (use the --cache argument to enable this).
+Building DAG of jobs...
+Job stats:
+job                          count    min threads    max threads
+-------------------------  -------  -------------  -------------
+align_pe                         4              1              1
+align_pe_2pass                   4              1              1
+all                              1              1              1
+deseq2                           1              1              1
+deseq2_init                      1              1              1
+get_annotation                   1              1              1
+get_genome                       1              1              1
+merge_fastqs                     8              1              1
+multiqc                          1              1              1
+rsem_pe                          4              1              1
+rsem_ref                         1              1              1
+rseqc_gtf2bed                    1              1              1
+rseqc_infer                      4              1              1
+rseqc_innerdis                   4              1              1
+rseqc_junction_annotation        4              1              1
+rseqc_junction_saturation        4              1              1
+rseqc_readdis                    4              1              1
+rseqc_readdup                    4              1              1
+rseqc_readgc                     4              1              1
+rseqc_stat                       4              1              1
+star_index                       1              1              1
+total                           61              1              1
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/B1_R2.fastq.gz
+    log: logs/merge-fastqs/B1_R2.log
+    jobid: 19
+    wildcards: sample=B1, read=R2
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/A2_R1.fastq.gz
+    log: logs/merge-fastqs/A2_R1.log
+    jobid: 12
+    wildcards: sample=A2, read=R1
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/B2_R1.fastq.gz
+    log: logs/merge-fastqs/B2_R1.log
+    jobid: 5
+    wildcards: sample=B2, read=R1
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/A1_R2.fastq.gz
+    log: logs/merge-fastqs/A1_R2.log
+    jobid: 16
+    wildcards: sample=A1, read=R2
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule get_genome:
+    output: resources/R64-1-1_100.fasta
+    log: logs/get-genome.log
+    jobid: 8
+    resources: tmpdir=/tmp
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/B1_R1.fastq.gz
+    log: logs/merge-fastqs/B1_R1.log
+    jobid: 18
+    wildcards: sample=B1, read=R1
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/A2_R2.fastq.gz
+    log: logs/merge-fastqs/A2_R2.log
+    jobid: 13
+    wildcards: sample=A2, read=R2
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/c.scerevisiae.2.fq, ngs-test-data/reads/b.scerevisiae.2.fq
+    output: results/merged/B2_R2.fastq.gz
+    log: logs/merge-fastqs/B2_R2.log
+    jobid: 6
+    wildcards: sample=B2, read=R2
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule merge_fastqs:
+    input: ngs-test-data/reads/a.scerevisiae.1.fq, ngs-test-data/reads/b.scerevisiae.1.fq
+    output: results/merged/A1_R1.fastq.gz
+    log: logs/merge-fastqs/A1_R1.log
+    jobid: 15
+    wildcards: sample=A1, read=R1
+    resources: tmpdir=/tmp
+
+
+[Mon Aug 23 12:24:10 2021]
+rule get_annotation:
+    output: resources/R64-1-1_100.gtf
+    log: logs/get_annotation.log
+    jobid: 9
+    resources: tmpdir=/tmp
+
+[Mon Aug 23 12:24:10 2021]
+rule rseqc_gtf2bed:
+    input: resources/R64-1-1_100.gtf
+    output: results/qc/rseqc/annotation.bed, results/qc/rseqc/annotation.db
+    log: logs/rseqc_gtf2bed.log
+    jobid: 29
+    resources: tmpdir=/tmp
+
+[Mon Aug 23 12:24:10 2021]
+rule star_index:
+    input: resources/R64-1-1_100.fasta, resources/R64-1-1_100.gtf
+    output: resources/star_genome
+    log: logs/star_index_genome.log
+    jobid: 7
+    resources: tmpdir=/tmp
+
+[Mon Aug 23 12:24:10 2021]
+rule rsem_ref:
+    input: resources/R64-1-1_100.gtf, resources/R64-1-1_100.fasta
+    output: resources/rsem_reference.seq, resources/rsem_reference.grp, resources/rsem_reference.ti
+    log: logs/rsem/prepare-reference.log
+    jobid: 20
+    resources: tmpdir=/tmp
+
+RuleException in line 73 of /home/cirm/Desktop/Hong_Kong/rna-seq-star-deseq2/.test/workflow/rules/ref.smk:
+NameError: The name 'extra' is unknown in this context. Please make sure that you defined that variable. Also note that braces not used for variable access have to be escaped by repeating them, i.e. {{print $1}}
