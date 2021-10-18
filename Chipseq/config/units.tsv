@@ -1,6 +1,5 @@
 sample	unit	fragment_len_mean	fragment_len_sd	fq1	fq2	sra_accession	platform
-A	1			resources/reads/a.chr21.1.fq	resources/reads/a.chr21.2.fq		ILLUMINA
-B	1			resources/reads/b.chr21.1.fq	resources/reads/b.chr21.2.fq		ILLUMINA
-B	2	300	14	resources/reads/b.chr21.1.fq			ILLUMINA
-C	1			resources/reads/a.chr21.1.fq	resources/reads/a.chr21.2.fq		ILLUMINA
-D	1			resources/reads/b.chr21.1.fq	resources/reads/b.chr21.2.fq		ILLUMINA
+A549-ACE2_mock_1	1					SRR15000166	ILLUMINA
+A549-ACE2_mock_2	1					SRR15000174	ILLUMINA
+A549-ACE2_cov_1	1					SRR15000167	ILLUMINA
+A549-ACE2_cov_2	1					SRR15000175	ILLUMINA

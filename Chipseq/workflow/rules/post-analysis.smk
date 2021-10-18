@@ -13,7 +13,7 @@ rule preseq_lc_extrap:
 rule collect_multiple_metrics:
     input:
          bam="results/filtered/{sample}.sorted.bam",
-         ref="resources/ref/genome.fasta"
+         ref=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"
     output: #ToDo: add descriptions to report captions
         # Through the output file extensions the different tools for the metrics can be selected
         # so that it is not necessary to specify them under params with the "PROGRAM" option.
@@ -91,7 +91,7 @@ rule sort_genomecov:
 rule bedGraphToBigWig:
     input:
         bedGraph="results/bed_graph/{sample}.sorted.bedgraph",
-        chromsizes="resources/ref/genome.chrom.sizes"
+        chromsizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
     output:
         "results/big_wig/{sample}.bigWig"
     log:
@@ -103,7 +103,7 @@ rule bedGraphToBigWig:
 
 rule create_igv_bigwig:
     input:
-        "resources/ref/genome.bed",
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
         expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
         "results/IGV/big_wig/merged_library.bigWig.igv.txt"
@@ -114,7 +114,7 @@ rule create_igv_bigwig:
 
 rule compute_matrix:
     input:
-         bed="resources/ref/genome.bed",
+         bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
          bigwig=expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
         # Usable output variables, their extensions and which option they implicitly call are listed here:
@@ -187,7 +187,7 @@ rule phantompeakqualtools:
 rule phantompeak_correlation:
     input:
         data="results/phantompeakqualtools/{sample}.phantompeak.Rdata",
-        header="../workflow/header/spp_corr_header.txt"
+        header="workflow/header/spp_corr_header.txt"
     output:
         "results/phantompeakqualtools/{sample}.spp_correlation_mqc.tsv"
     log:
@@ -201,8 +201,8 @@ rule phantompeak_multiqc:
     # NSC (Normalized strand cross-correlation) and RSC (relative strand cross-correlation) metrics use cross-correlation
     input:
         data="results/phantompeakqualtools/{sample}.phantompeak.spp.out",
-        nsc_header="../workflow/header/nsc_header.txt",
-        rsc_header="../workflow/header/rsc_header.txt"
+        nsc_header="workflow/header/nsc_header.txt",
+        rsc_header="workflow/header/rsc_header.txt"
     output:
         nsc="results/phantompeakqualtools/{sample}.spp_nsc_mqc.tsv",
         rsc="results/phantompeakqualtools/{sample}.spp_rsc_mqc.tsv"

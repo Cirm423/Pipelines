@@ -90,8 +90,8 @@ rule create_consensus_igv:
 rule homer_consensus_annotatepeaks:
     input:
         peaks="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.bed",
-        genome="resources/ref/genome.fasta",
-        gtf="resources/ref/annotation.gtf"
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
     output:
         annotations="results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt"
     threads:

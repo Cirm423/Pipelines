@@ -6,16 +6,15 @@ units: "config/units.tsv"  # to download reads from SRA the accession numbers (s
 single_end: False
 
 resources:
+  #Path to the share resources folder for the pipeline, where common files (genomes, references) are stored.
+  #Please do not change.
+  path: /data1/share/dcyleung/Pipeline/snakemake/resources/
   ref:
     # Number of chromosomes to consider for calling.
     # The first n entries of the FASTA will be considered.
-    n_chromosomes: 16
-    # Ensembl species name
-    species: saccharomyces_cerevisiae
-    # Ensembl release
-    release: 101
-    # Genome build
-    build: R64-1-1
+    n_chromosomes: 48
+    # Genecode or UCSC assembly name
+    assembly: GRCh38
     # for testing data only chromosome 21 is selected
     chromosome:
     # specify release version number of igenomes list to use (see https://github.com/nf-core/chipseq/releases), default: 1.2.2
@@ -35,7 +34,7 @@ params:
     q-value:
   deeptools-plots:
     # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
-    activate: False
+    activate: True
   lc_extrap:
     activate: True
   picard_metrics:

@@ -38,7 +38,7 @@ rule macs2_callpeak_broad:
     input:
         treatment="results/filtered/{sample}.sorted.bam",
         control="results/filtered/{control}.sorted.bam",
-        gsizepath="resources/ref/gsize.txt"
+        gsizepath=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.gsize.txt"
     output:
         # all output-files must share the same basename and only differ by it's extension
         # Usable extensions (and which tools they implicitly call) are listed here:
@@ -68,7 +68,7 @@ rule macs2_callpeak_narrow:
     input:
         treatment="results/filtered/{sample}.sorted.bam",
         control="results/filtered/{control}.sorted.bam",
-        gsizepath="resources/ref/gsize.txt"
+        gsizepath=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.gsize.txt"
     output:
         # all output-files must share the same basename and only differ by it's extension
         # Usable extensions (and which tools they implicitly call) are listed here:
@@ -176,8 +176,8 @@ rule create_igv_peaks:
 rule homer_annotatepeaks:
     input:
         peaks="results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",
-        genome="resources/ref/genome.fasta",
-        gtf="resources/ref/annotation.gtf"
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
     output:
         annotations="results/homer/annotate_peaks/{sample}-{control}.{peak}_peaks.annotatePeaks.txt"
     threads:

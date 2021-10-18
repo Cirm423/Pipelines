@@ -23,7 +23,7 @@ units.index = units.index.set_levels(
     [i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
-build = config["resources"]["ref"]["build"]
+build = config["resources"]["ref"]["assembly"]
 chromosome = config["resources"]["ref"]["chromosome"]
 
 ##### wildcard constraints #####
@@ -130,7 +130,7 @@ def get_plot_homer_annotatepeaks_input():
     )
 
 def get_samtools_view_filter_input(wildcards):
-    return ["results/picard_dedup/{sample}.bam", "resources/ref/blacklist.sorted.complement".format(
+    return ["results/picard_dedup/{sample}.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
         prefix="chr{chr}_".format(chr=chromosome) if chromosome else "",
         build=build
     )]
@@ -443,3 +443,36 @@ def all_input(wildcards):
                     )
                 )
     return wanted_input
+
+
+genecode = {
+    "GRCh38" : {
+        "assembly" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/GRCh38.primary_assembly.genome.fa.gz",
+        "gtf" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/gencode.v38.primary_assembly.annotation.gtf.gz",
+        "rmsk" : "hg38"
+    },
+    "GRCh37" : {
+        "assembly" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/GRCh37_mapping/GRCh37.primary_assembly.genome.fa.gz",
+        "gtf" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_38/GRCh37_mapping/gencode.v38lift37.annotation.gtf.gz",
+        "rmsk" : "hg19"
+    },
+    "GRCm39" : {
+        "assembly" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M27/GRCm39.primary_assembly.genome.fa.gz",
+        "gtf" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M27/gencode.vM27.primary_assembly.annotation.gtf.gz",
+        "rmsk" : "mm39"
+    },
+    "GRCm38" : {
+        "assembly" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/GRCm38.primary_assembly.genome.fa.gz",
+        "gtf" : "http://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.primary_assembly.annotation.gtf.gz",
+        "rmsk" : "mm10"
+    }
+}
+
+genecode_assembly = False
+if config['resources']['ref']['assembly'] in genecode.keys():
+    genecode_assembly = True
+
+def get_assembly_rmsk(wc):
+    if genecode_assembly:
+        return genecode[config['resources']['ref']['assembly']]["rmsk"]
+    return config['resources']['ref']['assembly']

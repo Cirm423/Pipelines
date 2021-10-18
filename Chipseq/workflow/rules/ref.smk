@@ -1,39 +1,106 @@
-rule get_genome:
+if genecode_assembly:
+
+    rule get_genome_gencode:
+        output:
+            fasta=f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
+            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
+        log:
+            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+        params:
+            assembly=f"{config['resources']['ref']['assembly']}",
+        cache: True
+        run:
+            shell(f"wget -O {output.fasta}.gz {genecode[config['resources']['ref']['assembly']]['assembly']} && gzip -d {output.fasta}.gz")
+            shell(f"wget -O {output.gtf}.gz {genecode[config['resources']['ref']['assembly']]['gtf']} && gzip -d {output.gtf}.gz")
+    
+    rule genome_faidx:
+        input:
+            f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
+        output:
+            f"{config['resources']}{config['resources']['ref']['assembly']}.fa.fai",
+        log:
+            f"logs/genome-faidx_{config['resources']['ref']['assembly']}.log",
+        cache: True
+        wrapper:
+            "0.77.0/bio/samtools/faidx"
+
+    rule annot_gtf2bed:
+        input:
+            f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
+        output:
+            f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed",
+        log:
+            "logs/annot_gtf2bed.log",
+        cache: True
+        conda:
+            "../envs/bedops.yaml"
+        shell:
+            r"""awk '{{ if ($0 ~ "transcript_id") print $0; else print $0" transcript_id \"\";"; }}' {input} | gtf2bed - > {output}"""
+
+else:
+
+    rule get_genome_ucsc:
+        output:
+            multiext(f"{config['resources']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
+        log:
+            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+        params:
+            provider="UCSC",
+            assembly=f"{config['resources']['ref']['assembly']}",
+        cache: True
+        conda:
+            "../envs/genomepy.yaml"
+        script:
+            "../scripts/genomepy.py"
+
+
+    rule unzip_annotation_ucsc:
+        input:
+            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']}{config['resources']['ref']['assembly']}.fa.sizes",
+        output:
+            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            bed=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed",
+            sizes=f"{config['resources']}{config['resources']['ref']['assembly']}.chrom.sizes",
+        cache: True
+        log:
+            f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
+        shell:
+            "gzip -dc {input.gtf} > {output.gtf} 2>{log} && gzip -dc {input.bed} > {output.bed} 2>>{log} && mv {input.sizes} {output.sizes}"
+
+rule bwa_index:
+    input:
+        f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
     output:
-        "resources/ref/genome.fasta"
+        multiext((f"{config['resources']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
-        "logs/ref/get-genome.log"
-    params:
-        species=config["resources"]["ref"]["species"],
-        datatype="dna",
-        build=config["resources"]["ref"]["build"],
-        release=config["resources"]["ref"]["release"],
-        chromosome=config["resources"]["ref"]["chromosome"]
+        f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
+    resources:
+        mem_mb=369000,
     cache: True
     wrapper:
-        "0.67.0/bio/reference/ensembl-sequence"
+        "0.77.0/bio/bwa/index"
 
-rule get_annotation:
+
+rule chromosome_size:
+    input:
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai"
     output:
-        "resources/ref/annotation.gtf"
-    params:
-        species=config["resources"]["ref"]["species"],
-        release=config["resources"]["ref"]["release"],
-        build=config["resources"]["ref"]["build"],
-        fmt="gtf",
-        flavor=""
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
     log:
-        "logs/ref/get_annotation.log"
-    cache: True  # save space and time with between workflow caching (see docs)
-    wrapper:
-        "0.64.0/bio/reference/ensembl-annotation"
+        "logs/ref/chromosome_size.log"
+    shell:
+        "cut -f 1,2 {input.genome} > {output} 2> {log}"
 
 # SRA-download
 rule sra_get_fastq_pe:
     output:
         # the wildcard name must be accession, pointing to an SRA number
         "resources/ref/sra-pe-reads/{accession}.1.fastq",
-        "resources/ref/sra-pe-reads/{accession}.2.fastq"
+        "resources/ref/sra-pe-reads/{accession}.2.fastq",
     params:
         extra=""
     threads: 6
@@ -53,55 +120,9 @@ rule sra_get_fastq_se:
     wrapper:
         "0.72.0/bio/sra-tools/fasterq-dump"
 
-rule gtf2bed:
-    input:
-        "resources/ref/annotation.gtf"
-    output:
-        "resources/ref/genome.bed"
-    log:
-        "logs/ref/gtf2bed.log"
-    conda:
-        "../envs/perl.yaml"
-    shell:
-        "../workflow/scripts/gtf2bed {input} > {output} 2> {log}"
-
-rule genome_faidx:
-    input:
-        "resources/ref/genome.fasta"
-    output:
-        "resources/ref/genome.fasta.fai"
-    log:
-        "logs/ref/genome-faidx.log"
-    cache: True
-    wrapper:
-        "0.64.0/bio/samtools/faidx"
-
-rule bwa_index:
-    input:
-        "resources/ref/genome.fasta"
-    output:
-        multiext("resources/ref/genome.fasta", ".amb", ".ann", ".bwt", ".pac", ".sa")
-    log:
-        "logs/bwa/bwa_index.log"
-    cache: True
-    params:
-        algorithm="bwtsw"
-    wrapper:
-        "0.64.0/bio/bwa/index"
-
-rule chromosome_size:
-    input:
-        genome="resources/ref/genome.fasta.fai"
-    output:
-        "resources/ref/genome.chrom.sizes"
-    log:
-        "logs/ref/chromosome_size.log"
-    shell:
-        "cut -f 1,2 {input.genome} > {output} 2> {log}"
-
 rule generate_igenomes:
     output:
-        "resources/ref/igenomes.yaml"
+        f"{config['resources']['path']}igenomes.yaml"
     params:
         igenomes_release = config["resources"]["ref"]["igenomes_release"]
     log:
@@ -113,11 +134,11 @@ rule generate_igenomes:
 
 rule generate_igenomes_blacklist:
     input:
-        "resources/ref/igenomes.yaml"
+        f"{config['resources']['path']}igenomes.yaml"
     output:
-        blacklist_path="resources/ref/blacklist.bed"
+        blacklist_path=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.bed"
     params:
-        build = config["resources"]["ref"]["build"],
+        build = config["resources"]["ref"]["assembly"],
         chromosome = config["resources"]["ref"]["chromosome"],
         blacklist = config["resources"]["ref"]["blacklist"]
     log:
@@ -129,9 +150,9 @@ rule generate_igenomes_blacklist:
 
 rule bedtools_sort_blacklist:
     input:
-        in_file="resources/ref/blacklist.bed"
+        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.bed"
     output:
-        "resources/ref/blacklist.sorted"
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted"
     params:
         extra=""
     log:
@@ -141,10 +162,10 @@ rule bedtools_sort_blacklist:
 
 rule bedtools_complement_blacklist:
     input:
-        in_file="resources/ref/blacklist.sorted",
-        genome="resources/ref/genome.chrom.sizes"
+        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted",
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
     output:
-        "resources/ref/blacklist.sorted.complement"
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement"
     params:
         extra=""
     log:
@@ -154,12 +175,12 @@ rule bedtools_complement_blacklist:
 
 checkpoint get_gsize:
     input:
-        "resources/ref/igenomes.yaml"
+        f"{config['resources']['path']}igenomes.yaml"
     output:
-        "resources/ref/gsize.txt"
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.gsize.txt"
     params:
         extra=config["resources"]["ref"]["macs-gsize"],
-        build=config["resources"]["ref"]["build"]
+        build=config["resources"]["ref"]["assembly"]
     log:
         "logs/ref/gsize.log"
     conda:
