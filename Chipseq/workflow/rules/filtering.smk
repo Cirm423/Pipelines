@@ -26,7 +26,7 @@ rule bamtools_filter_json:
         temp("results/bamtools_filtered/{sample}.bam")
     params:
           # filters mismatches in all reads and filters pe-reads within a size range given in json-file
-        json="../config/{}_bamtools_filtering_rules.json".format("se" if config["single_end"] else "pe")
+        json="config/{}_bamtools_filtering_rules.json".format("se" if config["single_end"] else "pe")
     log:
         "logs/filtered/{sample}.log"
     wrapper:
