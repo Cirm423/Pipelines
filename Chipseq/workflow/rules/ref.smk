@@ -2,8 +2,8 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            fasta=f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
-            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            fasta=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
         log:
             f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
@@ -15,9 +15,9 @@ if genecode_assembly:
     
     rule genome_faidx:
         input:
-            f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
         output:
-            f"{config['resources']}{config['resources']['ref']['assembly']}.fa.fai",
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai",
         log:
             f"logs/genome-faidx_{config['resources']['ref']['assembly']}.log",
         cache: True
@@ -26,9 +26,9 @@ if genecode_assembly:
 
     rule annot_gtf2bed:
         input:
-            f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
         output:
-            f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed",
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
         log:
             "logs/annot_gtf2bed.log",
         cache: True
@@ -41,9 +41,9 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
         log:
             f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
@@ -58,13 +58,13 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']}{config['resources']['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
         output:
-            gtf=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']}{config['resources']['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']}{config['resources']['ref']['assembly']}.chrom.sizes",
+            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes",
         cache: True
         log:
             f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
@@ -73,9 +73,9 @@ else:
 
 rule bwa_index:
     input:
-        f"{config['resources']}{config['resources']['ref']['assembly']}.fa",
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
     output:
-        multiext((f"{config['resources']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        multiext((f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
         f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
     resources:
@@ -85,22 +85,47 @@ rule bwa_index:
         "0.77.0/bio/bwa/index"
 
 
-rule chromosome_size:
-    input:
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai"
-    output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
-    log:
-        "logs/ref/chromosome_size.log"
-    shell:
-        "cut -f 1,2 {input.genome} > {output} 2> {log}"
+if genecode_assembly:
+
+    rule faToTwoBit_fa:
+        input:
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+        output:
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.2bit"),
+        log:
+            "logs/browser/fa_to_2bit.log"
+        params:
+            "" # optional params string
+        wrapper:
+            "0.78.0/bio/ucsc/faToTwoBit"
+
+    rule twoBitInfo:
+        input:
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.2bit"
+        output:
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.tmp")
+        log:
+            "logs/browser/chrom.sizes.log"
+        params:
+            "" # optional params string
+        wrapper:
+            "0.78.0/bio/ucsc/twoBitInfo"
+
+    rule twoBitInfo_sort:
+        input:
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.tmp"
+        output:
+            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+        cache: True
+        shell:
+            "sort -k2rn {input} > {output}"
 
 # SRA-download
 rule sra_get_fastq_pe:
     output:
         # the wildcard name must be accession, pointing to an SRA number
-        "resources/ref/sra-pe-reads/{accession}.1.fastq",
-        "resources/ref/sra-pe-reads/{accession}.2.fastq",
+        "resources/sra-pe-reads/{accession}_1.fastq",
+        "resources/sra-pe-reads/{accession}_2.fastq",
     params:
         extra=""
     threads: 6
@@ -111,7 +136,7 @@ rule sra_get_fastq_pe:
 
 rule sra_get_fastq_se:
     output:
-        "resources/ref/sra-se-reads/{accession}.fastq"
+        "resources/sra-se-reads/{accession}.fastq"
     params:
         extra=""
     threads: 6
@@ -157,8 +182,8 @@ rule bedtools_sort_blacklist:
         extra=""
     log:
         "logs/ref/blacklist.sorted.log"
-    wrapper:
-        "0.68.0/bio/bedtools/sort"
+    shell:
+        "sort -k1,1 -k2n -V {input.in_file} > {output} 2>{log}"
 
 rule bedtools_complement_blacklist:
     input:

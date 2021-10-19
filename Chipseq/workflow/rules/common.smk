@@ -67,16 +67,16 @@ def get_individual_fastq(wildcards):
     """Get individual raw FASTQ files from unit sheet, based on a read (end) wildcard"""
     if ( wildcards.read == "0" or wildcards.read == "1" ):
         if is_sra_se(wildcards.sample, wildcards.unit):
-            return expand("resources/ref/sra-se-reads/{accession}.fastq",
+            return expand("resources/sra-se-reads/{accession}.fastq",
                               accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
         elif is_sra_pe(wildcards.sample, wildcards.unit):
-            return expand("resources/ref/sra-pe-reads/{accession}.1.fastq",
+            return expand("resources/sra-pe-reads/{accession}_1.fastq",
                               accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
         else:
             return units.loc[ (wildcards.sample, wildcards.unit), "fq1" ]
     elif wildcards.read == "2":
         if is_sra_pe(wildcards.sample, wildcards.unit):
-            return expand("resources/ref/sra-pe-reads/{accession}.2.fastq",
+            return expand("resources/sra-pe-reads/{accession}_2.fastq",
                           accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
         else:
             return units.loc[ (wildcards.sample, wildcards.unit), "fq2" ]
@@ -84,10 +84,10 @@ def get_individual_fastq(wildcards):
 def get_fastqs(wildcards):
     """Get raw FASTQ files from unit sheet."""
     if is_sra_se(wildcards.sample, wildcards.unit):
-        return expand("resources/ref/sra-se-reads/{accession}.fastq",
+        return expand("resources/sra-se-reads/{accession}.fastq",
                           accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
     elif is_sra_pe(wildcards.sample, wildcards.unit):
-        return expand(["resources/ref/sra-pe-reads/{accession}.1.fastq", "ref/sra-pe-reads/{accession}.2.fastq"],
+        return expand(["resources/sra-pe-reads/{accession}_1.fastq", "resources/sra-pe-reads/{accession}_2.fastq"],
                           accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
     elif is_single_end(wildcards.sample, wildcards.unit):
         return units.loc[ (wildcards.sample, wildcards.unit), "fq1" ]
@@ -150,9 +150,11 @@ def get_samples_of_antibody(antibody):
     return samples[samples["antibody"] == antibody]["sample"]
 
 def get_map_reads_input(wildcards):
-    if is_single_end(wildcards.sample, wildcards.unit):
+    if is_sra_pe(wildcards.sample, wildcards.unit):
+        return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
+    elif is_single_end(wildcards.sample, wildcards.unit):
         return "results/trimmed/{sample}-{unit}.fastq.gz"
-    return ["results/trimmed/{sample}-{unit}.1.fastq.gz", "results/trimmed/{sample}-{unit}.2.fastq.gz"]
+    return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
 
 def get_read_group(wildcards):
     """Denote sample name and platform in read group."""
@@ -165,7 +167,10 @@ def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
         reads = [ "1", "2" ]
-        if is_single_end(sample, unit):
+        if is_sra_pe(sample, unit):
+            multiqc_input.extend(expand (["logs/cutadapt/{sample}-{unit}.pe.log"],
+            sample = sample, unit = unit))
+        elif is_single_end(sample, unit):
             reads = [ "0" ]
             multiqc_input.extend(expand (["logs/cutadapt/{sample}-{unit}.se.log"],
             sample = sample, unit = unit))
@@ -284,7 +289,19 @@ def all_input(wildcards):
 
     # trimming reads
     for (sample, unit) in units.index:
-        if is_single_end(sample, unit):
+        if is_sra_pe(sample, unit):
+            wanted_input.extend(
+                expand (
+                    [
+                        "results/trimmed/{sample}-{unit}_1.fastq.gz",
+                        "results/trimmed/{sample}-{unit}_2.fastq.gz",
+                        "results/trimmed/{sample}-{unit}.pe.qc.txt"
+                    ],
+                    sample = sample,
+                    unit = unit
+            )
+        )
+        elif is_single_end(sample, unit):
             wanted_input.extend(expand(
                     [
                         "results/trimmed/{sample}-{unit}.fastq.gz",
@@ -298,8 +315,8 @@ def all_input(wildcards):
             wanted_input.extend(
                 expand (
                     [
-                        "results/trimmed/{sample}-{unit}.1.fastq.gz",
-                        "results/trimmed/{sample}-{unit}.2.fastq.gz",
+                        "results/trimmed/{sample}-{unit}_1.fastq.gz",
+                        "results/trimmed/{sample}-{unit}_2.fastq.gz",
                         "results/trimmed/{sample}-{unit}.pe.qc.txt"
                     ],
                     sample = sample,

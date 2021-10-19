@@ -20,8 +20,8 @@ def get_blacklist_from_igenomes(igenomes, blacklist_path):
             with open(blacklist_link) as fin:
                 with open(blacklist_path, 'w') as fout:
                     for line in fin:
-                        if line.startswith("chr"):
-                            line = line.replace("chr", "", 1)
+                        # if line.startswith("chr"):
+                        #     line = line.replace("chr", "", 1)
                         if chromosome:
                             if line.startswith("{}\t".format(chromosome)):
                                 fout.write(line)
