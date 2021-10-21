@@ -60,7 +60,7 @@ rule orphan_remove:
     conda:
         "../envs/pysam.yaml"
     shell:
-        " ../workflow/scripts/rm_orphan_pe_bam.py {input} {output.bam} {params} 2> {log}"
+        " workflow/scripts/rm_orphan_pe_bam.py {input} {output.bam} {params} 2> {log}"
 
 rule samtools_sort_pe:
     input:

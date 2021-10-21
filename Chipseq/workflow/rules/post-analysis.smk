@@ -58,7 +58,7 @@ rule genomecov:
             step= "bamtools_filtered" if config["single_end"]
             else "orph_rm_pe"),
     output:
-        pipe("results/bed_graph/{sample}.bedgraph")
+        "results/bed_graph/{sample}.bedgraph"
     log:
         "logs/bed_graph/{sample}.log"
     params:
@@ -85,8 +85,10 @@ rule sort_genomecov:
         "results/bed_graph/{sample}.sorted.bedgraph"
     log:
         "logs/sort_genomecov/{sample}.log"
+    conda:
+        "../envs/bedsort.yaml"
     shell:
-        "sort -k1,1 -k2,2n {input} > {output} 2> {log}"
+        "bedSort {input} {output} 2> {log}"
 
 rule bedGraphToBigWig:
     input:
@@ -180,7 +182,7 @@ rule phantompeakqualtools:
     conda:
         "../envs/phantompeakqualtools.yaml"
     shell:
-        "( Rscript -e \"library(caTools); source('../workflow/scripts/run_spp.R')\" "
+        "( Rscript -e \"library(caTools); source('workflow/scripts/run_spp.R')\" "
         "  -c={input} -savp={output.plot} -savd={output.r_data} "
         "  -out={output.res_phantom} -p={threads} 2>&1 ) >{log}"
 

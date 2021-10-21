@@ -42,3 +42,5 @@ mmkchu
 {'hpc2.ust.hk': ['tychanag', 'sloh', 'shdiu', 'lswilson', 'twsam', 'yoawong', 'hxubb', 'mchengac', 'cwwongbk', 'hjjung', 'mmkchu'], 'biocrfhpc1.ust.hk': ['efrangedakis', 'angelochan', 'cschee', 'tychanag', 'shdiu', 'lswilson', 'hxubb', 'mmkchu'], 'biocrfhpc2.ust.hk': ['hxubb', 'mmkchu']}
 
 Put Fastqc into RNA-seq pipeline 
+
+Snakemake old version = 6.70

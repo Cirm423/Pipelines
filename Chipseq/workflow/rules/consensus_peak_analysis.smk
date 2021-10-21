@@ -75,7 +75,7 @@ rule plot_peak_intersect:
     log:
         "logs/macs2_merged_expand/plots/{antibody}.consensus_{peak}-peaks.boolean.intersect.plot.log"
     shell:
-        "Rscript ../workflow/scripts/plot_peak_intersect.R -i {input} -o {output} 2> {log}"
+        "Rscript workflow/scripts/plot_peak_intersect.R -i {input} -o {output} 2> {log}"
 
 rule create_consensus_igv:
     input:

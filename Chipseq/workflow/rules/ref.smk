@@ -120,6 +120,17 @@ if genecode_assembly:
         shell:
             "sort -k2rn {input} > {output}"
 
+
+rule twoBitInfo_sort_tobedtools:
+    input:
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+    output:
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.bedtools"
+    cache: True
+    shell:
+        "sort -k1,1 -k2,2n {input} > {output}"
+
+
 # SRA-download
 rule sra_get_fastq_pe:
     output:
@@ -182,13 +193,13 @@ rule bedtools_sort_blacklist:
         extra=""
     log:
         "logs/ref/blacklist.sorted.log"
-    shell:
-        "sort -k1,1 -k2n -V {input.in_file} > {output} 2>{log}"
+    wrapper:
+        "0.68.0/bio/bedtools/sort"
 
 rule bedtools_complement_blacklist:
     input:
         in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted",
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.bedtools"
     output:
         f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement"
     params:

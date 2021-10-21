@@ -125,7 +125,7 @@ rule bedtools_intersect:
         left="results/filtered/{sample}.sorted.bam",
         right="results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak"
     output:
-        pipe("results/bedtools_intersect/{sample}-{control}.{peak}.intersected.bed")
+        "results/bedtools_intersect/{sample}-{control}.{peak}.intersected.bed"
     params:
         extra="-bed -c -f 0.20"
     log:
@@ -204,7 +204,7 @@ rule plot_macs_qc:
     conda:
         "../envs/plot_macs_annot.yaml"
     shell:
-        "Rscript ../workflow/scripts/plot_macs_qc.R -i {params.input} -s {params.sample_control_combinations}  -o {output.plot} -p {output.summmary} 2> {log}"
+        "Rscript workflow/scripts/plot_macs_qc.R -i {params.input} -s {params.sample_control_combinations}  -o {output.plot} -p {output.summmary} 2> {log}"
 
 rule plot_homer_annotatepeaks:
     input:
@@ -220,7 +220,7 @@ rule plot_homer_annotatepeaks:
     conda:
         "../envs/plot_macs_annot.yaml"
     shell:
-        "Rscript ../workflow/scripts/plot_homer_annotatepeaks.R -i {params.input} -s {params.sample_control_combinations}  -o {output.plot} -p {output.summmary} 2> {log}"
+        "Rscript workflow/scripts/plot_homer_annotatepeaks.R -i {params.input} -s {params.sample_control_combinations}  -o {output.plot} -p {output.summmary} 2> {log}"
 
 rule plot_sum_annotatepeaks:
     input:
