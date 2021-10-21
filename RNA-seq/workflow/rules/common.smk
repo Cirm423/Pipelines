@@ -196,11 +196,18 @@ def is_paired_end(sample):
 def get_map_reads_input_R1(wildcards):
     if not is_activated("mergeReads"):
         if config["trimming"]["activate"]:
-            return expand(
-                "results/trimmed/{sample}_{unit}_R1.fastq.gz",
-                unit=units.loc[wildcards.sample, "unit_name"],
-                sample=wildcards.sample,
-            )
+            if is_paired_end(wildcards.sample):
+                return expand(
+                    "results/trimmed/{sample}_{unit}_R1.fastq.gz",
+                    unit=units.loc[wildcards.sample, "unit_name"],
+                    sample=wildcards.sample,
+                )
+            else:
+                return expand(
+                    "results/trimmed/{sample}_{unit}_single.fastq.gz",
+                    unit=units.loc[wildcards.sample, "unit_name"],
+                    sample=wildcards.sample,
+                )                
         unit = units.loc[wildcards.sample]
         if all(pd.isna(unit["fq1"])):
             # SRA sample (always paired-end for now)
@@ -209,7 +216,7 @@ def get_map_reads_input_R1(wildcards):
         sample_units = units.loc[wildcards.sample]
         return sample_units["fq1"]
     ext = units.loc[wildcards.sample]["fq1"][0]
-    if ext.endswith("gz"):
+    if ext.endswith("gz") or config['trimming']['activate']:
         ending = ".gz"
     else:
         ending = ""
@@ -235,7 +242,7 @@ def get_map_reads_input_R2(wildcards):
             sample_units = units.loc[wildcards.sample]
             return sample_units["fq2"]
         ext = units.loc[wildcards.sample]["fq1"][0]
-        if ext.endswith("gz"):
+        if ext.endswith("gz") or config['trimming']['activate']:
             ending = ".gz"
         else:
             ending = ""
@@ -368,7 +375,7 @@ def is_activated(xpath):
 def get_fastqs_gz(wc):
     if config["trimming"]["activate"]:
         return expand(
-            "results/trimmed/{sample}/{unit}_{read}.fastq.gz",
+            "results/trimmed/{sample}_{unit}_{read}.fastq.gz",
             unit=units.loc[wc.sample, "unit_name"],
             sample=wc.sample,
             read=wc.read,
@@ -387,9 +394,12 @@ def get_fastqs_gz(wc):
 
 def get_fastqs(wc):
     unit = units.loc[wc.sample]
-    fq = "fq{}".format(wc.read[-1])
-    if not units.loc[wc.sample, fq][0].endswith("gz"):
+    print(unit)
+    if wc.read != "single":
         fq = "fq{}".format(wc.read[-1])
+    else:
+        fq = "fq1"
+    if not units.loc[wc.sample, fq][0].endswith("gz"):
         return units.loc[wc.sample, fq].tolist()
 
 def get_contrast(wildcards):

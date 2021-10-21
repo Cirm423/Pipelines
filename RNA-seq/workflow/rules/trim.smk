@@ -1,21 +1,30 @@
-rule get_sra:
+rule get_sra_pe:
     output:
-        "sra/{accession}_1.fastq",
-        "sra/{accession}_2.fastq",
+        "sra/{accession}_1.fastq.gz",
+        "sra/{accession}_2.fastq.gz",
     log:
         "logs/get-sra/{accession}.log",
     wrapper:
         "0.77.0/bio/sra-tools/fasterq-dump"
 
-rule compress_sra:
-    input:
-        "sra/{accession}_{read}.fastq",
+
+rule get_sra_se:
     output:
-        "sra/{accession}_{read}.fastq.gz",
+        "sra/{accession}.fastq.gz",
     log:
-        "logs/compress-sra/{accession}_{read}.log"
-    shell:
-        "gzip {input} 2> {log}"
+        "logs/get-sra/{accession}.log",
+    wrapper:
+        "0.77.0/bio/sra-tools/fasterq-dump"
+
+# rule compress_sra:
+#     input:
+#         "sra/{accession}_{read}.fastq",
+#     output:
+#         "sra/{accession}_{read}.fastq.gz",
+#     log:
+#         "logs/compress-sra/{accession}_{read}.log"
+#     shell:
+#         "gzip {input} 2> {log}"
 
 rule cutadapt_pipe:
     input:
@@ -35,9 +44,9 @@ rule cutadapt_pe:
     input:
         get_cutadapt_input,
     output:
-        fastq1="results/trimmed/{sample}-{unit}_R1.fastq.gz",
-        fastq2="results/trimmed/{sample}-{unit}_R2.fastq.gz",
-        qc="results/trimmed/{sample}-{unit}.paired.qc.txt",
+        fastq1="results/trimmed/{sample}_{unit}_R1.fastq.gz",
+        fastq2="results/trimmed/{sample}_{unit}_R2.fastq.gz",
+        qc="results/trimmed/{sample}_{unit}.paired.qc.txt",
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
@@ -52,8 +61,8 @@ rule cutadapt_se:
     input:
         get_cutadapt_input,
     output:
-        fastq="results/trimmed/{sample}-{unit}_single.fastq.gz",
-        qc="results/trimmed/{sample}-{unit}_single.qc.txt",
+        fastq="results/trimmed/{sample}_{unit}_single.fastq.gz",
+        qc="results/trimmed/{sample}_{unit}_single.qc.txt",
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
