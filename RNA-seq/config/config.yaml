@@ -3,7 +3,7 @@ samples: config/samples.tsv
 # path to sequencing unit sheet
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: config/units.tsv
+units: config/units_alt.tsv
 #Path to the share resources folder for the pipeline, where common files (genomes, references) are stored.
 #Please do not change.
 resources: /data1/share/dcyleung/Pipeline/snakemake/resources/
@@ -14,6 +14,9 @@ ref:
   assembly: GRCh38
 
 #Config marked as True is activated, config marked as False is deactivated
+
+#Indicate if sra accession numbers are single or paired end data, it only affects sra. It does not affect local data.
+single_end: False
 
 #Activate a 2 pass star alignment. It improves novel splice junction quantification.
 #For more info see https://academic.oup.com/bioinformatics/article/32/1/43/1744001
@@ -32,14 +35,14 @@ mergeReads:
 
 #Make a pca plot. It can only be used when diffexp is also activated.
 pca:
-  activate: False
+  activate: True
   labels:
     # columns of sample sheet to use for PCA
     - condition
 
 #Perform Deseq2 analysis. It cannot be activated at the same time of single.
 diffexp:
-  activate: False
+  activate: True
   # contrasts for the deseq2 results method. Only 2 conditions can be at the same time inside each contrast or the pipeline will fail.
   TE:
    activate: True
@@ -53,11 +56,11 @@ diffexp:
 
 #Perform single sample differential analysis. Cannot be activated with diffexp.
 single:
-  activate: True
+  activate: False
 
 #Perform single sample TE differential analysis. As before, it cannot be activated with diffexp but you can activate both single and TE_single.
 TE_single:
-  activate: True
+  activate: False
   filter: 10
 
 #Pass additional parameters to certain steps of the pipeline. 

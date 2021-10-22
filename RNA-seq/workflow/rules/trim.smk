@@ -1,7 +1,7 @@
 rule get_sra_pe:
     output:
-        "sra/{accession}_1.fastq.gz",
-        "sra/{accession}_2.fastq.gz",
+        "sra-pe-reads/{accession}_1.fastq.gz",
+        "sra-pe-reads/{accession}_2.fastq.gz",
     log:
         "logs/get-sra/{accession}.log",
     wrapper:
@@ -10,7 +10,7 @@ rule get_sra_pe:
 
 rule get_sra_se:
     output:
-        "sra/{accession}.fastq.gz",
+        "sra-se-reads/{accession}.fastq.gz",
     log:
         "logs/get-sra/{accession}.log",
     wrapper:

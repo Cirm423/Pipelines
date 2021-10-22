@@ -148,7 +148,10 @@ def get_cutadapt_input(wildcards):
     if pd.isna(unit["fq1"]):
         # SRA sample (always paired-end for now)
         accession = unit["sra"]
-        return expand("sra/{accession}_{read}.fastq", accession=accession, read=[1, 2])
+        if is_sra_pe(wildcards.sample, wildcards.unit):
+            return expand("sra-pe-reads/{accession}_{read}.fastq.gz", accession=accession, read=[1, 2])
+        if is_sra_se(wildcards.sample, wildcards.unit):
+            return f"sra-se-reads/{accession}.fastq.gz"
 
     if unit["fq1"].endswith("gz"):
         ending = ".gz"
@@ -190,8 +193,61 @@ def is_paired_end(sample):
     ), "invalid units for sample {}, must be all paired end or all single end".format(
         sample
     )
+    if ((all_paired & ~sra_null)).all():
+        if config["single_end"]:
+            all_paired = (~paired).all()
     return all_paired
 
+# Imported from Chipseq
+
+def has_only_sra_accession(sample, unit):
+    return pd.isnull(units.loc[(sample, unit), "fq1"]) and pd.isnull(units.loc[(sample, unit), "fq2"]) \
+           and not pd.isnull(units.loc[(sample, unit), "sra"])
+
+def is_sra_se(sample, unit):
+    return has_only_sra_accession(sample, unit) and config["single_end"]
+
+def is_sra_pe(sample, unit):
+    return has_only_sra_accession(sample, unit) and not config["single_end"]
+
+def get_individual_fastq(wildcards):
+    if ( wildcards.read == "0" or wildcards.read == "1" ):
+        if is_sra_se(wildcards.sample, wildcards.unit):
+            return expand("sra-se-reads/{accession}.fastq.gz",
+                            accession=units.loc[ (wildcards.sample, wildcards.unit), "sra" ])
+        elif is_sra_pe(wildcards.sample, wildcards.unit):
+            return expand("sra-pe-reads/{accession}_1.fastq.gz",
+                            accession=units.loc[ (wildcards.sample, wildcards.unit), "sra" ])
+        else:
+            return units.loc[ (wildcards.sample, wildcards.unit), "fq1" ]
+    elif wildcards.read == "2":
+        if is_sra_pe(wildcards.sample, wildcards.unit):
+            return expand("sra-pe-reads/{accession}_2.fastq.gz",
+                          accession=units.loc[ (wildcards.sample, wildcards.unit), "sra" ])
+        else:
+            return units.loc[ (wildcards.sample, wildcards.unit), "fq2" ]
+
+def get_multiqc_input(wildcards):
+    multiqc_input = []
+    for (sample, unit) in units.index:
+        reads = [ "1", "2" ]
+        if not is_sra_pe(sample, unit):
+            if not is_paired_end(sample):
+                reads = [ "0" ]
+        multiqc_input.extend(
+            expand (
+                [
+                    "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
+                    "results/qc/fastqc/{sample}.{unit}.{reads}.html",
+                ],
+                sample = sample,
+                unit = unit,
+                reads = reads
+            )
+        )
+    return multiqc_input
+
+# Original from RNA-seq
 
 def get_map_reads_input_R1(wildcards):
     if not is_activated("mergeReads"):
@@ -209,12 +265,20 @@ def get_map_reads_input_R1(wildcards):
                     sample=wildcards.sample,
                 )                
         unit = units.loc[wildcards.sample]
-        if all(pd.isna(unit["fq1"])):
-            # SRA sample (always paired-end for now)
+        if has_only_sra_accession(wildcards.sample, wildcards.unit):
             accession = unit["sra"]
-            return expand("sra/{accession}_R1.fastq.gz", accession=accession)
+            if not config["single_end"]:
+                return expand("sra-pe-reads/{accession}_1.fastq.gz", accession=accession)
+            if config["single_end"]:
+                return expand("sra-se-reads/{accession}.fastq.gz", accession=accession)
         sample_units = units.loc[wildcards.sample]
         return sample_units["fq1"]
+    unit=units.loc[wildcards.sample]
+    if all(pd.isna(unit["fq1"])):
+        if not config["single_end"]:
+            return "results/merged/{sample}_R1.fastq.gz"
+        if config["single_end"]:
+            return "results/merged/{sample}_single.fastq.gz"
     ext = units.loc[wildcards.sample]["fq1"][0]
     if ext.endswith("gz") or config['trimming']['activate']:
         ending = ".gz"
@@ -235,12 +299,19 @@ def get_map_reads_input_R2(wildcards):
                     sample=wildcards.sample,
                 )
             unit = units.loc[wildcards.sample]
-            if all(pd.isna(unit["fq1"])):
+            if has_only_sra_accession(wildcards.sample, wildcards.unit):
                 # SRA sample (always paired-end for now)
                 accession = unit["sra"]
-                return expand("sra/{accession}_R2.fastq.gz", accession=accession)
+                if not config["single_end"]:
+                    return expand("sra-pe-reads/{accession}_2.fastq.gz", accession=accession)
             sample_units = units.loc[wildcards.sample]
             return sample_units["fq2"]
+        unit=units.loc[wildcards.sample]
+        if all(pd.isna(unit["fq1"])):
+            if not config["single_end"]:
+                return "results/merged/{sample}_R2.fastq.gz"
+            if config["single_end"]:
+                return ""            
         ext = units.loc[wildcards.sample]["fq1"][0]
         if ext.endswith("gz") or config['trimming']['activate']:
             ending = ".gz"
@@ -384,9 +455,14 @@ def get_fastqs_gz(wc):
     if all(pd.isna(unit["fq1"])):
         # SRA sample (always paired-end for now)
         accession = unit["sra"]
-        return expand(
-            "sra/{accession}_{read}.fastq.gz", accession=accession, read=wc.read[-1]
-        )
+        if not config["single_end"]:
+            return expand(
+                "sra-pe-reads/{accession}_{read}.fastq.gz", accession=accession, read=wc.read[-1]
+            )
+        if config["single_end"]:
+            return expand(
+                "sra-se-reads/{accession}.fastq.gz", accession=accession
+            )
     fq = "fq{}".format(wc.read[-1])
     out_list = units.loc[wc.sample, fq].tolist()
     if units.loc[wc.sample, fq][0].endswith("gz"):
@@ -394,7 +470,6 @@ def get_fastqs_gz(wc):
 
 def get_fastqs(wc):
     unit = units.loc[wc.sample]
-    print(unit)
     if wc.read != "single":
         fq = "fq{}".format(wc.read[-1])
     else:

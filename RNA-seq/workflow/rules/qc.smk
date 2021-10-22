@@ -151,10 +151,24 @@ rule rseqc_readgc:
     shell:
         "read_GC.py -i {input.bam} -o {params.prefix} > {log} 2>&1"
 
+rule fastqc:
+    input:
+        get_individual_fastq
+    output:
+        html="results/qc/fastqc/{sample}.{unit}.{read}.html",
+        zip="results/qc/fastqc/{sample}.{unit}.{read}_fastqc.zip"
+    params:
+        ""
+    log:
+        "logs/fastqc/{sample}.{unit}.{read}.log"
+    threads: 6
+    wrapper:
+        "0.72.0/bio/fastqc"
 
 rule multiqc:
     input:
         lambda wc: get_star_output_all_units(wc, fi="bam", orig =True),
+        get_multiqc_input,
         list(set(expand(
             path_merged_cond_mqc("results/qc/rseqc/?.junctionanno.junction.bed"),
             unit=units.itertuples(),
