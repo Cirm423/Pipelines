@@ -44,3 +44,9 @@ mmkchu
 Put Fastqc into RNA-seq pipeline 
 
 Snakemake old version = 6.70
+
+Run in snakemake environment:
+conda install -c conda-forge cookiecutter
+cookiecutter https://github.com/Snakemake-Profiles/slurm.git
+
+or copy the folder snake_config to the cluster. The snake_config has to be put in the shared folder for everyone snakemake to use.

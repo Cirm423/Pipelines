@@ -97,7 +97,7 @@ rule homer_consensus_annotatepeaks:
     threads:
         2
     resources:
-        mem_mb=4000
+        mem_mb=lambda wildcards, attempt: attempt * 4000
     params:
         mode="",
         extra="-gid"

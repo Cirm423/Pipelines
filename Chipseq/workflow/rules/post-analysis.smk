@@ -45,8 +45,12 @@ rule collect_multiple_metrics:
     params:
         # optional parameters, TODO: move to config.yaml and load from there
         "VALIDATION_STRINGENCY=LENIENT "
-    wrapper:
-        "0.64.0/bio/picard/collectmultiplemetrics"
+        "METRIC_ACCUMULATION_LEVEL=null "
+        "METRIC_ACCUMULATION_LEVEL=SAMPLE "
+    conda:
+        "../envs/picard.yaml"
+    script:
+        "../scripts/picard_metrics.py"
 
 rule genomecov:
     input:
@@ -128,13 +132,14 @@ rule compute_matrix:
     threads: 24
     params:
         command="scale-regions",
-        extra="--regionBodyLength 1000 "
+        extra="--numberOfProcessors 24 " #Match this to threads above
+              "--regionBodyLength 1000 "
               "--beforeRegionStartLength 3000 "
               "--afterRegionStartLength 3000 "
               "--missingDataAsZero " # added to prevent black output in the heatmap (plot_heatmap rule) https://github.com/deeptools/deepTools/issues/793
               "--skipZeros "
               "--smartLabels "
-              "--numberOfProcessors 2 "
+              
     wrapper:
         "0.64.0/bio/deeptools/computematrix"
 
