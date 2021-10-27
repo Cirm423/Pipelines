@@ -54,7 +54,7 @@ def get_final_output():
             num = "2"
         else:
             num = ""
-        if pd.isna(units["fq2"][0]):
+        if not is_paired_end(samples["sample_name"][0]):
             if is_activated("mergeReads"):
                 final_output = expand(
                     "results/rsem/se{num}/{sample}/mapped.genes.results",
