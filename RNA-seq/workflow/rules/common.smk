@@ -194,7 +194,7 @@ def is_paired_end(sample):
         sample
     )
     if ((all_paired & ~sra_null)).all():
-        if config["single_end"]:
+        if config["single_end"]["activate"]:
             all_paired = (~paired).all()
     return all_paired
 
@@ -205,10 +205,10 @@ def has_only_sra_accession(sample, unit):
            and not pd.isnull(units.loc[(sample, unit), "sra"])
 
 def is_sra_se(sample, unit):
-    return has_only_sra_accession(sample, unit) and config["single_end"]
+    return has_only_sra_accession(sample, unit) and config["single_end"]["activate"]
 
 def is_sra_pe(sample, unit):
-    return has_only_sra_accession(sample, unit) and not config["single_end"]
+    return has_only_sra_accession(sample, unit) and not config["single_end"]["activate"]
 
 def get_individual_fastq(wildcards):
     if ( wildcards.read == "0" or wildcards.read == "1" ):
@@ -267,17 +267,17 @@ def get_map_reads_input_R1(wildcards):
         unit = units.loc[wildcards.sample]
         if has_only_sra_accession(wildcards.sample, wildcards.unit):
             accession = unit["sra"]
-            if not config["single_end"]:
+            if not config["single_end"]["activate"]:
                 return expand("sra-pe-reads/{accession}_1.fastq.gz", accession=accession)
-            if config["single_end"]:
+            if config["single_end"]["activate"]:
                 return expand("sra-se-reads/{accession}.fastq.gz", accession=accession)
         sample_units = units.loc[wildcards.sample]
         return sample_units["fq1"]
     unit=units.loc[wildcards.sample]
     if all(pd.isna(unit["fq1"])):
-        if not config["single_end"]:
+        if not config["single_end"]["activate"]:
             return "results/merged/{sample}_R1.fastq.gz"
-        if config["single_end"]:
+        if config["single_end"]["activate"]:
             return "results/merged/{sample}_single.fastq.gz"
     ext = units.loc[wildcards.sample]["fq1"][0]
     if ext.endswith("gz") or config['trimming']['activate']:
@@ -302,15 +302,15 @@ def get_map_reads_input_R2(wildcards):
             if has_only_sra_accession(wildcards.sample, wildcards.unit):
                 # SRA sample (always paired-end for now)
                 accession = unit["sra"]
-                if not config["single_end"]:
+                if not config["single_end"]["activate"]:
                     return expand("sra-pe-reads/{accession}_2.fastq.gz", accession=accession)
             sample_units = units.loc[wildcards.sample]
             return sample_units["fq2"]
         unit=units.loc[wildcards.sample]
         if all(pd.isna(unit["fq1"])):
-            if not config["single_end"]:
+            if not config["single_end"]["activate"]:
                 return "results/merged/{sample}_R2.fastq.gz"
-            if config["single_end"]:
+            if config["single_end"]["activate"]:
                 return ""            
         ext = units.loc[wildcards.sample]["fq1"][0]
         if ext.endswith("gz") or config['trimming']['activate']:
@@ -455,11 +455,11 @@ def get_fastqs_gz(wc):
     if all(pd.isna(unit["fq1"])):
         # SRA sample (always paired-end for now)
         accession = unit["sra"]
-        if not config["single_end"]:
+        if not config["single_end"]["activate"]:
             return expand(
                 "sra-pe-reads/{accession}_{read}.fastq.gz", accession=accession, read=wc.read[-1]
             )
-        if config["single_end"]:
+        if config["single_end"]["activate"]:
             return expand(
                 "sra-se-reads/{accession}.fastq.gz", accession=accession
             )

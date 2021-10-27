@@ -20,6 +20,14 @@ properties:
     required:
       - assembly
 
+  single_end:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
   2nd_pass:
     type: object
     properties:

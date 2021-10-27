@@ -16,7 +16,8 @@ ref:
 #Config marked as True is activated, config marked as False is deactivated
 
 #Indicate if sra accession numbers are single or paired end data, it only affects sra. It does not affect local data.
-single_end: False
+single_end: 
+  activate: False
 
 #Activate a 2 pass star alignment. It improves novel splice junction quantification.
 #For more info see https://academic.oup.com/bioinformatics/article/32/1/43/1744001
