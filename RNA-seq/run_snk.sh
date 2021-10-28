@@ -29,4 +29,6 @@ mkdir -p logs/slurm
 
 #Running snakemake
 
-snakemake --cluster 'sbatch -c {threads} -o logs/slurm/{rule}.{wildcards}.out -e logs/slurm/{rule}.{wildcards}.out' -j 10 --latency-wait 60 --use-conda --cache --rerun-incomplete
+#snakemake --cluster 'sbatch -c {threads} -o logs/slurm/{rule}.{wildcards}.out -e logs/slurm/{rule}.{wildcards}.out' -j 10 --latency-wait 60 --use-conda --cache --rerun-incomplete
+
+snakemake --profile /data1/share/dcyleung/Pipeline/snakemake/snake_config
