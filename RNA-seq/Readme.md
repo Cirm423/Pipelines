@@ -74,7 +74,7 @@ The next file that needs to be modified is *units.tsv*, where you indicate the l
 > | B2	| lane1 | ... | ... | | | 1 |
 > | B2	| lane2 | ... | ... | | | 1 |
 
-You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples (***sra IDs only works for paired end samples***). The path to your files can be the full path to your files, i.e:
+You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 
 > /root/user/snakemake/samples/sample_1/sample_1_R1.fastq.gz
 
@@ -84,7 +84,7 @@ or a relative path from where snakemake is run, which is the directory where the
 
 This last approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. SRA accession samples will always be run as paired end. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting has no effect on local samples. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
 The last necessary column is strandedness, which **needs to be equal for all units**. The number equivalences can be found here:  
 
@@ -184,7 +184,7 @@ Snakemake will store all the output files in a directory called results. The out
 
     results/rsem/pe/sample1/star_output_files
 
-In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which you can download and view in a browser. 
+In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc. You can download these files and view in a browser. 
 
 If you activated deseq2, in the deseq2 results folder you can find `all.rds` which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
 

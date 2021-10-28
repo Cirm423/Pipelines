@@ -202,7 +202,7 @@ biocrfhpc2:<br>
 </tbody>
 </table>
 </blockquote>
-<p>You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples (<em><strong>sra IDs only works for paired end samples</strong></em>). The path to your files can be the full path to your files, i.e:</p>
+<p>You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:</p>
 <blockquote>
 <p>/root/user/snakemake/samples/sample_1/sample_1_R1.fastq.gz</p>
 </blockquote>
@@ -211,7 +211,7 @@ biocrfhpc2:<br>
 <p>samples/sample_1/sample_1_R1.fastq.gz</p>
 </blockquote>
 <p>This last approach is the preferred one.</p>
-<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. SRA accession samples will always be run as paired end. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
+<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. This setting has no effect on local samples. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
 <p>The last necessary column is strandedness, which <strong>needs to be equal for all units</strong>. The number equivalences can be found here:</p>
 <blockquote>
 <table>
@@ -319,7 +319,7 @@ biocrfhpc2:<br>
 <p>Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like star, rsem, etc; with sample folders within them. For example:</p>
 <pre><code>results/rsem/pe/sample1/star_output_files
 </code></pre>
-<p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which you can download and view in a browser.</p>
+<p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which includes fastqc and rseqc. You can download these files and view in a browser.</p>
 <p>If you activated deseq2, in the deseq2 results folder you can find <code>all.rds</code> which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.</p>
 <p>For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}_vs_{control}.tsv will be placed, comparing all the samples in <code>samples.tsv</code> against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.</p>
 <p>Additionally logs for each step will be stored in the logs folder.</p>
