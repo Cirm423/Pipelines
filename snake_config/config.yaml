@@ -10,3 +10,4 @@ use-conda: true
 rerun-incomplete: true
 cache: true
 jobs: 10
+printshellcmds: true
