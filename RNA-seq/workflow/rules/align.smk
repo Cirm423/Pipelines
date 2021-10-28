@@ -1,4 +1,5 @@
 import random
+import os
 
 rule align_pe:
     input:
@@ -215,16 +216,17 @@ rule rsem_pe:
     params:
         # optional, specify if sequencing is paired-end
         paired_end=True,
+        out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
+        rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
-        extra=f"--bam --star --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
+        extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
         path_merged_cond("logs/rsem/calculate_expression/?.log"),
-    run:
-        import os
-        out_path = os.path.dirname(output.genes_results) + "/" + "mapped"
-        rsem_ref= os.path.splitext(input.reference)[0]
-        shell("rsem-calculate-expression --num-threads {threads} {params.extra} --paired-end --alignments {input.bam} {rsem_ref} {out_path} > {log} 2>&1")
+    conda:
+        "../envs/rsem.yaml"
+    shell:
+        "rsem-calculate-expression --num-threads {threads} {params.extra} --paired-end --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"
 
 rule rsem_se:
     input:
@@ -249,12 +251,13 @@ rule rsem_se:
     params:
         # optional, specify if sequencing is paired-end
         paired_end=False,
+        out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
+        rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
-        extra=f"--bam --star --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
+        extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     log:
         path_merged_cond("logs/rsem/calculate_expression/?.log"),
-    run:
-        import os
-        out_path = os.path.dirname(output.genes_results) + "/" + "mapped"   
-        rsem_ref= os.path.splitext(input.reference)[0] 
-        shell("rsem-calculate-expression --num-threads {threads} {params.extra} --alignments {input.bam} {rsem_ref} {out_path} > {log} 2>&1")
+    conda:
+        "../envs/rsem.yaml"
+    shell: 
+        "rsem-calculate-expression --num-threads {threads} {params.extra} --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"

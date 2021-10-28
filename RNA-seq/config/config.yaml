@@ -74,7 +74,7 @@ TE_single:
 #Rsem is used for counts, recommended parameters are set.
 #The parameters necessary to run the pipeline are coded within the pipeline and
 #cannot be changed. These parameters are:
-#--bam --star
+#--bam
 #Rsem seed is set randomly by the system, and strandedness is set from units.tsv file
 
 params:
@@ -84,4 +84,5 @@ params:
 	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
 	--sjdbScore 1 --limitBAMsortRAM 60000000000 
   --limitIObufferSize 330000000"
+  #If rsem has trouble remove --calc-ci and --ci-memory, it seems like an bug with rsem
   rsem: "--estimate-rspd --calc-ci --no-bam-output --ci-memory 70000"
