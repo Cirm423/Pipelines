@@ -79,6 +79,8 @@ rule sort_bw_uns:
     output:
         temp(path_merged_cond("results/bw_uns/?/Signal.Unique.str1.out.bg.sorted")),
     threads: 8
+    conda:
+        "../envs/coreutils.yaml"
     shell:
         "sort --parallel={threads} -k1,1 -k2,2n {input} > {output}"
 
@@ -90,9 +92,10 @@ rule sort_bw_str:
         str1=temp(path_merged_cond("results/bw_str/?/Signal.Unique.str1.out.bg.sorted")),
         str2=temp(path_merged_cond("results/bw_str/?/Signal.Unique.str2.out.bg.sorted")),
     threads: 8
-    run:
-        shell("sort --parallel={threads} -k1,1 -k2,2n {input.str1} > {output.str1}")
-        shell("sort --parallel={threads} -k1,1 -k2,2n {input.str2} > {output.str2}")
+    conda:
+        "../envs/coreutils.yaml"
+    shell:
+        "sort --parallel={threads} -k1,1 -k2,2n {input.str1} > {output.str1} && sort --parallel={threads} -k1,1 -k2,2n {input.str2} > {output.str2}"
 
 rule bedGraphToBigWig_str1:
     input:

@@ -3,7 +3,7 @@ samples: config/samples.tsv
 # path to sequencing unit sheet
 # Units are technical replicates (e.g. lanes, or resequencing of the same biological
 # sample).
-units: config/units_alt.tsv
+units: config/units.tsv
 #Path to the share resources folder for the pipeline, where common files (genomes, references) are stored.
 #Please do not change.
 resources: /data1/share/dcyleung/Pipeline/snakemake/resources/

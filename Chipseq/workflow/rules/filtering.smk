@@ -85,5 +85,7 @@ rule merge_se_pe:
         ""
     log:
         "logs/filtered/{sample}.sorted.log"
+    conda:
+        "../envs/coreutils.yaml"
     shell:
         "ln -sr {input} {output}"
