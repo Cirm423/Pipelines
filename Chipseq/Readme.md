@@ -12,9 +12,6 @@
     - [TEs](#tes)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
-- [Troubleshooting](#troubleshooting)
-  - [Pipeline not starting](#pipeline-not-starting)
-  - [Some step in the pipeline fails](#some-step-in-the-pipeline-fails)
 - [Acknowledgements](#acknowledgements)
 
 # Starting
@@ -23,11 +20,11 @@ This readme provides instructions on how to run the snakemake RNA-seq pipeline o
 
 To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:
 > hpc2:\
-> /home/share/dcyleung/snakemake/RNA-seq/\
+> /home/share/dcyleung/snakemake/ChIP-seq/\
 > biocrfhpc1:\
-> /home4/share/dcyleung/snakemake/RNA-seq/\
+> /home4/share/dcyleung/snakemake/ChIP-seq/\
 > biocrfhpc2:\
-> /data1/share/dcyleung/Pipeline/snakemake/RNA-seq/
+> /data1/share/dcyleung/Pipeline/snakemake/ChIP-seq/
 
 and place it in your own folder, preferentially in its own folder since snakemake will create many new files.
 
@@ -38,6 +35,8 @@ The config folder includes the following files:
 - config.yaml
 - samples.tsv
 - units.tsv
+- pe_bamtools_filtering_rules.json
+- se_bamtools_filtering_rules.json
 
 Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
 
@@ -175,11 +174,11 @@ To run the pipeline simply send the run_snk.sh script to slurm by doing:
 
     sbatch run_snk.sh
 
-from the directory where the folders you copied, config and workflow, are located. If run_snk.sh is run from another directory snakemake will not detect the pipeline and it will not work. This will run snakemake with the default config for sbatch for the cluster, using the partition general for hpc2 and q1 for biocrf clusters.
+from the directory where the folders you copied, config and workflow, are located. If run_snk.sh is run from another directory snakemake will not detect the pipeline and it will not work.
 
-Inside *run_snk.sh* you can modify the partition to which snakemake will run by changing the line `#SBATCH -p q1`, which is only one job. As for the partition where snakemake will send the jobs, you can change the last 2 lines of the `run_snk.sh` file. If you want to use the another partition, comment (using #) the snakemake line with the profile and uncomment the longer snakemake line (by removing #). Then set your partition by changing or adding `-p <partition>` after the `sbatch` command present in the line (within the single quotes).
+Inside *run_snk.sh* you can modify the partition to which snakemake will send the jobs by changing the line `#SBATCH -p q1` and the option `-p q1` in the `snakemake` line if its present (in hpc2 and biocrfhpc1).
 
-Additionally, snakemake is configured to run up to 10 simultaneous jobs by default in biocrfhpcs, 2 for hpc2; but if you're using the pipeline in a cluster with number of jobs restrictions you may want to reduce it to 2 or 1 jobs by changing the `-j` parameter in the long `snakemake` line. Snakemake will take at least 2 job spots, one for the pipeline manager and another for the actual jobs, when `-j` is set to 1. In hpc2, `-j` is set to 2 by default since its the cluster with the most restrictions. Therefore if you use the pipeline in the biocrfhpc clusters it will be faster.
+Additionally, snakemake is configured to run up to 5 simultaneous jobs by default, but if you're using the pipeline in a cluster with number of jobs restrictions you may want to reduce it to 2 or 1 jobs by changing the `-j` parameter in the `snakemake` line. Snakemake will take at least 2 job spots, one for the pipeline manager and another for the actual jobs, when `-j` is set to 1. In hpc2, `-j` is set to 1 by default since its the cluster with the most restrictions. Therefore if you use the pipeline in the biocrfhpc clusters it will be faster.
 
 # Output
 
@@ -194,40 +193,6 @@ If you activated deseq2, in the deseq2 results folder you can find `all.rds` whi
 For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}\_vs_{control}.tsv will be placed, comparing all the samples in `samples.tsv` against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.
 
 Additionally logs for each step will be stored in the logs folder. 
-
-# Troubleshooting
-
-## Pipeline not starting
-
-Most of these issues have to do with the formatting of units.tsv or samples.tsv, but you may have also activated incompatible config settings.
-
-- 'utf-8' codec can't decode...
-
-If this line appears in the error message in the pipeline slurm output file, it means that there is a special character somewhere in either `units.tsv` or `samples.tsv` (usually the message specifies which file). Libreoffice's calc and nano can show special characters, so you can use them to check your files and remove them. 
-
-Another possibility is that you saved any of the tsv files as an Excel .xml file, in which case they won't work unless you save them as csv files with tab separators.
-
-- Wrong samples or units formatting
-
-If snakemake complains that it cannot find a column in one of the tsv files, or that the values in the column are the wrong type of data; it usually means that there are wrongly placed tabs in the file. You may want to check that the columns are properly formatted in a spreadsheet program and also try to check if there are extra tabs anywhere in the file (like another line at the bottom, or after the last column).
-
-- Directory locked
-  
-If snakemake complains that the directory is locked, it means that either snakemake is already running or that the previous snakemake job crashed or was cancelled and could not unlock the directory. If snakemake is still running wait until it finishes. If the directory is locked and snakemake is not running, run the following code to unlock the directory (from the RNA-seq directory):
-
-> source ~/../share/dcyleung/miniconda3/etc/profile.d/conda.sh \
-> conda activate snakemake \
-> snakemake --unlock \
-> conda deactivate \
-> source ~/.bashrc
-
-## Some step in the pipeline fails
-
-The only step that I've found that can fail that is not my fault (ehem) is rsem. There seems to be a bug where rsem is failing to calculate the confidence intervals (ci), seems to happen more with sra samples. If this is the case, deactivate ci for rsem in `config.yaml`, there are further instructions in the file.
-
-Another step that can fail with a not useful log is Deseq2 init (thanks R), which usually has to do with problems with the model. You can try to run with only `~condition` as a model to check that it works.
-
-If any other step is failing for you, please tell me so I can fix it.
 
 # Acknowledgements
 
