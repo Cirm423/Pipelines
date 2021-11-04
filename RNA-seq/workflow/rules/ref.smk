@@ -28,9 +28,9 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz"),
         log:
             f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
@@ -45,18 +45,24 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']}{config['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
+            fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
+            fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
         output:
             gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
             bed=f"{config['resources']}{config['ref']['assembly']}.annotation.bed",
             sizes=f"{config['resources']}{config['ref']['assembly']}.chrom.sizes",
+            fai=f"{config['resources']}{config['ref']['assembly']}.fa.fai",
+            fa=f"{config['resources']}{config['ref']['assembly']}.fa",
         cache: True
+        params:
+            folder=f"{config['resources']}{config['ref']['assembly']}"
         log:
             f"logs/unzip_annotation_{config['ref']['assembly']}.log"
         shell:
-            "gzip -dc {input.gtf} > {output.gtf} 2>{log} && gzip -dc {input.bed} > {output.bed} 2>>{log} && mv {input.sizes} {output.sizes}"
+            "gzip -dc {input.gtf} > {output.gtf} 2>{log} && gzip -dc {input.bed} > {output.bed} 2>>{log} && mv {input.sizes} {output.sizes} && mv {input.fai} {output.fai} && mv {input.fa} {output.fa} && rm -r {params.folder}"
 
 rule bwa_index:
     input:
