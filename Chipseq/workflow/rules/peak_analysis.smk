@@ -31,8 +31,10 @@ rule plot_fingerprint:
             )
     threads:
         8
-    wrapper:
-        "0.66.0/bio/deeptools/plotfingerprint"
+    conda:
+        "../envs/deeptools.yaml"
+    script:
+        "../scripts/deeptools/plotfingerprint.py"
 
 rule macs2_callpeak_broad:
     input:
