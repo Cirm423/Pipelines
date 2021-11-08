@@ -138,6 +138,7 @@ if (file.exists(DDSFile) == FALSE) {
     } else {
         rld <- vst(dds)
     }
+    dir.create(dirname(DDSFile))
     save(dds,rld,file=DDSFile)
 }
 

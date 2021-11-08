@@ -12,6 +12,7 @@
     - [TEs](#tes)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
+- [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
 
 # Starting
@@ -193,6 +194,11 @@ If you activated deseq2, in the deseq2 results folder you can find `all.rds` whi
 For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}\_vs_{control}.tsv will be placed, comparing all the samples in `samples.tsv` against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.
 
 Additionally logs for each step will be stored in the logs folder. 
+
+
+# Notes
+
+Consensus peak analysis needs at least 3 replicates per antibody
 
 # Acknowledgements
 
