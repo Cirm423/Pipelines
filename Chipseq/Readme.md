@@ -41,8 +41,6 @@ The config folder includes the following files:
 
 Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
 
-Before starting, make sure that your fastq files are compressed in fastq.gz format, both to save space in clusters and to make sure the pipeline works properly.
-
 # Configuring Snakemake
 
 
@@ -52,12 +50,12 @@ The previously mentioned *samples.tsv* has to be modified according to your own 
 
 The first file you need to modify is *samples.tsv*. It is a tab separated file that looks like this:
 
-> | sample_name |	condition |
-> ------------|-----------------
-> | A1  | treated |
-> | B1	| untreated |
-> | A2	| treated |
-> | B2	| untreated |
+> | sample_name | group | batch_effect | control | antibody |
+> ------------|---------|--------------|---------|----------|
+> | A1  | treated | batch1 |  | RPB1 |
+> | B1	| untreated | batch1 | A1 | H3K9me3 |
+> | A2	| treated | batch2 | A1 | RPB1 |
+> | B2	| untreated | batch2 | A1 | H3K9me3 |
 
 You need to modify this file to include any samples you want to analyze in the pipeline, and the condition that will be used in Deseq2 model. If you are not going to use Deseq2 leave condition as *treated* for every sample, but the samples should still be filled in this file.
 
@@ -66,16 +64,16 @@ If you need to analyze more conditions in Deseq2, you can add more columns to th
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit_name columns refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
-> | sample_name |	unit_name | fq1 | fq2 | sra | adapters | strandedness |
-> ------------|---------------|-----|-----|-----|----------|--------------|
-> | A1  | lane1 | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | | 1 |
-> | A1  | lane2 | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | | 1 |
-> | B1	| lane1 | B1.lane1.R1... | B1.lane1.R2...| | | 1 |
-> | B1	| lane2 | ... | ... | | | 1 |
-> | A2	| lane1 | ... | ... | | | 1 |
-> | A2	| lane2 | ... | ... | | | 1 |
-> | B2	| lane1 | ... | ... | | | 1 |
-> | B2	| lane2 | ... | ... | | | 1 |
+> | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
+> --------------|--------|-------------------|-----------------|-----|----|------|----------|
+> | A1  | lane1 | | | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | ILLUMINA |
+> | A1  | lane2 | | | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | ILLUMINA |
+> | B1	| lane1 | | | B1.lane1.R1... | B1.lane1.R2...| | ILLUMINA |
+> | B1	| lane2 | | | ... | ... | | ... |
+> | A2	| lane1 | | | ... | ... | | ... |
+> | A2	| lane2 | | | ... | ... | | ... |
+> | B2	| lane1 | | | ... | ... | | ... |
+> | B2	| lane2 | | | ... | ... | | ... |
 
 You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 
