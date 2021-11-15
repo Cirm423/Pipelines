@@ -15,7 +15,7 @@ resources:
     n_chromosomes: 48
     # Genecode or UCSC assembly name
     assembly: GRCh38
-    # for testing data only chromosome 21 is selected
+    # for testing data, select only one chromosome otherwise leave empty
     chromosome:
     # specify release version number of igenomes list to use (see https://github.com/nf-core/chipseq/releases), default: 1.2.2
     igenomes_release: 1.2.2
@@ -34,10 +34,13 @@ params:
     q-value:
   deeptools-plots:
     # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
+    # May crash due to high memory usage, not recommended unless you do a more exhaustive filtering.
     activate: False
   lc_extrap:
+    # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True
   picard_metrics:
+    # Produces alignment metrics
     activate: True
   deseq2:
     # optional to run vst transform instead of rlog
@@ -47,6 +50,7 @@ params:
   peak-qc:
     activate: True
   consensus-peak-analysis:
+    # Should not be run unless there are at least 2 samples per control (not counting control) otherwise will not work.
     activate: True
   # samtools view parameters:
   # if duplicates should be removed in this filtering, add "-F 0x0400" to the params
@@ -55,7 +59,6 @@ params:
   # the -L option is automatically activated if a path to a blacklist of the given genome exists in "config/igenomes.yaml" or has been entered there
   samtools-view-se: "-b -F 0x004"
   samtools-view-pe: "-b -F 0x004 -G 0x009 -f 0x001"
-  # TODO: move adapter parameters into a `adapter` column in units.tsv and check for its presence via the units.schema.yaml -- this enables unit-specific adapters, e.g. when integrating multiple datasets
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types

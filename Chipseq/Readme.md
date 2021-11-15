@@ -5,14 +5,8 @@
 - [Configuring Snakemake](#configuring-snakemake)
   - [Input dataset](#input-dataset)
   - [Assembly](#assembly)
-  - [Deseq2 Model](#deseq2-model)
-  - [Transposable Elements (TE)](#transposable-elements-te)
-  - [Single Sample](#single-sample)
-    - [Genes](#genes)
-    - [TEs](#tes)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
-- [Notes](#notes)
 - [Acknowledgements](#acknowledgements)
 
 # Starting
@@ -52,17 +46,16 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control | antibody |
 > ------------|---------|--------------|---------|----------|
-> | A1  | treated | batch1 |  | RPB1 |
+> | A1  | treated | batch1 |  | |
 > | B1	| untreated | batch1 | A1 | H3K9me3 |
 > | A2	| treated | batch2 | A1 | RPB1 |
 > | B2	| untreated | batch2 | A1 | H3K9me3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, and the condition that will be used in Deseq2 model. If you are not going to use Deseq2 leave condition as *treated* for every sample, but the samples should still be filled in this file.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that control and antibody fields are not necessary in the control samples, and specifically **samples without control will be considered as controls in the pipeline.**
 
-If you need to analyze more conditions in Deseq2, you can add more columns to the right of *condition* column and set each sample treatment in that column.
+**It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results.**
 
-
-The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit_name columns refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
+The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
 > | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
 > --------------|--------|-------------------|-----------------|-----|----|------|----------|
@@ -85,21 +78,11 @@ or a relative path from where snakemake is run, which is the directory where the
 
 This last approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting has no effect on local samples. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
-The last necessary column is strandedness, which **needs to be equal for all units**. The number equivalences can be found here:  
+The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.
 
-> Number | Strandedness |
-> -------|---------------
-> 1 | Stranded |
-> 0.5 | Unstranded |
-> 0 | Reverse Stranded* |
-> *Only used in Illumina TruSeq protocol  
-
-             
-The adapters column is only used for trimming and can be left empty. However if you need to trim an adapter you have to input the sequence of  the adapter in this column for each unit.
-
-Lastly, the *config.yaml* file sets what analyses snakemake will do. This file has been commented to briefly explain what each setting does, so modify the settings to your needs. 
+Lastly, the *config.yaml* file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs. 
 
 However, some options require further explanation that can be seen bellow.
 
@@ -110,62 +93,17 @@ To indicate which genome assembly you want to use for the reference genome you h
 Four Genecode assemblies are supported:
 
 
-> | Organism |	assembly   | Ucsc rmsk
-> --------------|---------------|---------
-> | Human   | GRCh38 | hg38
-> | Human	| GRCh37 | hg19
-> | Mouse	| GRCm39 | mm39
-> | Mouse	| GRCm38 | mm10
+> | Organism |	assembly  
+> --------------|--------------
+> | Human   | GRCh38
+> | Human	| GRCh37
+> | Mouse	| GRCm39 
+> | Mouse	| GRCm38
 
-In case you are using the pipeline for TEs, the remasker file indicated in the 3rd column will be downloaded from UCSC to be used as a reference.
 
 If you indicate any assembly name that does not appear in the table, the pipeline will try to download an UCSC reference genome. For example, if you want to use the reference mouse genome from UCSC, you can indicate mm39 instead of GCRm39 in the assembly field. 
 
 For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.
-
-## Deseq2 Model
-
-To use Deseq2 there needs to be a model set in *config.yaml*. The model needs to be set even if you are not going to activate Deseq2, in this case just leave the default model as is. The default model used is 
-
-    ~condition
-
-which uses the condition column present in *samples.tsv*. If you added additional columns to be used for testing in Deseq2, they need to be put in the model. For example, if you added the column *mutated* to *samples.tsv*, the model present in *config.yaml* would be:
-
-    ~condition + mutated
-
-Then Deseq2 will produce a result file by comparing 2 contrasts, which are indicated in *config.yaml* contrasts section. A base one is already provided in *config.yaml*, but more can be added in the following way:
-
-    contrasts:
-        treated-vs-untreated:
-          - treated
-          - untreated
-        mutated-vs-control:
-          - mutated
-          - control    
-
-where mutated-vs-control is what will be used for the file name, and the conditions inside is the contrasts that will be compared in Deseq2. Note that all the contrasts here have to appear in *samples.tsv* for Deseq2 to work.
-
-## Transposable Elements (TE)
-
-Within the DEseq2 config block is also the TE configuration. If you activate the TE option snakemake will produce DEseq2 output for TEs in addition to the normal DEseq2 output using the RepeatMasker file from UCSC for your selected assembly, including the R object and the pca (if activated). Both DEseq2 and TEs will use the same model specified in this config block.
-
-The other setting in this section is the filter, which will filter out elements in DEseq2 with less than the filter number of counts. Is set to 10 by default but you can change it to suit your needs.
-
-## Single Sample
-
-### Genes
-
-To be used when you have no replicates for a sample. It is activated by turning the single option in config.yaml to True, and it will perform an alternative analysis to Deseq2. Therefore, the single option cannot be used at the same time at Deseq2 (and therefore pca), otherwise the pipeline will not work. Single mode also requires mergeReads to be activated, as it will be comparing samples and not units.
-
-Additionally, the treatment of one of the samples in samples.tsv **must be called `control`**. The other treatments do not matter, as every sample will be compared to the control sample.
-
-Once you run the pipeline in single mode with one sample as control, you can rerun it with another sample as control and new files comparing samples to the new control will be generated without needing to run the whole pipeline.
-
-### TEs
-
-In a similar way, you can obtain TE differential expression for samples with no replicates by turning *TE_single* to activate in the `config.yaml` file. TE_single shares the same requirements as single mode does, and both single and TE_single can be activated at the same time, producing output for both genes and TEs.
-
-The only difference for TE_single is the filter, which will remove from the analysis elements with less than the filter number of counts, similarly to the TE analysis with DEseq2.
 
 # Running Snakemake
 
@@ -175,7 +113,7 @@ To run the pipeline simply send the run_snk.sh script to slurm by doing:
 
 from the directory where the folders you copied, config and workflow, are located. If run_snk.sh is run from another directory snakemake will not detect the pipeline and it will not work.
 
-Inside *run_snk.sh* you can modify the partition to which snakemake will send the jobs by changing the line `#SBATCH -p q1` and the option `-p q1` in the `snakemake` line if its present (in hpc2 and biocrfhpc1).
+Inside *run_snk.sh* you can modify the partition to which snakemake will send the jobs by changing the line `#SBATCH -p q1` and the option `-p q1` in the `snakemake` line if its present (in hpc2 and biocrfhpc1). snakemake will run on a default profile settings in every cluster, if you want to use the another partition, comment (using #) the snakemake line with the profile and uncomment the longer snakemake line (by removing #). Then set your partition by changing or adding `-p <partition>` after the `sbatch` command present in the line (within the single quotes).
 
 Additionally, snakemake is configured to run up to 5 simultaneous jobs by default, but if you're using the pipeline in a cluster with number of jobs restrictions you may want to reduce it to 2 or 1 jobs by changing the `-j` parameter in the `snakemake` line. Snakemake will take at least 2 job spots, one for the pipeline manager and another for the actual jobs, when `-j` is set to 1. In hpc2, `-j` is set to 1 by default since its the cluster with the most restrictions. Therefore if you use the pipeline in the biocrfhpc clusters it will be faster.
 
@@ -187,16 +125,10 @@ Snakemake will store all the output files in a directory called results. The out
 
 In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc. You can download these files and view in a browser. 
 
-If you activated deseq2, in the deseq2 results folder you can find `all.rds` which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
-
-For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}\_vs_{control}.tsv will be placed, comparing all the samples in `samples.tsv` against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.
+In the deseq2 results folder you can find `dds_rld` folder which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
 
 Additionally logs for each step will be stored in the logs folder. 
 
-
-# Notes
-
-Consensus peak analysis needs at least 3 replicates per antibody
 
 # Acknowledgements
 
