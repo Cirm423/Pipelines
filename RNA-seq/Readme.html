@@ -345,13 +345,12 @@ biocrfhpc2:<br>
 <li>Directory locked</li>
 </ul>
 <p>If snakemake complains that the directory is locked, it means that either snakemake is already running or that the previous snakemake job crashed or was cancelled and could not unlock the directory. If snakemake is still running wait until it finishes. If the directory is locked and snakemake is not running, run the following code to unlock the directory (from the RNA-seq directory):</p>
-<blockquote>
-<p>source ~/../share/dcyleung/miniconda3/etc/profile.d/conda.sh <br>
-conda activate snakemake <br>
-snakemake --unlock <br>
-conda deactivate <br>
-source ~/.bashrc</p>
-</blockquote>
+<pre><code> source ~/../share/dcyleung/miniconda3/etc/profile.d/conda.sh 
+ conda activate snakemake 
+ snakemake --unlock 
+ conda deactivate 
+ source ~/.bashrc
+</code></pre>
 <h2 id="some-step-in-the-pipeline-fails">Some step in the pipeline fails</h2>
 <p>The only step that I've found that can fail that is not my fault (ehem) is rsem. There seems to be a bug where rsem is failing to calculate the confidence intervals (ci), seems to happen more with sra samples. If this is the case, deactivate ci for rsem in <code>config.yaml</code>, there are further instructions in the file.</p>
 <p>Another step that can fail with a not useful log is Deseq2 init (thanks R), which usually has to do with problems with the model. You can try to run with only <code>~condition</code> as a model to check that it works.</p>

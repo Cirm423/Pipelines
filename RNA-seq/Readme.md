@@ -215,11 +215,11 @@ If snakemake complains that it cannot find a column in one of the tsv files, or 
   
 If snakemake complains that the directory is locked, it means that either snakemake is already running or that the previous snakemake job crashed or was cancelled and could not unlock the directory. If snakemake is still running wait until it finishes. If the directory is locked and snakemake is not running, run the following code to unlock the directory (from the RNA-seq directory):
 
-> source ~/../share/dcyleung/miniconda3/etc/profile.d/conda.sh \
-> conda activate snakemake \
-> snakemake --unlock \
-> conda deactivate \
-> source ~/.bashrc
+     source ~/../share/dcyleung/miniconda3/etc/profile.d/conda.sh 
+     conda activate snakemake 
+     snakemake --unlock 
+     conda deactivate 
+     source ~/.bashrc
 
 ## Some step in the pipeline fails
 
