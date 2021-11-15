@@ -11,7 +11,7 @@
 
 # Starting
 
-This readme provides instructions on how to run the snakemake RNA-seq pipeline on a cluster.
+This readme provides instructions on how to run the snakemake ChIP-seq pipeline on a cluster.
 
 To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:
 > hpc2:\
