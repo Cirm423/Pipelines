@@ -46,7 +46,16 @@
 </ul>
 </li>
 <li><a href="#running-snakemake">Running Snakemake</a></li>
-<li><a href="#output">Output</a></li>
+<li><a href="#output">Output</a>
+<ul>
+<li><a href="#plot-explanations">Plot explanations</a>
+<ul>
+<li><a href="#phantompeaks">Phantompeaks</a></li>
+<li><a href="#deeptools">Deeptools</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a href="#acknowledgements">Acknowledgements</a></li>
 </ul>
 <h1 id="starting">Starting</h1>
@@ -279,6 +288,18 @@ biocrfhpc2:<br>
 <p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which includes fastqc and rseqc. You can download these files and view in a browser.</p>
 <p>In the deseq2 results folder you can find <code>dds_rld</code> folder which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.</p>
 <p>Additionally logs for each step will be stored in the logs folder.</p>
+<h2 id="plot-explanations">Plot explanations</h2>
+<p>Most figures and scores have explanations within their files on how to interpret them, here are some graphs for additional help.</p>
+<h3 id="phantompeaks">Phantompeaks</h3>
+<p>To get strand cross-correlation scores, as good quality ChIP-seq should produce clusters of enriched DNA sequence tags around sites of interest.</p>
+<p>The important scores are nsc and rsc, both explained in output files. The higher, the better. Very good if both are &gt; 1. These scores are present in the 3rd and 2nd from the last columns in <em>sample</em>.phantompeak.spp.out respectively, as well as in their individual files. The last column is a quality score based on rsc, which ranges between -2 and 2, lower score meaning worse quality.</p>
+<h3 id="deeptools">Deeptools</h3>
+<p>For measuring cumulative enrichment, determines how well a ChIP-seq sample can be distinguished from its control sample (meaning that we can separate ChIP signal from the noise).</p>
+<ul>
+<li>Fingerprint plot</li>
+</ul>
+<p><img src="file:////home/cirm/Desktop/Hong_Kong/Pipelines/Chipseq/Images/fingerprint.png" alt="image">
+From Deeptools manual</p>
 <h1 id="acknowledgements">Acknowledgements</h1>
 <p>This pipeline is based on the pipeline made by jafors:</p>
 <p><a href="https://doi.org/10.5281/zenodo.5245549"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.5245549.svg" alt="DOI"></a> <a href="https://github.com/snakemake-workflows/rna-seq-star-deseq2">Snakemake workflow: rna-seq-star-deseq2</a></p>
