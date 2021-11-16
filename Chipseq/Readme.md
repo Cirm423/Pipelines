@@ -7,6 +7,9 @@
   - [Assembly](#assembly)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
+  - [Plot explanations](#plot-explanations)
+    - [Phantompeaks](#phantompeaks)
+    - [Deeptools](#deeptools)
 - [Acknowledgements](#acknowledgements)
 
 # Starting
@@ -129,6 +132,24 @@ In the deseq2 results folder you can find `dds_rld` folder which contains a Dese
 
 Additionally logs for each step will be stored in the logs folder. 
 
+## Plot explanations
+
+Most figures and scores have explanations within their files on how to interpret them, here are some graphs for additional help.
+
+### Phantompeaks
+
+To get strand cross-correlation scores, as good quality ChIP-seq should produce clusters of enriched DNA sequence tags around sites of interest.
+
+The important scores are nsc and rsc, both explained in output files. The higher, the better. Very good if both are > 1. These scores are present in the 3rd and 2nd from the last columns in *sample*.phantompeak.spp.out respectively, as well as in their individual files. The last column is a quality score based on rsc, which ranges between -2 and 2, lower score meaning worse quality.
+
+### Deeptools
+
+For measuring cumulative enrichment, determines how well a ChIP-seq sample can be distinguished from its control sample (meaning that we can separate ChIP signal from the noise).
+
+- Fingerprint plot
+
+![image](Images/fingerprint.png)
+From Deeptools manual
 
 # Acknowledgements
 
