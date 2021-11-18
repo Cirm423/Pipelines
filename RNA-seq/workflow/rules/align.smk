@@ -255,6 +255,7 @@ rule rsem_se:
         rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
         extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
+    threads: 24
     log:
         path_merged_cond("logs/rsem/calculate_expression/?.log"),
     conda:
