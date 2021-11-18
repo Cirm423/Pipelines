@@ -147,7 +147,9 @@ def get_controls_of_antibody(antibody):
     return controls[controls["group"].isin(list(groups))]["sample"]
 
 def get_samples_of_antibody(antibody):
-    return samples[samples["antibody"] == antibody]["sample"]
+    groups = samples[samples["antibody"] == antibody]["group"]
+    treated = samples[pd.notnull(samples["control"])]
+    return treated[treated["group"].isin(list(groups))]["sample"]
 
 def get_map_reads_input(wildcards):
     if is_sra_pe(wildcards.sample, wildcards.unit):

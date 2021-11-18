@@ -113,7 +113,7 @@ count.table <- count.table[,7:ncol(count.table),drop=FALSE]
 #setwd(opt$outdir)
 
 samples.vec <- sort(colnames(count.table))
-groups <- sub("_[^_]+$", "", samples.vec)
+groups <- gsub("_[^_]+", "", samples.vec)
 print(unique(groups))
 if (length(unique(groups)) == 1) {
     quit(save = "no", status = 0, runLast = FALSE)

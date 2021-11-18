@@ -49,14 +49,14 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control | antibody |
 > ------------|---------|--------------|---------|----------|
-> | A1  | treated | batch1 |  | |
-> | B1	| untreated | batch1 | A1 | H3K9me3 |
-> | A2	| treated | batch2 | A1 | RPB1 |
-> | B2	| untreated | batch2 | A1 | H3K9me3 |
+> | A1  | treated | batch1 | B1 | H3K9me3 |
+> | B1	| untreated | batch1 |  | H3K9me3 |
+> | A2	| treated | batch2 | B2 | RPB1 |
+> | B2	| untreated | batch2 |  | RPB1 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that control and antibody fields are not necessary in the control samples, and specifically **samples without control will be considered as controls in the pipeline.**
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that **samples without control will be considered as controls in the pipeline.** The rest of the fields should be specified for every sample, including controls.
 
-**It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results.**
+**It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 

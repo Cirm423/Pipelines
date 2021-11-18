@@ -100,35 +100,35 @@ biocrfhpc2:<br>
 <td>A1</td>
 <td>treated</td>
 <td>batch1</td>
-<td></td>
-<td></td>
+<td>B1</td>
+<td>H3K9me3</td>
 </tr>
 <tr>
 <td>B1</td>
 <td>untreated</td>
 <td>batch1</td>
-<td>A1</td>
+<td></td>
 <td>H3K9me3</td>
 </tr>
 <tr>
 <td>A2</td>
 <td>treated</td>
 <td>batch2</td>
-<td>A1</td>
+<td>B2</td>
 <td>RPB1</td>
 </tr>
 <tr>
 <td>B2</td>
 <td>untreated</td>
 <td>batch2</td>
-<td>A1</td>
-<td>H3K9me3</td>
+<td></td>
+<td>RPB1</td>
 </tr>
 </tbody>
 </table>
 </blockquote>
-<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that control and antibody fields are not necessary in the control samples, and specifically <strong>samples without control will be considered as controls in the pipeline.</strong></p>
-<p><strong>It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results.</strong></p>
+<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that <strong>samples without control will be considered as controls in the pipeline.</strong> The rest of the fields should be specified for every sample, including controls.</p>
+<p><strong>It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
 <p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
 <blockquote>
 <table>
