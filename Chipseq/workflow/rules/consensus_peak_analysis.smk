@@ -1,6 +1,6 @@
 rule bedtools_merge_broad:
     input:
-        get_macs2_peaks()
+        get_macs2_peaks_ab
     output:
         "results/bedtools/merged/{antibody}.consensus_broad-peaks.txt"
     params:
@@ -13,7 +13,7 @@ rule bedtools_merge_broad:
 
 rule bedtools_merge_narrow:
     input:
-        get_macs2_peaks()
+        get_macs2_peaks_ab
     output:
         "results/bedtools/merged/{antibody}.consensus_narrow-peaks.txt"
     params:
@@ -31,7 +31,7 @@ rule macs2_merged_expand:
         bool_txt="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.txt",
         bool_intersect="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.intersect.txt"
     params:
-        sample_control_peak=get_sample_control_peak_combinations_list(),
+        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab(wildcards.antibody),
         narrow_param="--is_narrow_peak" if config["params"]["peak-analysis"] == "narrow" else "",
         min_reps_consensus=config["params"]["min-reps-consensus"]
     log:
