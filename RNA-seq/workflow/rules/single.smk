@@ -17,7 +17,7 @@ rule gene_name:
     log:
         "logs/gene_name.log",
     shell:
-        "workflow/scripts/single/gene_name.bash {input} {output} 2 > {log}"
+        "bash workflow/scripts/single/gene_name.bash {input} {output} 2 > {log}"
 
 rule prepare_single:
     input:
@@ -27,7 +27,7 @@ rule prepare_single:
     output:
         "results/single/{sample}.signal"
     shell:
-        "workflow/scripts/single/prepare_single.bash {input.treat} {input.id_name} {input.factor} {output}"
+        "bash workflow/scripts/single/prepare_single.bash {input.treat} {input.id_name} {input.factor} {output}"
 
 rule counts_single:
     input:

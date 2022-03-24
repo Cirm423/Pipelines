@@ -48,6 +48,7 @@ rule rseqc_junction_saturation:
         prefix=lambda w, output: output[0].replace(".junctionSaturation_plot.pdf", ""),
     conda:
         "../envs/rseqc.yaml"
+    threads: 24
     shell:
         "junction_saturation.py {params.extra} -i {input.bam} -r {input.bed} -o {params.prefix} "
         "> {log} 2>&1"
@@ -148,6 +149,7 @@ rule rseqc_readgc:
         prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
     conda:
         "../envs/rseqc.yaml"
+    threads: 24
     shell:
         "read_GC.py -i {input.bam} -o {params.prefix} > {log} 2>&1"
 
@@ -161,6 +163,20 @@ rule fastqc:
         ""
     log:
         "logs/fastqc/{sample}.{unit}.{read}.log"
+    threads: 6
+    wrapper:
+        "0.72.0/bio/fastqc"
+
+rule fastqc_trimmed:
+    input:
+        get_individual_trimmed_fastq
+    output:
+        html="results/qc/fastqc/trimmed_{sample}.{unit}.{read}.html",
+        zip="results/qc/fastqc/trimmed_{sample}.{unit}.{read}_fastqc.zip"
+    params:
+        ""
+    log:
+        "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
     threads: 6
     wrapper:
         "0.72.0/bio/fastqc"
@@ -209,5 +225,7 @@ rule multiqc:
         "results/qc/multiqc_report.html",
     log:
         "logs/multiqc.log",
-    wrapper:
-        "0.77.0/bio/multiqc"
+    conda:
+        "../envs/multiqc.yaml"
+    script:
+        "../scripts/multiqc.py"

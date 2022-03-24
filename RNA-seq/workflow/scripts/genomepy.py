@@ -24,7 +24,7 @@ if any(["annotation" in out for out in snakemake.output]):
 # parse the genome dir
 genome_dir = "./"
 if snakemake.output[0].count("/") > 1:
-    genome_dir = "/".join(snakemake.output[0].split("/")[:-1])
+    genome_dir = "/".join(snakemake.output[0].split("/")[:-2])
     #genome_dir = os.path.dirname(os.path.dirname(snakemake.output[0]))
 
 log = snakemake.log

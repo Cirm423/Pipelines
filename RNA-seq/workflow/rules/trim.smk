@@ -30,12 +30,11 @@ rule cutadapt_pipe:
     input:
         get_cutadapt_pipe_input,
     output:
-        pipe("pipe/cutadapt/{sample}/{unit}.{fq}.{ext}"),
+        temp("pipe/cutadapt/{sample}/{unit}.{fq}.{ext}"),
     log:
         "logs/pipe-fastqs/catadapt/{sample}-{unit}.{fq}.{ext}.log",
     wildcard_constraints:
         ext=r"fastq|fastq\.gz",
-    threads: 0
     shell:
         "cat {input} > {output} 2> {log}"
 
@@ -54,7 +53,7 @@ rule cutadapt_pe:
         adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     threads: 8
     wrapper:
-        "0.59.2/bio/cutadapt/pe"
+        "0.80.0/bio/cutadapt/pe"
 
 
 rule cutadapt_se:
@@ -70,7 +69,7 @@ rule cutadapt_se:
         adapters_r1=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     threads: 8
     wrapper:
-        "0.59.2/bio/cutadapt/se"
+        "0.80.0/bio/cutadapt/se"
 
 
 rule merge_fastqs_gz:

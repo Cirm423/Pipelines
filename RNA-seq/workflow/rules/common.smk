@@ -227,6 +227,17 @@ def get_individual_fastq(wildcards):
         else:
             return units.loc[ (wildcards.sample, wildcards.unit), "fq2" ]
 
+def get_individual_trimmed_fastq(wildcards):
+    if wildcards.read == "0":
+        return expand("results/trimmed/{sample}_{unit}_single.fastq.gz",
+                    sample = wildcards.sample, unit = wildcards.unit)
+    elif wildcards.read == "1":
+        return expand("results/trimmed/{sample}_{unit}_R1.fastq.gz",
+                        sample = wildcards.sample, unit = wildcards.unit)
+    elif wildcards.read == "2":
+        return expand("results/trimmed/{sample}_{unit}_R2.fastq.gz",
+                        sample = wildcards.sample, unit = wildcards.unit)
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -245,6 +256,18 @@ def get_multiqc_input(wildcards):
                 reads = reads
             )
         )
+        if is_activated("trimming"):
+            multiqc_input.extend(
+                expand (
+                    [
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html",
+                    ],
+                    sample = sample,
+                    unit = unit,
+                    reads = reads
+                )
+            )
     return multiqc_input
 
 # Original from RNA-seq
@@ -463,7 +486,10 @@ def get_fastqs_gz(wc):
             return expand(
                 "sra-se-reads/{accession}.fastq.gz", accession=accession
             )
-    fq = "fq{}".format(wc.read[-1])
+    if wc.read != "single":
+        fq = "fq{}".format(wc.read[-1])
+    else:
+        fq = "fq1"
     out_list = units.loc[wc.sample, fq].tolist()
     if units.loc[wc.sample, fq][0].endswith("gz"):
         return out_list

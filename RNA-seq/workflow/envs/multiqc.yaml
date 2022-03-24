@@ -2,5 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - rseqc =4.0
-  - openssl =1.0
+  - multiqc
