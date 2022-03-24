@@ -8,11 +8,11 @@ rule cutadapt_pe:
         log="logs/cutadapt/{sample}-{unit}.pe.log"
     params:
         adapters = config["params"]["cutadapt-pe"],
-        others = config["params"]["cutadapt-others"]
+        extra = config["params"]["cutadapt-others"]
     log:
         "logs/cutadapt/{sample}-{unit}.pe.log"
     wrapper:
-        "0.64.0/bio/cutadapt/pe"
+        "v1.3.1/bio/cutadapt/pe"
 
 
 rule cutadapt_se:
@@ -23,11 +23,12 @@ rule cutadapt_se:
         qc="results/trimmed/{sample}-{unit}.se.qc.txt",
         log="logs/cutadapt/{sample}-{unit}.se.log"
     params:
-        "{} {}".format(
-            config["params"]["cutadapt-se"],
+        adapters="{}".format(
+            config["params"]["cutadapt-se"]),
+        extra = "{}".format(
             config["params"]["cutadapt-others"]
             )
     log:
         "logs/cutadapt/{sample}-{unit}.se.log"
     wrapper:
-        "0.64.0/bio/cutadapt/se"
+        "v1.3.1/bio/cutadapt/se"
