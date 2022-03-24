@@ -9,7 +9,7 @@ rule bedtools_merge_broad:
     log:
         "logs/bedtools/merged/{antibody}.consensus_peaks.log"
     wrapper:
-        "0.66.0/bio/bedtools/merge"
+        "v1.3.1/bio/bedtools/merge"
 
 rule bedtools_merge_narrow:
     input:
@@ -22,7 +22,7 @@ rule bedtools_merge_narrow:
     log:
         "logs/bedtools/merged/{antibody}.consensus_peaks.log"
     wrapper:
-        "0.66.0/bio/bedtools/merge"
+        "v1.3.1/bio/bedtools/merge"
 
 rule macs2_merged_expand:
     input:
@@ -104,7 +104,7 @@ rule homer_consensus_annotatepeaks:
     log:
         "logs/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.log"
     wrapper:
-        "0.68.0/bio/homer/annotatePeaks"
+        "v1.3.1/bio/homer/annotatePeaks"
 
 rule trim_homer_consensus_annotatepeaks:
     input:
@@ -133,7 +133,7 @@ rule merge_bool_and_annotatepeaks:
 
 rule feature_counts:
     input:
-        sam=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
+        samples=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
             sample=get_samples_of_antibody(wc.antibody),
             control=get_controls_of_antibody(wc.antibody)),
         annotation="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.saf"
@@ -149,7 +149,7 @@ rule feature_counts:
     log:
         "logs/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.log"
     wrapper:
-        "0.73.0/bio/subread/featurecounts"
+        "v1.3.1/bio/subread/featurecounts"
 
 rule featurecounts_modified_colnames:
     input:

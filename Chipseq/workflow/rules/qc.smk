@@ -10,7 +10,7 @@ rule fastqc:
         "logs/fastqc/{sample}.{unit}.{read}.log"
     threads: 6
     wrapper:
-        "0.72.0/bio/fastqc"
+        "v1.3.1/bio/fastqc"
 
 rule fastqc_trimmed:
     input:
@@ -24,7 +24,7 @@ rule fastqc_trimmed:
         "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
     threads: 6
     wrapper:
-        "0.72.0/bio/fastqc"
+        "v1.3.1/bio/fastqc"
 
 rule multiqc:
     input:

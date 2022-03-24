@@ -4,8 +4,8 @@ rule samtools_index:
     output:
         "results/{step}/{samples_units}.bam.bai"
     params:
-        "" # optional params string
+        extra="" # optional params string
     log:
         "logs/samtools-index/{step}/{samples_units}.log"
     wrapper:
-        "0.64.0/bio/samtools/index"
+        "v1.3.1/bio/samtools/index"

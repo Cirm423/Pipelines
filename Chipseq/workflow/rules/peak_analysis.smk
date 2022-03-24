@@ -64,7 +64,7 @@ rule macs2_callpeak_broad:
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
             bam_format="BAM" if config["single_end"] else "BAMPE")
     wrapper:
-        "0.68.0/bio/macs2/callpeak"
+        "v1.3.1/bio/macs2/callpeak"
 
 rule macs2_callpeak_narrow:
     input:
@@ -93,7 +93,7 @@ rule macs2_callpeak_narrow:
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
             bam_format="BAM" if config["single_end"] else "BAMPE")
     wrapper:
-        "0.68.0/bio/macs2/callpeak"
+        "v1.3.1/bio/macs2/callpeak"
 
 rule peaks_count:
     input:
@@ -133,7 +133,7 @@ rule bedtools_intersect:
     log:
         "logs/bedtools/intersect/{sample}-{control}.{peak}.intersected.log"
     wrapper:
-        "0.66.0/bio/bedtools/intersect"
+        "v1.3.1/bio/bedtools/intersect"
 
 rule frip_score:
     input:
@@ -190,7 +190,7 @@ rule homer_annotatepeaks:
     log:
         "logs/homer/annotate_peaks/{sample}-{control}.{peak}.log"
     wrapper:
-        "0.68.0/bio/homer/annotatePeaks"
+        "v1.3.1/bio/homer/annotatePeaks"
 
 rule plot_macs_qc:
     input:

@@ -10,14 +10,14 @@ rule samtools_view_filter:
         # the -L option is automatically activated if a path to a blacklist of the given genome exists in the
         # downloaded "resources/ref/igenomes.yaml" or has been provided via the "config/config.yaml"
         # parameter "config['resources']['ref']['blacklist']"
-        lambda wc, input: "{params} {blacklist}".format(
+        extra=lambda wc, input: "{params} {blacklist}".format(
             params=config["params"]["samtools-view-se"] if config["single_end"] else config["params"]["samtools-view-pe"],
             blacklist="" if len(input) == 1 else "-L {}".format(list(input)[1])
         )
     log:
         "logs/samtools-view/{sample}.log"
     wrapper:
-        "0.64.0/bio/samtools/view"
+        "v1.3.1/bio/samtools/view"
 
 rule bamtools_filter_json:
     input:
@@ -26,11 +26,12 @@ rule bamtools_filter_json:
         temp("results/bamtools_filtered/{sample}.bam")
     params:
           # filters mismatches in all reads and filters pe-reads within a size range given in json-file
-        json="config/{}_bamtools_filtering_rules.json".format("se" if config["single_end"] else "pe")
+        json="config/{}_bamtools_filtering_rules.json".format("se" if config["single_end"] else "pe"),
+        region=""
     log:
         "logs/filtered/{sample}.log"
     wrapper:
-        "0.64.0/bio/bamtools/filter_json"
+        "v1.3.1/bio/bamtools/filter_json"
 
 rule samtools_sort:
     input:
@@ -38,13 +39,13 @@ rule samtools_sort:
     output:
         "results/bamtools_filtered/{sample}.sorted.bam"
     params:
-        ""
+        extra=""
     log:
         "logs/bamtools_filtered/{sample}.sorted.log"
     threads:
         8
     wrapper:
-        "0.64.0/bio/samtools/sort"
+        "v1.3.1/bio/samtools/sort"
 
 #TODO for later: customize and substitute rm_orphan_pe_bam.py with some existing tool
 rule orphan_remove:
@@ -68,13 +69,13 @@ rule samtools_sort_pe:
     output:
         "results/orph_rm_pe/{sample}.sorted.bam"
     params:
-        ""
+        extra=""
     log:
         "logs/orph_rm_pe/{sample}.sorted.log"
     threads:  # Samtools takes additional threads through its option -@
         8
     wrapper:
-        "0.64.0/bio/samtools/sort"
+        "v1.3.1/bio/samtools/sort"
 
 rule merge_se_pe:
     input:

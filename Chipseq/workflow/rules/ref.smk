@@ -20,9 +20,11 @@ if genecode_assembly:
             f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai",
         log:
             f"logs/genome-faidx_{config['resources']['ref']['assembly']}.log",
+        params:
+            extra="",  # optional params string
         cache: True
         wrapper:
-            "0.77.0/bio/samtools/faidx"
+            "v1.3.1/bio/samtools/faidx"
 
     rule annot_gtf2bed:
         input:
@@ -75,14 +77,16 @@ rule bwa_index:
     input:
         f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
     output:
-        multiext((f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext((f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
         f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
+    params:
+        algorithm="bwtsw",
     resources:
         mem_mb=369000,
     cache: True
     wrapper:
-        "0.77.0/bio/bwa/index"
+        "v1.3.1/bio/bwa/index"
 
 
 if genecode_assembly:
@@ -97,7 +101,7 @@ if genecode_assembly:
         params:
             "" # optional params string
         wrapper:
-            "0.78.0/bio/ucsc/faToTwoBit"
+            "v1.3.1/bio/ucsc/faToTwoBit"
 
     rule twoBitInfo:
         input:
@@ -109,7 +113,7 @@ if genecode_assembly:
         params:
             "" # optional params string
         wrapper:
-            "0.78.0/bio/ucsc/twoBitInfo"
+            "v1.3.1/bio/ucsc/twoBitInfo"
 
     rule twoBitInfo_sort:
         input:
@@ -135,26 +139,26 @@ rule twoBitInfo_sort_tobedtools:
 rule sra_get_fastq_pe:
     output:
         # the wildcard name must be accession, pointing to an SRA number
-        "resources/sra-pe-reads/{accession}_1.fastq",
-        "resources/sra-pe-reads/{accession}_2.fastq",
+        "resources/sra-pe-reads/{accession}_1.fastq.gz",
+        "resources/sra-pe-reads/{accession}_2.fastq.gz",
     params:
-        extra=""
+        extra="--skip-technical"
     threads: 6
     log:
         "logs/ref/sra-pe-reads/{accession}.log"
     wrapper:
-        "0.72.0/bio/sra-tools/fasterq-dump"
+        "v1.3.1/bio/sra-tools/fasterq-dump"
 
 rule sra_get_fastq_se:
     output:
-        "resources/sra-se-reads/{accession}.fastq"
+        "resources/sra-se-reads/{accession}.fastq.gz"
     params:
-        extra=""
+        extra="--skip-technical"
     threads: 6
     log:
         "logs/ref/sra-pe-reads/{accession}.log"
     wrapper:
-        "0.72.0/bio/sra-tools/fasterq-dump"
+        "v1.3.1/bio/sra-tools/fasterq-dump"
 
 rule generate_igenomes:
     output:
@@ -194,7 +198,7 @@ rule bedtools_sort_blacklist:
     log:
         "logs/ref/blacklist.sorted.log"
     wrapper:
-        "0.68.0/bio/bedtools/sort"
+        "v1.3.1/bio/bedtools/sort"
 
 rule bedtools_format_blacklist:
     input:

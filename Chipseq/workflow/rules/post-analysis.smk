@@ -84,7 +84,7 @@ rule genomecov:
             if config["single_end"] else ""
         )
     wrapper:
-        "0.64.0/bio/bedtools/genomecov"
+        "v1.3.1/bio/bedtools/genomecov"
 
 rule sort_genomecov:
     input:
@@ -110,7 +110,7 @@ rule bedGraphToBigWig:
     params:
         ""
     wrapper:
-        "0.64.0/bio/ucsc/bedGraphToBigWig"
+        "v1.3.1/bio/ucsc/bedGraphToBigWig"
 
 rule create_igv_bigwig:
     input:

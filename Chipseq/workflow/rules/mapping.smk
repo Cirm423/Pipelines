@@ -7,13 +7,14 @@ rule bwa_mem:
     log:
         "logs/bwa/bwa_mem/{sample}-{unit}.log"
     params:
-        index= lambda w, input: os.path.splitext(input.idx[0])[0],
+        #index= lambda w, input: os.path.splitext(input.idx[0])[0],
         extra= get_read_group,
-        sort="samtools",
+        sorting="samtools",
         sort_order="coordinate",
+        sort_extra="",
     threads: 8
     wrapper:
-        "0.64.0/bio/bwa/mem"
+        "v1.3.1/bio/bwa/mem"
 
 rule merge_bams:
     input:
@@ -26,9 +27,9 @@ rule merge_bams:
     log:
         "logs/picard/mergebamfiles/{sample}.log"
     params:
-        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate"
+        extra="VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
     wrapper:
-        "0.64.0/bio/picard/mergesamfiles"
+        "v1.3.1/bio/picard/mergesamfiles"
 
 rule mark_merged_duplicates:
     input:
@@ -39,6 +40,6 @@ rule mark_merged_duplicates:
     log:
         "logs/picard/picard_dedup/{sample}.log"
     params:
-        "REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT"
+        extra="REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT",
     wrapper:
-        "0.64.0/bio/picard/markduplicates"
+        "v1.3.1/bio/picard/markduplicates"
