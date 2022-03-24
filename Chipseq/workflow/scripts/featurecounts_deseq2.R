@@ -136,9 +136,23 @@ if (file.exists(DDSFile) == FALSE) {
     if (!snakemake@params[["vst"]]) {
         rld <- rlog(dds)
     } else {
-        rld <- vst(dds)
+        if (nrow(dds) <= 1000){
+            rld <- varianceStabilizingTransformation(dds)
+        } else {
+        rld <- tryCatch(
+            {
+                rld <- vst(dds)
+            },
+            error=function(cond){
+                message("vst failed with the following error, trying small vst instead:")
+                message(cond)
+                message("\nStarting varianceStabilizingTransformation")
+                rld <- varianceStabilizingTransformation(dds)
+                return(rld)
+            }
+        )
+        }
     }
-    dir.create(dirname(DDSFile))
     save(dds,rld,file=DDSFile)
 }
 

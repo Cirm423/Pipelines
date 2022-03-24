@@ -196,9 +196,32 @@ rule bedtools_sort_blacklist:
     wrapper:
         "0.68.0/bio/bedtools/sort"
 
+rule bedtools_format_blacklist:
+    input:
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted"
+    output:
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist_formated.sorted"
+    log:
+        "logs/ref/blacklist.format.log"
+    run:
+        transform=[]
+        with open(input[0],"r") as f:
+            for line in f:
+                transform.append(line)
+        
+        with open(output[0],"w") as f:
+            for line in transform:
+                if line.startswith("chr"):
+                    f.write(line)
+                else:
+                    if line.startswith("MT"):
+                        line.replace("MT","chrM")
+                    else:
+                        f.write("chr" + line)
+
 rule bedtools_complement_blacklist:
     input:
-        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted",
+        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist_formated.sorted",
         genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.bedtools"
     output:
         f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement"

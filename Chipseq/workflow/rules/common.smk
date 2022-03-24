@@ -81,6 +81,17 @@ def get_individual_fastq(wildcards):
         else:
             return units.loc[ (wildcards.sample, wildcards.unit), "fq2" ]
 
+def get_individual_trimmed_fastq(wildcards):
+    if wildcards.read == "0":
+        return expand("results/trimmed/{sample}-{unit}.fastq.gz",
+                    sample = wildcards.sample, unit = wildcards.unit)
+    elif wildcards.read == "1":
+        return expand("results/trimmed/{sample}-{unit}_1.fastq.gz",
+                        sample = wildcards.sample, unit = wildcards.unit)
+    elif wildcards.read == "2":
+        return expand("results/trimmed/{sample}-{unit}_2.fastq.gz",
+                        sample = wildcards.sample, unit = wildcards.unit)
+
 def get_fastqs(wildcards):
     """Get raw FASTQ files from unit sheet."""
     if is_sra_se(wildcards.sample, wildcards.unit):
@@ -198,6 +209,8 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
+                    "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
+                    "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html",
                     "results/mapped/{sample}-{unit}.mapped.flagstat",
                     "results/mapped/{sample}-{unit}.mapped.idxstats",
                     "results/mapped/{sample}-{unit}.mapped.stats.txt"

@@ -12,6 +12,20 @@ rule fastqc:
     wrapper:
         "0.72.0/bio/fastqc"
 
+rule fastqc_trimmed:
+    input:
+        get_individual_trimmed_fastq
+    output:
+        html="results/qc/fastqc/trimmed_{sample}.{unit}.{read}.html",
+        zip="results/qc/fastqc/trimmed_{sample}.{unit}.{read}_fastqc.zip"
+    params:
+        ""
+    log:
+        "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
+    threads: 6
+    wrapper:
+        "0.72.0/bio/fastqc"
+
 rule multiqc:
     input:
         get_multiqc_input
@@ -19,5 +33,7 @@ rule multiqc:
         "results/qc/multiqc/multiqc.html"
     log:
         "logs/multiqc.log"
-    wrapper:
-        "0.64.0/bio/multiqc"
+    conda:
+        "../envs/multiqc.yaml"
+    script:
+        "../scripts/multiqc.py"

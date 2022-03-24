@@ -4,11 +4,15 @@ rule preseq_lc_extrap:
     output:
         "results/preseq/{sample}.lc_extrap"
     params:
-         "-v {} -seed 1".format( "" if config["single_end"] else "-pe" )
+        lambda wildcards, resources: f"-v {'' if config['single_end'] else '-pe'} -seed 1 {'-D' if resources.attempt > 1 else ''}" 
     log:
         "logs/preseq/{sample}.log"
-    wrapper:
-        "0.64.0/bio/preseq/lc_extrap"
+    resources:
+        attempt = lambda wildcards, attempt: attempt
+    conda:
+        "../envs/preseq.yaml"
+    script:
+        "../scripts/preseq.py"
 
 rule collect_multiple_metrics:
     input:
@@ -89,6 +93,7 @@ rule sort_genomecov:
         "results/bed_graph/{sample}.sorted.bedgraph"
     log:
         "logs/sort_genomecov/{sample}.log"
+    threads: 8
     conda:
         "../envs/bedsort.yaml"
     shell:
@@ -118,9 +123,20 @@ rule create_igv_bigwig:
     shell:
         "find {input} -type f -name '*.bigWig' -exec echo -e 'results/IGV/big_wig/\"{{}}\"\t0,0,178' \;  > {output} 2> {log}"
 
+rule create_region:
+    input:
+        get_macs2_peaks()
+    output:
+        "results/macs2_callpeak/Peak_region.bed"
+    conda:
+        "../envs/bedtools.yaml"
+    shell:
+        "cat results/macs2_callpeak/*.*Peak | sort -k1,1 -k2,2n | bedtools merge -i stdin > {output}"
+
 rule compute_matrix:
     input:
-         bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+         #bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+         bed="results/macs2_callpeak/Peak_region.bed",
          bigwig=expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
         # Usable output variables, their extensions and which option they implicitly call are listed here:
@@ -138,10 +154,11 @@ rule compute_matrix:
               "--afterRegionStartLength 3000 "
               "--missingDataAsZero " # added to prevent black output in the heatmap (plot_heatmap rule) https://github.com/deeptools/deepTools/issues/793
               "--skipZeros "
-              "--smartLabels "
-              
-    wrapper:
-        "0.64.0/bio/deeptools/computematrix"
+              "--smartLabels "       
+    conda: 
+        "../envs/deeptools.yaml"
+    script:
+        "../scripts/deeptools/computeMatrix.py"
 
 rule plot_profile:
     input:
@@ -156,8 +173,10 @@ rule plot_profile:
     params:
         ""
     threads: 24
-    wrapper:
-        "0.64.0/bio/deeptools/plotprofile"
+    conda:
+        "../envs/deeptools.yaml"
+    script:
+        "../scripts/deeptools/plotProfile.py"
 
 rule plot_heatmap:
     input:
@@ -172,8 +191,10 @@ rule plot_heatmap:
     params:
         ""
     threads: 24
-    wrapper:
-        "0.64.0/bio/deeptools/plotheatmap"
+    conda:
+        "../envs/deeptools.yaml"
+    script:
+        "../scripts/deeptools/plotheatmap.py"
 
 rule phantompeakqualtools:
     input:
