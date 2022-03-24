@@ -155,6 +155,7 @@ rule plot_profile:
         "logs/deeptools/plot_profile.log"
     params:
         ""
+    threads: 24
     wrapper:
         "0.64.0/bio/deeptools/plotprofile"
 
@@ -170,6 +171,7 @@ rule plot_heatmap:
         "logs/deeptools/heatmap.log"
     params:
         ""
+    threads: 24
     wrapper:
         "0.64.0/bio/deeptools/plotheatmap"
 
