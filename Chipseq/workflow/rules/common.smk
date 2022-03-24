@@ -95,10 +95,10 @@ def get_individual_trimmed_fastq(wildcards):
 def get_fastqs(wildcards):
     """Get raw FASTQ files from unit sheet."""
     if is_sra_se(wildcards.sample, wildcards.unit):
-        return expand("resources/sra-se-reads/{accession}.fastq",
+        return expand("resources/sra-se-reads/{accession}.fastq.gz",
                           accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
     elif is_sra_pe(wildcards.sample, wildcards.unit):
-        return expand(["resources/sra-pe-reads/{accession}_1.fastq", "resources/sra-pe-reads/{accession}_2.fastq"],
+        return expand(["resources/sra-pe-reads/{accession}_1.fastq.gz", "resources/sra-pe-reads/{accession}_2.fastq.gz"],
                           accession=units.loc[ (wildcards.sample, wildcards.unit), "sra_accession" ])
     elif is_single_end(wildcards.sample, wildcards.unit):
         return units.loc[ (wildcards.sample, wildcards.unit), "fq1" ]
