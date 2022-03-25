@@ -84,7 +84,7 @@ rule genomecov:
             if config["single_end"] else ""
         )
     wrapper:
-        "v1.3.1/bio/bedtools/genomecov"
+        "v0.87.0/bio/bedtools/genomecov"
 
 rule sort_genomecov:
     input:
