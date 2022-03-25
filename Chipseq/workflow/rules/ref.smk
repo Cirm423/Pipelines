@@ -2,16 +2,15 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            fasta=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            multiext(f"{config['resources']}{config['ref']['assembly']}",".fa",".annotation.gtf"),
         log:
-            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+            f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
-            assembly=f"{config['resources']['ref']['assembly']}",
+            assembly=f"{config['ref']['assembly']}",
         cache: True
         run:
-            shell(f"wget -O {output.fasta}.gz {genecode[config['resources']['ref']['assembly']]['assembly']} && gzip -d {output.fasta}.gz")
-            shell(f"wget -O {output.gtf}.gz {genecode[config['resources']['ref']['assembly']]['gtf']} && gzip -d {output.gtf}.gz")
+            shell(f"wget -O {output[0]}.gz {genecode[config['ref']['assembly']]['assembly']} && gzip -d {output[0]}.gz")
+            shell(f"wget -O {output[1]}.gz {genecode[config['ref']['assembly']]['gtf']} && gzip -d {output[1]}.gz")
     
     rule genome_faidx:
         input:
@@ -64,14 +63,12 @@ else:
             bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
             sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
         output:
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes",
+            multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
         cache: True
         log:
             f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
         shell:
-            "gzip -dc {input.gtf} > {output.gtf} 2>{log} && gzip -dc {input.bed} > {output.bed} 2>>{log} && mv {input.sizes} {output.sizes}"
+            "gzip -dc {input.gtf} > {output[0]} 2>{log} && gzip -dc {input.bed} > {output[1]} 2>>{log} && mv {input.sizes} {output[2]}"
 
 rule bwa_index:
     input:

@@ -2,16 +2,15 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            fasta=f"{config['resources']}{config['ref']['assembly']}.fa",
-            gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
+            multiext(f"{config['resources']}{config['ref']['assembly']}",".fa",".annotation.gtf"),
         log:
             f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
             assembly=f"{config['ref']['assembly']}",
         cache: True
         run:
-            shell(f"wget -O {output.fasta}.gz {genecode[config['ref']['assembly']]['assembly']} && gzip -d {output.fasta}.gz")
-            shell(f"wget -O {output.gtf}.gz {genecode[config['ref']['assembly']]['gtf']} && gzip -d {output.gtf}.gz")
+            shell(f"wget -O {output[0]}.gz {genecode[config['ref']['assembly']]['assembly']} && gzip -d {output[0]}.gz")
+            shell(f"wget -O {output[1]}.gz {genecode[config['ref']['assembly']]['gtf']} && gzip -d {output[1]}.gz")
     
     rule genome_faidx:
         input:
@@ -28,14 +27,14 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
         log:
-            f"logs/get-genome_{config['ref']['assembly']}.log",
+            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
             provider="UCSC",
-            assembly=f"{config['ref']['assembly']}",
+            assembly=f"{config['resources']['ref']['assembly']}",
         cache: True
         conda:
             "../envs/genomepy.yaml"
@@ -45,24 +44,16 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
-            fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
-            fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
+            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
         output:
-            gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']}{config['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']}{config['ref']['assembly']}.chrom.sizes",
-            fai=f"{config['resources']}{config['ref']['assembly']}.fa.fai",
-            fa=f"{config['resources']}{config['ref']['assembly']}.fa",
+            multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
         cache: True
-        params:
-            folder=f"{config['resources']}{config['ref']['assembly']}"
         log:
-            f"logs/unzip_annotation_{config['ref']['assembly']}.log"
+            f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
         shell:
-            "gzip -dc {input.gtf} > {output.gtf} 2>{log} && gzip -dc {input.bed} > {output.bed} 2>>{log} && mv {input.sizes} {output.sizes} && mv {input.fai} {output.fai} && mv {input.fa} {output.fa} && rm -r {params.folder}"
+            "gzip -dc {input.gtf} > {output[0]} 2>{log} && gzip -dc {input.bed} > {output[1]} 2>>{log} && mv {input.sizes} {output[2]}"
 
 rule bwa_index:
     input:
@@ -100,11 +91,8 @@ rule rsem_ref:
         reference_genome=f"{config['resources']}{config['ref']['assembly']}.fa",
     output:
         # one of the index files created and used by RSEM (required)
-        seq=f"{config['resources']}rsem_reference_{config['ref']['assembly']}.seq",
-        # RSEM produces a number of other files which may optionally be specified as output; these may be provided so that snakemake is aware of them, but the wrapper doesn't do anything with this information other than to verify that the file path prefixes match that of output.seq.
-        # for example,
-        grp=f"{config['resources']}rsem_reference_{config['ref']['assembly']}.grp",
-        ti=f"{config['resources']}rsem_reference_{config['ref']['assembly']}.ti",
+        multiext(f"{config['resources']}rsem_reference_{config['ref']['assembly']}",".seq",".grp",".ti")
+        # RSEM produces a number of other files which may optionally be specified as output (later 2 above); these may be provided so that snakemake is aware of them, but the wrapper doesn't do anything with this information other than to verify that the file path prefixes match that of output.seq.
     threads: 4
     params:
         # optional additional parameters, for example,
