@@ -27,9 +27,9 @@ rule merge_bams:
     log:
         "logs/picard/mergebamfiles/{sample}.log"
     params:
-        extra="VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
+        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
     wrapper:
-        "v1.3.1/bio/picard/mergesamfiles"
+        "v0.87.0/bio/picard/mergesamfiles"
 
 rule mark_merged_duplicates:
     input:
@@ -40,6 +40,6 @@ rule mark_merged_duplicates:
     log:
         "logs/picard/picard_dedup/{sample}.log"
     params:
-        extra="REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT",
+        "REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT",
     wrapper:
-        "v1.3.1/bio/picard/markduplicates"
+        "v0.87.0/bio/picard/markduplicates"
