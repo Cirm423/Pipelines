@@ -147,7 +147,7 @@ rule frip_score:
     conda:
         "../envs/gawk.yaml"
     shell:
-        "grep 'mapped (' {input.flagstats} | "
+        "grep -m 1 'mapped (' {input.flagstats} | "
         " gawk -v a=$(gawk -F '\t' '{{sum += $NF}} END {{print sum}}' < {input.intersect}) "
         " -v OFS='\t' "
         " '{{print \"{wildcards.sample}-{wildcards.control}_{wildcards.peak}_peaks\", a/$1}}' "

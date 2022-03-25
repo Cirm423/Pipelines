@@ -71,7 +71,7 @@ rule genomecov:
         "logs/bed_graph/{sample}.log"
     params:
         lambda w, input:
-            "-bg -scale $(grep 'mapped (' {flagstats_file} | awk '{{print 1000000/$1}}') {pe_fragment} {extend}".format(
+            "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 1000000/$1}}') {pe_fragment} {extend}".format(
             flagstats_file=input.flag_stats,
             pe_fragment="" if config["single_end"] else "-pc",
             # Estimated fragment size used to extend single-end reads
@@ -84,7 +84,7 @@ rule genomecov:
             if config["single_end"] else ""
         )
     wrapper:
-        "v0.87.0/bio/bedtools/genomecov"
+        "v1.3.1/bio/bedtools/genomecov"
 
 rule sort_genomecov:
     input:
