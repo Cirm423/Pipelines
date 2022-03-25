@@ -2,9 +2,9 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            multiext(f"{config['resources']}{config["resources"]["ref"]["assembly"]}",".fa",".annotation.gtf"),
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".fa",".annotation.gtf"),
         log:
-            f"logs/get-genome_{config["resources"]["ref"]["assembly"]}.log",
+            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
             assembly=f"{config['resources']['ref']['assembly']}",
         cache: True
@@ -63,7 +63,7 @@ else:
             bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
             sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
         output:
-            multiext(f"{config['resources']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
         cache: True
         log:
             f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"

@@ -27,14 +27,14 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']}{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz"),
         log:
-            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+            f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
             provider="UCSC",
-            assembly=f"{config['resources']['ref']['assembly']}",
+            assembly=f"{config['ref']['assembly']}",
         cache: True
         conda:
             "../envs/genomepy.yaml"
@@ -44,14 +44,14 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']['path']}{config['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']['path']}{config['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']['path']}{config['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']}{config['ref']['assembly']}.fa.sizes",
         output:
             multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
         cache: True
         log:
-            f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
+            f"logs/unzip_annotation_{config['ref']['assembly']}.log"
         shell:
             "gzip -dc {input.gtf} > {output[0]} 2>{log} && gzip -dc {input.bed} > {output[1]} 2>>{log} && mv {input.sizes} {output[2]}"
 
