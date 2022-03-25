@@ -44,9 +44,9 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']['path']}{config['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']['path']}{config['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']['path']}{config['ref']['assembly']}.fa.sizes",
         output:
             multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
         cache: True
