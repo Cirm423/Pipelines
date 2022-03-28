@@ -21,10 +21,10 @@ if (snakemake@threads > 1) {
 Samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sample_name", check.names=FALSE)
 filepaths <- snakemake@input[["bam"]]
 
-filenames <- lapply(filepaths, function(x) basename(dirname(x)))
+names(filepaths) <- basename(dirname(filepaths))
+filepaths <- filepaths[order(match(names(filepaths),row.names(Samples)))]
 
 bamfiles <- BamFileList(filepaths)
-names(bamfiles) <- filenames
 
 gtffile <- snakemake@input[["gtf"]]
 txdb <- makeTxDbFromGFF(gtffile,format="gtf",circ_seqs=character())

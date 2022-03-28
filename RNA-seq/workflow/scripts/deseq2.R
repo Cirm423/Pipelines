@@ -3,6 +3,7 @@ sink(log)
 sink(log, type="message")
 
 library("DESeq2")
+library(ashr)
 
 parallel <- FALSE
 if (snakemake@threads > 1) {
@@ -17,7 +18,7 @@ dds <- readRDS(snakemake@input[[1]])
 contrast <- c("condition", snakemake@params[["contrast"]])
 res <- results(dds, contrast=contrast, parallel=parallel)
 # shrink fold changes for lowly expressed genes
-res <- lfcShrink(dds, contrast=contrast, res=res, type="normal")
+res <- lfcShrink(dds, contrast=contrast, res=res, type="ashr")
 # sort by p-value
 res <- res[order(res$padj),]
 # TODO explore IHW usage
