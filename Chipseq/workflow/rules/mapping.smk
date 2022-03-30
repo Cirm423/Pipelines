@@ -1,6 +1,6 @@
 rule bwa_mem:
     input:
-        reads = get_map_reads_input,
+        reads = lambda wc: get_map_reads_input if config["params"]["trimming"]["activate"] else get_fastqs,
         idx = rules.bwa_index.output
     output:
         temp("results/mapped/{sample}-{unit}.bam")

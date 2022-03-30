@@ -209,8 +209,6 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
-                    "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html",
                     "results/mapped/{sample}-{unit}.mapped.flagstat",
                     "results/mapped/{sample}-{unit}.mapped.idxstats",
                     "results/mapped/{sample}-{unit}.mapped.stats.txt"
@@ -220,6 +218,16 @@ def get_multiqc_input(wildcards):
                 reads = reads
             )
         )
+        if config["params"]["trimming"]["activate"]:
+            multiqc_input.extend(
+                expand (
+                    [
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html"
+                    ]
+                  
+                )
+            )
     for sample in samples.index:
         multiqc_input.extend(
             expand (
@@ -316,41 +324,42 @@ def all_input(wildcards):
     ])
 
     # trimming reads
-    for (sample, unit) in units.index:
-        if is_sra_pe(sample, unit):
-            wanted_input.extend(
-                expand (
-                    [
-                        "results/trimmed/{sample}-{unit}_1.fastq.gz",
-                        "results/trimmed/{sample}-{unit}_2.fastq.gz",
-                        "results/trimmed/{sample}-{unit}.pe.qc.txt"
-                    ],
-                    sample = sample,
-                    unit = unit
-            )
-        )
-        elif is_single_end(sample, unit):
-            wanted_input.extend(expand(
-                    [
-                        "results/trimmed/{sample}-{unit}.fastq.gz",
-                        "results/trimmed/{sample}-{unit}.se.qc.txt"
-                    ],
-                    sample = sample,
-                    unit = unit
+    if config["params"]["trimming"]["activate"]:
+        for (sample, unit) in units.index:
+            if is_sra_pe(sample, unit):
+                wanted_input.extend(
+                    expand (
+                        [
+                            "results/trimmed/{sample}-{unit}_1.fastq.gz",
+                            "results/trimmed/{sample}-{unit}_2.fastq.gz",
+                            "results/trimmed/{sample}-{unit}.pe.qc.txt"
+                        ],
+                        sample = sample,
+                        unit = unit
                 )
             )
-        else:
-            wanted_input.extend(
-                expand (
-                    [
-                        "results/trimmed/{sample}-{unit}_1.fastq.gz",
-                        "results/trimmed/{sample}-{unit}_2.fastq.gz",
-                        "results/trimmed/{sample}-{unit}.pe.qc.txt"
-                    ],
-                    sample = sample,
-                    unit = unit
+            elif is_single_end(sample, unit):
+                wanted_input.extend(expand(
+                        [
+                            "results/trimmed/{sample}-{unit}.fastq.gz",
+                            "results/trimmed/{sample}-{unit}.se.qc.txt"
+                        ],
+                        sample = sample,
+                        unit = unit
+                    )
+                )
+            else:
+                wanted_input.extend(
+                    expand (
+                        [
+                            "results/trimmed/{sample}-{unit}_1.fastq.gz",
+                            "results/trimmed/{sample}-{unit}_2.fastq.gz",
+                            "results/trimmed/{sample}-{unit}.pe.qc.txt"
+                        ],
+                        sample = sample,
+                        unit = unit
+                )
             )
-        )
 
     # mapping, merging and filtering bam-files
     for sample in samples.index:
