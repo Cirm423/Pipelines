@@ -226,8 +226,10 @@ def get_multiqc_input(wildcards):
                     [
                         "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
                         "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html"
-                    ]
-                  
+                    ],
+                    sample = sample,
+                    unit = unit,
+                    reads = reads                  
                 )
             )
     for sample in samples.index:
