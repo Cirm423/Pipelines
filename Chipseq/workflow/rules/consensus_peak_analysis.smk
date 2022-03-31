@@ -133,7 +133,7 @@ rule merge_bool_and_annotatepeaks:
 
 rule feature_counts:
     input:
-        samples=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
+        sam=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
             sample=get_samples_of_antibody(wc.antibody),
             control=get_controls_of_antibody(wc.antibody)),
         annotation="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.saf"
@@ -149,7 +149,7 @@ rule feature_counts:
     log:
         "logs/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.log"
     wrapper:
-        "v1.3.1/bio/subread/featurecounts"
+        "v1.1.0/bio/subread/featurecounts"
 
 rule featurecounts_modified_colnames:
     input:
