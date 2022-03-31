@@ -131,7 +131,7 @@ rule create_region:
     conda:
         "../envs/bedtools.yaml"
     shell:
-        "cat results/macs2_callpeak/*.*Peak | sort -k1,1 -k2,2n | bedtools merge -i stdin > {output}"
+        "cat {input} | sort -k1,1 -k2,2n | bedtools merge -i stdin > {output}"
 
 rule compute_matrix:
     input:
