@@ -27,9 +27,9 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz"),
         log:
             f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
@@ -44,16 +44,20 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']}{config['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']}{config['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
+            fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
+            fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
+            multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+        params:
+            folder=f"{config['resources']}{config['ref']['assembly']}"
         cache: True
         log:
             f"logs/unzip_annotation_{config['ref']['assembly']}.log"
         shell:
-            "gzip -dc {input.gtf} > {output[0]} 2>{log} && gzip -dc {input.bed} > {output[1]} 2>>{log} && mv {input.sizes} {output[2]}"
+            "gzip -dc {input.gtf} > {output[0]} 2>{log} && gzip -dc {input.bed} > {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
 
 rule bwa_index:
     input:
@@ -102,6 +106,8 @@ rule rsem_ref:
         out_ref = f"{config['resources']}rsem_reference_{config['ref']['assembly']}",
     log:
         f"logs/rsem/prepare-reference_{config['ref']['assembly']}.log",
+    conda:
+        "../envs/rsem.yaml"
     cache: True
     shell:
         "rsem-prepare-reference --num-threads {threads} {params.extra} {input.reference_genome} {params.out_ref} > {log} 2>&1"

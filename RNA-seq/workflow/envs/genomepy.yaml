@@ -2,5 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - genomepy =0.8.3
-  - click =8.0.0
+  - genomepy =0.12.0

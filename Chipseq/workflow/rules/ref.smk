@@ -42,9 +42,9 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz"),
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.gtf.gz"),
+            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.bed.gz"),
         log:
             f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
@@ -59,11 +59,15 @@ else:
 
     rule unzip_annotation_ucsc:
         input:
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf.gz",
-            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed.gz",
-            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.sizes",
+            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.gtf.gz",
+            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.bed.gz",
+            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.sizes",
+            fai=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.fai",
+            fa=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa",
         output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes")
+            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+        params:
+            folder=f"{config['resources']['path']}{config['resources']['ref']['assembly']}"
         cache: True
         log:
             f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
