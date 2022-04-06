@@ -1,5 +1,9 @@
 sample	group	batch_effect	control
 A549_ACE2_mock_1	untreated	batch1	
-A549_ACE2_mock_2	untreated	batch2	A549_ACE2_mock_1
-A549_ACE2_cov_1	treated	batch1	A549_ACE2_mock_1
-A549_ACE2_cov_2	treated	batch2	A549_ACE2_mock_1
+A549_ACE2_mock_2	untreated	batch2	
+A549_ACE2_cov_1	untreated	batch1	A549_ACE2_mock_1
+A549_ACE2_cov_2	untreated	batch2	A549_ACE2_mock_2
+A549_ACE2_mock_3	treated	batch1	
+A549_ACE2_mock_4	treated	batch2	
+A549_ACE2_cov_3	treated	batch1	A549_ACE2_mock_3
+A549_ACE2_cov_4	treated	batch2	A549_ACE2_mock_4

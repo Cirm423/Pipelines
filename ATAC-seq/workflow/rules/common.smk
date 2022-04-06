@@ -4,6 +4,12 @@ import os
 from smart_open import open
 import yaml
 
+#FOR TESTING ONLY
+with open("config/config.yaml",'r') as f:
+     config = yaml.safe_load(f)
+
+##### load config and sample sheets #####
+
 validate(config, schema="../schemas/config.schema.yaml")
 
 samples = pd.read_csv(config["samples"], sep="\t", dtype = str).set_index("sample", drop=False)
@@ -18,13 +24,13 @@ units.index = units.index.set_levels(
 validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
-chromosome = config["resources"]["ref"]["chromosome"]
 
 ##### wildcard constraints #####
 
 wildcard_constraints:
     sample = "|".join(samples.index),
-    unit = "|".join(units["unit"])
+    unit = "|".join(units["unit"]),
+    group = "|".join(samples["group"].unique())
 
 ##### reference genomes #####
 
@@ -172,6 +178,16 @@ def get_plot_homer_annotatepeaks_input():
 def exists_replicates(group):
     return len(samples[samples["group"] == group]["sample"].unique()) > 1
 
+def get_controls_of_group(group):
+    sample_g = samples[samples['group'] == group]['group']
+    controls = samples[pd.isnull(samples["control"])]
+    return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
+
+def get_samples_of_group(group):
+    sample_g = samples[samples['group'] == group]['group']
+    treated = samples[pd.notnull(samples["control"])]
+    return treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+
 def get_map_reads_input(wildcards):
     if is_sra_pe(wildcards.sample, wildcards.unit):
         return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
@@ -208,9 +224,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    #"results/mapped/{sample}-{unit}.mapped.flagstat",
+                    #"results/mapped/{sample}-{unit}.mapped.idxstats",
+                    #"results/mapped/{sample}-{unit}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -281,5 +297,14 @@ def all_input(wildcards):
                         unit = unit
                 )
             )
+    for group in samples["group"].unique():
+        wanted_input.extend(expand(
+                [
+                    "results/genrich/{group}.narrowPeak",
+                    "results/genrich/{group}.bed"
+                ],
+                group = group
+            )
+        )
     #Need to add more files as things are made, at least until peak calling for now
     return wanted_input

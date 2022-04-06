@@ -178,7 +178,6 @@ rule generate_igenomes_blacklist:
         blacklist_path=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.bed"
     params:
         build = config["resources"]["ref"]["assembly"],
-        chromosome = config["resources"]["ref"]["chromosome"],
         blacklist = config["resources"]["ref"]["blacklist"]
     log:
         "logs/ref/blacklist.log"

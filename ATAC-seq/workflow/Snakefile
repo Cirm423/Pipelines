@@ -16,6 +16,7 @@ include: "rules/ref.smk"
 include: "rules/qc.smk"
 include: "rules/cutadapt.smk"
 include: "rules/mapping.smk"
+include: "rules/peak_calling.smk"
 
 rule all:
     input: all_input
