@@ -32,6 +32,11 @@ wildcard_constraints:
     unit = "|".join(units["unit"]),
     group = "|".join(samples["group"].unique())
 
+
+#Check that the controls in samples are actually a sample in the table
+
+assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
+
 ##### reference genomes #####
 
 genecode = {
@@ -135,16 +140,18 @@ def get_fastqs(wildcards):
         u = units.loc[ (wildcards.sample, wildcards.unit), ["fq1", "fq2"] ].dropna()
         return [ f"{u.fq1}", f"{u.fq2}" ]
 
-def is_control(sample):
-    control = samples.loc[sample]["control"]
-    return pd.isna(control) or pd.isnull(control)
+#Not used in ATAC since there are not different antybodies, but may be useful for something
 
-def get_sample_control_peak_combinations_list():
-    sam_contr = []
-    for sample in samples.index:
-        if not is_control(sample):
-            sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
-    return sam_contr
+# def is_control(sample):
+#     control = samples.loc[sample]["control"]
+#     return pd.isna(control) or pd.isnull(control)
+
+# def get_sample_control_peak_combinations_list():
+#     sam_contr = []
+#     for sample in samples.index:
+#         if not is_control(sample):
+#             sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
+#     return sam_contr
 
 def get_peaks_count_plot_input():
     return expand(
@@ -178,10 +185,13 @@ def get_plot_homer_annotatepeaks_input():
 def exists_replicates(group):
     return len(samples[samples["group"] == group]["sample"].unique()) > 1
 
+#Changed this to allow controls to be in a different group as the samples, i.e. in the case of an input
 def get_controls_of_group(group):
     sample_g = samples[samples['group'] == group]['group']
-    controls = samples[pd.isnull(samples["control"])]
-    return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
+    #controls = samples[pd.isnull(samples["control"])]
+    #return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
+    treated = samples[pd.notnull(samples["control"])]
+    return treated[treated["group"].index.isin(list(sample_g.index))]["control"]
 
 def get_samples_of_group(group):
     sample_g = samples[samples['group'] == group]['group']
