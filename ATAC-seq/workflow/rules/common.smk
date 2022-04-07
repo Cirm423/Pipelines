@@ -234,9 +234,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    #"results/mapped/{sample}-{unit}.mapped.flagstat",
-                    #"results/mapped/{sample}-{unit}.mapped.idxstats",
-                    #"results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    "results/mapped/{sample}-{unit}.mapped.flagstat",
+                    "results/mapped/{sample}-{unit}.mapped.idxstats",
+                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
