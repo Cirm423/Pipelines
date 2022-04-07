@@ -10,7 +10,7 @@ rule bwa_mem:
         #index= lambda w, input: os.path.splitext(input.idx[0])[0],
         extra= get_read_group,
         sorting="samtools",
-        sort_order="coordinate",
+        sort_order="queryname",
         sort_extra="",
     threads: 8
     wrapper:
@@ -27,6 +27,6 @@ rule merge_bams:
     log:
         "logs/picard/mergebamfiles/{sample}.log"
     params:
-        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
+        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=queryname",
     wrapper:
         "v0.87.0/bio/picard/mergesamfiles"

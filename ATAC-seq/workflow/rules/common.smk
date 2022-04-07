@@ -24,13 +24,13 @@ units.index = units.index.set_levels(
 validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
-
+groups = samples["group"].unique()
 ##### wildcard constraints #####
 
 wildcard_constraints:
     sample = "|".join(samples.index),
     unit = "|".join(units["unit"]),
-    group = "|".join(samples["group"].unique())
+    group = "|".join(groups)
 
 
 #Check that the controls in samples are actually a sample in the table
@@ -234,9 +234,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    "results/mapped/stats/{sample}-{unit}.mapped.flagstat",
+                    "results/mapped/stats/{sample}-{unit}.mapped.idxstats",
+                    "results/mapped/stats/{sample}-{unit}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -307,11 +307,12 @@ def all_input(wildcards):
                         unit = unit
                 )
             )
-    for group in samples["group"].unique():
+    for group in groups:
         wanted_input.extend(expand(
                 [
                     "results/genrich/{group}.narrowPeak",
-                    "results/genrich/{group}.bed"
+                    "results/genrich/{group}.bed",
+                    "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
                 ],
                 group = group
             )
