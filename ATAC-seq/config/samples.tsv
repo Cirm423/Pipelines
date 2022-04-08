@@ -1,7 +1,7 @@
 sample	group	batch_effect	control
-J1_Va_Rep1		batch1	
-J1_Va_Rep2		batch1	
-J1_Va_Rep3		batch1	
+J1_Va_Rep1	control	batch1	
+J1_Va_Rep2	control	batch1	
+J1_Va_Rep3	control	batch1	
 DnmtDKO_Va_Rep1	DnmtDKO	batch1	J1_Va_Rep1
 DnmtDKO_Va_Rep2	DnmtDKO	batch1	J1_Va_Rep2
 DnmtDKO_Va_Rep3	DnmtDKO	batch1	J1_Va_Rep3
