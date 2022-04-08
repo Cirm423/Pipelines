@@ -25,6 +25,10 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
 groups = samples["group"].unique()
+#List of groups to remove
+no_group = ['control','input']
+#We remove control and input group from the groups that will be used to call peaks.
+groups = [x for x in groups if x not in no_group]
 ##### wildcard constraints #####
 
 wildcard_constraints:
