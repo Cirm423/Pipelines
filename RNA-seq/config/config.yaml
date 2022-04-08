@@ -58,11 +58,16 @@ diffexp:
 #Perform single sample differential analysis. Cannot be activated with diffexp.
 single:
   activate: False
+  #Alternative is used when doing the Poisson test, can be: greater, less, two.sided . 
+  #Greater and less have greater statistical power, but only get up and down regulated genes respectively. two.sided gets both up and down regulated genes.
+  alternative: greater
 
 #Perform single sample TE differential analysis. As before, it cannot be activated with diffexp but you can activate both single and TE_single.
 TE_single:
   activate: False
   filter: 10
+  #Same as single alternative, but for TEs (Look above for explanation)
+  alternative: greater
 
 #Pass additional parameters to certain steps of the pipeline. 
 #Cutadapt is used in adapter trimming.

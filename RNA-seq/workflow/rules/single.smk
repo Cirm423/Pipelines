@@ -37,11 +37,13 @@ rule counts_single:
         expand("results/single/{sample}_vs_{control}.tsv",sample=samples.loc[samples["condition"]!="control"]["sample_name"], control = samples.loc[samples["condition"]=="control"]["sample_name"]),
         temp("results/single/counts.temp"),
         temp("results/single/counts_diff.temp"),
+    params:
+        config["single"]["alternative"]
     run:
         for file in input.treat:
             file_name = os.path.basename(file).split(".")[0]
             control_name = os.path.basename(input.control[0]).split(".")[0]
             shell("""paste {file} {input.control}  | awk -F"\t" 'BEGIN{{OFS="\t"}} {{print $1,$2,$3,$4,$5,$12,$6,$13,$7,$14,$5/$12}}' > results/single/counts.temp""")
-            shell("Rscript workflow/scripts/pois-test_RSEM.R")
+            shell("Rscript workflow/scripts/pois-test_RSEM.R {params}")
             shell("""echo -e "GeneName\tGeneID\tlength\teffective_length\t{file_name}_NormalizedCounts\t{control_name}_NormalizedCounts\t{file_name}_TPM\t{control_name}_TPM\t{file_name}_FPKM\t{control_name}_FPKM\tFoldChange\tp-value\tFDR" > results/single/{file_name}_vs_{control_name}.tsv""")
             shell("cat results/single/counts_diff.temp >> results/single/{file_name}_vs_{control_name}.tsv")
