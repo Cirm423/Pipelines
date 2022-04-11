@@ -2,6 +2,8 @@
 
 ## /home/share/dcyleung/Program/Pipeline/For_R/pois-test_RSEM.R
 
+args = commandArgs(TRUE)
+
 alt = args[1]
 
 a <- read.table("results/single/counts.temp",sep="\t",header=FALSE,quote="")

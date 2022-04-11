@@ -1,5 +1,7 @@
 #! /usr/bin/Rscript --vanilla
 
+args = commandArgs(TRUE)
+
 alt = args[1]
 
 a <- read.table("results/TE_single/counts.temp",sep="\t",header=FALSE)
