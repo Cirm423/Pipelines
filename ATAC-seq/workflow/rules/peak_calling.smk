@@ -9,12 +9,14 @@ rule genrich:
         blacklist = f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist_formated.sorted",
     output:
         peak = "results/genrich/{group}.narrowPeak",
-        bed = "results/genrich/{group}.bed"
+        bed = "results/genrich/{group}.bed",
     log:
         "logs/genrich/{group}.log"
     params:
+        samples = lambda wc, input: ",".join(input.samples),
+        controls = lambda wc, input: ",".join(input.controls),
         #f Output bedgraph for visualizacion, r remove pcr duplicates, -e for excluding chromosomes, j is ATAC mode
-        base = "-f -r -E {input.blacklist} -j -v",
+        base = lambda wc, input, output: f"-f {output.bed} -r -E {input.blacklist} -j -v",
         #Tells genrich to consider unpaired alignments if single end
         single = "-y" if config["single_end"] else "",
         excl = "" if not config["params"]["callpeak"]["chromosome"] else f"-e {config['params']['callpeak']['chromosome']}",
@@ -22,8 +24,9 @@ rule genrich:
         q_value = "-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
     conda:
         "../envs/genrich.yaml"
+    threads: 12
     shell:
-        "Genrich -t {input.samples} -c {input.controls} -o {output.peak} {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} 2>{log}"
+        "Genrich {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} -t {params.samples} -c {params.controls} -o {output.peak} 2>{log}"
 
  #The bedgraph output above has to be processed into 4 columns (first 3 + a datavalue of choice) for visualization  
 
