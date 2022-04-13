@@ -316,6 +316,7 @@ def all_input(wildcards):
                 [
                     "results/genrich/{group}.narrowPeak",
                     "results/genrich/{group}.bed",
+                    "results/bedtools_intersect/{group}.narrow.peaks_frip.tsv",
                     "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
                 ],
                 group = group
