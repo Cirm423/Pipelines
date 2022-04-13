@@ -10,7 +10,7 @@ rule bwa_mem:
         #index= lambda w, input: os.path.splitext(input.idx[0])[0],
         extra= get_read_group,
         sorting="samtools",
-        sort_order="queryname",
+        sort_order="coordinate",
         sort_extra="",
     threads: 8
     wrapper:
