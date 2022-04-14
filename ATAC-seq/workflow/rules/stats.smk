@@ -50,9 +50,9 @@ rule samtools_stats:
 
 rule samtools_index_merged:
     input:
-        "results/merged_group/{group}.bam"
+        "results/merged_group/{group}.sorted.bam"
     output:
-        "results/merged_group/{group}.bam.bai"
+        "results/merged_group/{group}.sorted.bam.bai"
     params:
         extra="" # optional params string
     log:
@@ -62,11 +62,11 @@ rule samtools_index_merged:
         
 rule samtools_flagstat_merged:
     input:
-        "results/merged_group/{group}.bam"
+        "results/merged_group/{group}.sorted.bam"
     output:
-        "results/merged/stats/{group}.merged_group.flagstat"
+        "results/merged_group/{group}.sorted.merged_group.flagstat"
     log:
-        "logs/samtools-flagstat/merged/{group}.merged_group.log"
+        "logs/samtools-flagstat/merged/{group}.sorted.merged_group.log"
     params:
         extra=""
     wrapper:
