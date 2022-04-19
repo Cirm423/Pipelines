@@ -17,6 +17,7 @@ include: "rules/qc.smk"
 include: "rules/cutadapt.smk"
 include: "rules/mapping.smk"
 include: "rules/stats.smk"
+include: "rules/filtering.smk"
 include: "rules/peak_calling.smk"
 
 rule all:

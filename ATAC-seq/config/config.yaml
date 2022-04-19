@@ -50,6 +50,13 @@ params:
   consensus-peak-analysis:
     # Should not be run unless there are at least 2 samples per control (not counting control) otherwise will not work.
     activate: True
+  # samtools view parameters:
+  # if duplicates should be removed in this filtering, add "-F 0x0400" to the params
+  # if for each read, you only want to retain a single (best) mapping, add "-q 1" to params
+  # if you would like to restrict analysis to certain regions (e.g. excluding other "blacklisted" regions),
+  # the -L option is automatically activated if a path to a blacklist of the given genome exists in "config/igenomes.yaml" or has been entered there
+  samtools-view-se: "-b -F 0x004 -F 0x0400 -q 10"
+  samtools-view-pe: "-b -F 0x004 -G 0x009 -f 0x001 -q 10"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types

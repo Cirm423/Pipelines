@@ -238,9 +238,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/stats/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/stats/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/stats/{sample}-{unit}.mapped.stats.txt"
+                    "results/filtered/stats/{sample}.mapped.flagstat",
+                    "results/filtered/stats/{sample}.mapped.idxstats",
+                    "results/filtered/stats/{sample}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -316,11 +316,25 @@ def all_input(wildcards):
                 [
                     "results/genrich/{group}.narrowPeak",
                     "results/genrich/{group}.bed",
-                    "results/bedtools_intersect/{group}.narrow.peaks_frip.tsv",
-                    "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
+
                 ],
                 group = group
             )
         )
+    #Only for treatment samples, not controls
+    for sample in samples.loc[samples['group'].isin(groups)].index:
+        wanted_input.extend(expand(
+            [   
+                "results/bedtools_intersect/{sample}.intersected.bed",
+                "results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv"
+            ],
+            sample = sample
+        ))
+    #For individual stuff
+    wanted_input.extend(
+        [
+            "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
+        ]
+    )    
     #Need to add more files as things are made, at least until peak calling for now
     return wanted_input

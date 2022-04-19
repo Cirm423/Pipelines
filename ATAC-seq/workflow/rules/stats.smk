@@ -1,22 +1,22 @@
 rule samtools_index:
     input:
-        "results/mapped/{samples_units}.bam"
+        "results/filtered/{sample}.sorted.bam"
     output:
-        "results/mapped/{samples_units}.bam.bai"
+        "results/filtered/{sample}.sorted.bam.bai"
     params:
         extra="" # optional params string
     log:
-        "logs/samtools-index/mapped/{samples_units}.log"
+        "logs/samtools-index/mapped/{sample}.log"
     wrapper:
         "v1.3.1/bio/samtools/index"
         
 rule samtools_flagstat:
     input:
-        "results/mapped/{samples_units}.bam"
+        "results/filtered/{sample}.sorted.bam"
     output:
-        "results/mapped/stats/{samples_units}.mapped.flagstat"
+        "results/filtered/stats/{sample}.mapped.flagstat"
     log:
-        "logs/samtools-flagstat/mapped/{samples_units}.mapped.log"
+        "logs/samtools-flagstat/mapped/{sample}.mapped.log"
     params:
         extra=""
     wrapper:
@@ -24,12 +24,12 @@ rule samtools_flagstat:
 
 rule samtools_idxstats:
     input:
-        bam = "results/mapped/{samples_units}.bam",
-        idx = "results/mapped/{samples_units}.bam.bai"
+        bam = "results/filtered/{sample}.sorted.bam",
+        idx = "results/filtered/{sample}.sorted.bam.bai"
     output:
-        "results/mapped/stats/{samples_units}.mapped.idxstats"
+        "results/filtered/stats/{sample}.mapped.idxstats"
     log:
-        "logs/samtools-idxstats/mapped/{samples_units}.mapped.log"
+        "logs/samtools-idxstats/mapped/{sample}.mapped.log"
     params:
         extra=""
     wrapper:
@@ -37,37 +37,12 @@ rule samtools_idxstats:
 
 rule samtools_stats:
     input:
-        "results/mapped/{samples_units}.bam"
+        "results/filtered/{sample}.sorted.bam"
     output:
-        "results/mapped/stats/{samples_units}.mapped.stats.txt"
+        "results/filtered/stats/{sample}.mapped.stats.txt"
     params:
         extra=""
     log:
-        "logs/samtools-stats/mapped/{samples_units}.mapped.log"
+        "logs/samtools-stats/mapped/{sample}.mapped.log"
     wrapper:
         "v1.3.1/bio/samtools/stats"
-
-
-rule samtools_index_merged:
-    input:
-        "results/merged_group/{group}.sorted.bam"
-    output:
-        "results/merged_group/{group}.sorted.bam.bai"
-    params:
-        extra="" # optional params string
-    log:
-        "logs/samtools-index/merged_group/{group}.log"
-    wrapper:
-        "v1.3.1/bio/samtools/index"
-        
-rule samtools_flagstat_merged:
-    input:
-        "results/merged_group/{group}.sorted.bam"
-    output:
-        "results/merged_group/{group}.sorted.merged_group.flagstat"
-    log:
-        "logs/samtools-flagstat/merged/{group}.sorted.merged_group.log"
-    params:
-        extra=""
-    wrapper:
-        "v1.3.1/bio/samtools/flagstat"
