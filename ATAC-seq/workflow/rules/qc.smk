@@ -37,3 +37,19 @@ rule multiqc:
         "../envs/multiqc.yaml"
     script:
         "../scripts/multiqc.py"
+
+rule ATACseqQC:
+    input:
+        "results/filtered/{sample}.sorted.bam"
+    output:
+        fragmentSizeDistribution = report("results/qc/ATACseqQC/fragmentSizeDistribution.pdf", category = "ATACseqQC"),
+        
+    params:
+        BSgenome = "",
+        Txdb = ""
+    log:
+        "logs/ATACseqQC/{sample}.log"
+    conda:
+        "../envs/ATACseqQC.yaml"
+    script:
+        "../scripts/ATACseqQC.R"
