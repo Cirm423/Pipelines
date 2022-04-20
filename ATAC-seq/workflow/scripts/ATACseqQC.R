@@ -1,3 +1,6 @@
+log <- file(snakemake@log[[1]], open="wt")
+sink(log)
+sink(log, type="message")
 library(BiocManager)
 install(snakemake@params[["BSgenome"]])
 install(snakemake@params[["Txdb"]])
@@ -5,7 +8,7 @@ library(ATACseqQC)
 bamfile <- snakemake@input[[1]]
 bamfile.labels <- gsub(".bam", "", basename(bamfile))
 #Change the outputs from number to names as you make the rule
-pdf(snakemake@output[[1]]) #fragmentSizeDistribution.pdf
+pdf(snakemake@output[["fragmentSizeDistribution"]]) #fragmentSizeDistribution.pdf
 fragSize <- fragSizeDist(bamfile, bamfile.labels)
 dev.off()
 library(snakemake@params[["Txdb"]])
@@ -36,7 +39,7 @@ main="Transcription Start Site (TSS) Enrichment Score",
 xlab="TSS enrichment score")
 dev.off()
 gc(reset=TRUE)
-genome <- ${params.R.BSgenome}
+genome <- snakemake@params[["BSgenome"]]
 objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = ".")
 rm(gal1)
 gc(reset=TRUE)
@@ -47,7 +50,7 @@ bamfiles <- file.path(".",
                     "dinucleosome.bam",
                     "trinucleosome.bam"))
 pdf(snakemake@output[[4]]) #cumulativePercentage.pdf
-cumulativePercentage(bamfiles[1:2], as(seqinfo(${params.R.BSgenome})[seqlev], "GRanges"))
+cumulativePercentage(bamfiles[1:2], as(seqinfo(snakemake@params[["BSgenome"]])[seqlev], "GRanges"))
 dev.off()
 TSS <- promoters(txs, upstream=0, downstream=1)
 TSS <- unique(TSS)
