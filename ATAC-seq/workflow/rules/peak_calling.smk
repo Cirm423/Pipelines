@@ -1,10 +1,24 @@
-#Genrich manages shifting, Removal of mitochondrial reads, Removal of PCR duplicates, Analysis of multimapping reads. The blacklisted regions are removed previously.
+#Genrich requires the bam files to be sorted by queryname instead of coordinate like all the stats and qc stuff, make temp files for that.
+rule genrich_sort:
+    input:
+        get_se_pe_branches_input
+    output:
+        temp("results/genrich/{sample}.sorted.bam")
+    params:
+        extra="-n"
+    log:
+        "logs/genrich/{sample}.sorted.log"
+    threads:
+        8
+    wrapper:
+        "v1.3.1/bio/samtools/sort"
 
+#Genrich manages shifting, Removal of mitochondrial reads, Removal of PCR duplicates, Analysis of multimapping reads. The blacklisted regions are removed previously.
 rule genrich:
     input:
-        samples = lambda wc: expand(["results/filtered/{sample}.sorted.bam"],
+        samples = lambda wc: expand(["results/genrich/{sample}.sorted.bam"],
             sample = get_samples_of_group(wc.group)),
-        controls = lambda wc: expand(["results/filtered/{control}.sorted.bam"],
+        controls = lambda wc: expand(["results/genrich/{control}.sorted.bam"],
             control = get_controls_of_group(wc.group)),
     output:
         peak = "results/genrich/{group}.narrowPeak",

@@ -85,10 +85,10 @@ rule merge_se_pe:
     output:
         "results/filtered/{sample}.sorted.bam"
     params:
-        extra="-n"
+        ""
     log:
         "logs/filtered/{sample}.sorted.log"
-    threads:
-        8
-    wrapper:
-        "v1.3.1/bio/samtools/sort"
+    conda:
+        "../envs/coreutils.yaml"
+    shell:
+        "ln -sr {input} {output}"
