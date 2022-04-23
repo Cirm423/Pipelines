@@ -19,13 +19,13 @@ which <- as(seqinfo(snakemake@params[["BSgenome"]])[seqlev], "GRanges")
 gal <- readBamFile(bamfile, which=which, asMates=TRUE, bigFile=TRUE)
 gal1 <- shiftGAlignmentsList(gal) #outbam="shifted.bam" was there
 pt <- PTscore(gal1, txs)
-pdf(snakemake@output[[2]]) #"PTscore.pdf"
+pdf(snakemake@output[["PTscore"]]) #"PTscore.pdf"
 plot(mcols(pt)[, "log2meanCoverage"], mcols(pt)[, "PT_score"], 
     xlab="log2 mean coverage",
     ylab="Promoter vs Transcript")
 dev.off()
 nfr <- NFRscore(gal1, txs)
-pdf(snakemake@output[[3]]) #NFRscore.pdf
+pdf(snakemake@output[["NFRscore"]]) #NFRscore.pdf
 plot(mcols(nfr)[, "log2meanCoverage"], mcols(nfr)[, "NFR_score"], 
     xlab="log2 mean coverage",
     ylab="Nucleosome Free Regions score",
@@ -33,7 +33,7 @@ plot(mcols(nfr)[, "log2meanCoverage"], mcols(nfr)[, "NFR_score"],
     xlim=c(-10, 0), ylim=c(-5, 5))
 dev.off()
 tsse <- TSSEscore(gal1, txs)
-pdf(snakemake@output[[4]]) #TSSEscore.pdf
+pdf(snakemake@output[["TSSEscore"]]) #TSSEscore.pdf
 hist(mcols(tsse)[, "TSS.enrichment.score"], breaks=100, 
 main="Transcription Start Site (TSS) Enrichment Score", 
 xlab="TSS enrichment score")
@@ -49,7 +49,7 @@ bamfiles <- file.path(".",
                     "mononucleosome.bam",
                     "dinucleosome.bam",
                     "trinucleosome.bam"))
-pdf(snakemake@output[[4]]) #cumulativePercentage.pdf
+pdf(snakemake@output[["cumulativePercentage"]]) #cumulativePercentage.pdf
 cumulativePercentage(bamfiles[1:2], as(seqinfo(snakemake@params[["BSgenome"]])[seqlev], "GRanges"))
 dev.off()
 TSS <- promoters(txs, upstream=0, downstream=1)
@@ -69,7 +69,7 @@ sigs <- enrichedFragments(gal=objs[c("NucleosomeFree",
                         upstream = ups,
                         downstream = dws)
     sigs.log2 <- lapply(sigs, function(.ele) log2(.ele+1))
-    pdf(snakemake@output[[5]]) #featureAligndHeatmap.pdf
+    pdf(snakemake@output[["featureAligndHeatmap"]]) #featureAligndHeatmap.pdf
     featureAlignedHeatmap(sigs.log2, reCenterPeaks(TSS, width=ups+dws),
                     zeroAt=.5, n.tile=NTILE)
     dev.off()
@@ -79,7 +79,7 @@ sigs <- enrichedFragments(gal=objs[c("NucleosomeFree",
                                 ylab="Averaged coverage")
 range01 <- function(x){(x-min(x))/(max(x)-min(x))}
 out <- apply(out, 2, range01)
-pdf(snakemake@output[[6]]) #TSS.profile.pdf
+pdf(snakemake@output[["TSS_profile"]]) #TSS.profile.pdf
 matplot(out, type="l", xaxt="n", 
     xlab="Position (bp)", 
     ylab="Fraction of signal")
@@ -90,13 +90,13 @@ dev.off()
 library(MotifDb)
 CTCF <- query(MotifDb, c("CTCF"))
 CTCF <- as.list(CTCF)
-pdf(snakemake@output[[7]]) #CTCF.footprint.pdf
+pdf(snakemake@output[["CTCF_footprint"]]) #CTCF.footprint.pdf
 sigs <- factorFootprints("shifted.bam", pfm=CTCF[[1]], 
                         genome=genome,
                         min.score="90%", seqlev=seqlev,
                         upstream=100, downstream=100)
 dev.off()
-pdf(snakemake@output[[8]]) #CTCF.Vplot.pdf
+pdf(snakemake@output[["CTCF_Vplot"]]) #CTCF.Vplot.pdf
 vp <- vPlot("shifted.bam", pfm=CTCF[[1]], 
         genome=genome, min.score="90%", seqlev=seqlev,
         upstream=200, downstream=200, 

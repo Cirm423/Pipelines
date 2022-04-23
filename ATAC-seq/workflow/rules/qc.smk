@@ -42,11 +42,18 @@ rule ATACseqQC:
     input:
         "results/filtered/{sample}.sorted.bam"
     output:
-        fragmentSizeDistribution = report("results/qc/ATACseqQC/fragmentSizeDistribution.pdf", category = "ATACseqQC"),
-        
+        fragmentSizeDistribution = report("results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf", category = "ATACseqQC_{sample}"),
+        PTscore = report("results/qc/ATACseqQC/{sample}/PTscore.pdf", category = "ATACseqQC_{sample}"),
+        NFRscore = report("results/qc/ATACseqQC/{sample}/NFRscore.pdf", category = "ATACseqQC_{sample}"),
+        TSSEscore = report("results/qc/ATACseqQC/{sample}/TSSEscore.pdf", category = "ATACseqQC_{sample}"),
+        cumulativePercentage = report("results/qc/ATACseqQC/{sample}/cumulativePercentage.pdf", category = "ATACseqQC_{sample}"),
+        featureAligndHeatmap = report("results/qc/ATACseqQC/{sample}/featureAligndHeatmap.pdf", category = "ATACseqQC_{sample}"),
+        TSS_profile = report("results/qc/ATACseqQC/{sample}/TSS_profile.pdf", category = "ATACseqQC_{sample}"),
+        CTCF_footprint = report("results/qc/ATACseqQC/{sample}/CTCF_footprint.pdf", category = "ATACseqQC_{sample}"),
+        CTCF_Vplot = report("results/qc/ATACseqQC/{sample}/CTCF_Vplot.pdf", category = "ATACseqQC_{sample}")
     params:
-        BSgenome = "",
-        Txdb = ""
+        BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
+        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"]
     log:
         "logs/ATACseqQC/{sample}.log"
     conda:

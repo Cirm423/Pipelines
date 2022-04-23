@@ -70,6 +70,39 @@ genecode_assembly = False
 if config['resources']['ref']['assembly'] in genecode.keys():
     genecode_assembly = True
 
+####### ATACseqQC packages ######
+
+QC_packages = {
+    "GRCh38" : {
+        "BSgenome" : "BSgenome.Hsapiens.UCSC.hg38",
+        "Txdb" : "TxDb.Hsapiens.UCSC.hg38.knownGene"
+    },
+    "h38" : {
+        "BSgenome" : "BSgenome.Hsapiens.UCSC.hg38",
+        "Txdb" : "TxDb.Hsapiens.UCSC.hg38.knownGene"
+    },
+    "GRCh37" : {
+        "BSgenome" : "BSgenome.Hsapiens.UCSC.hg19",
+        "Txdb" : "TxDb.Hsapiens.UCSC.hg19.knownGene"        
+    },
+    "h19" : {
+        "BSgenome" : "BSgenome.Hsapiens.UCSC.hg19",
+        "Txdb" : "TxDb.Hsapiens.UCSC.hg19.knownGene"        
+    },
+    "GRCm38" : {
+        "BSgenome" : "BSgenome.Mmusculus.UCSC.mm10",
+        "Txdb" : "TxDb.Mmusculus.UCSC.mm10.knownGene"        
+    },
+    "mm10" : {
+        "BSgenome" : "BSgenome.Mmusculus.UCSC.mm10",
+        "Txdb" : "TxDb.Mmusculus.UCSC.mm10.knownGene"        
+    }
+}
+
+ATACseqQC_act = False
+if config['resources']['ref']['assembly'] in QC_packages.keys():
+    ATACseqQC_act = True
+
 ####### helpers ###########
 
 def is_single_end(sample, unit):
@@ -269,9 +302,10 @@ def all_input(wildcards):
 
     wanted_input = []
 
-    # QC with fastQC and multiQC
+    # QC with fastQC and multiQC, individual stuff
     wanted_input.extend([
-        "results/qc/multiqc/multiqc.html"
+        "results/qc/multiqc/multiqc.html",
+        "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
     ])
 
     # trimming reads
@@ -311,6 +345,22 @@ def all_input(wildcards):
                         unit = unit
                 )
             )
+    for sample in samples.index:
+        if ATACseqQC_act:
+            wanted_input.extend(expand(
+                [
+                    "results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf",
+                    "results/qc/ATACseqQC/{sample}/PTscore.pdf",
+                    "results/qc/ATACseqQC/{sample}/NFRscore.pdf",
+                    "results/qc/ATACseqQC/{sample}/TSSEscore.pdf",
+                    "results/qc/ATACseqQC/{sample}/cumulativePercentage.pdf",
+                    "results/qc/ATACseqQC/{sample}/featureAligndHeatmap.pdf",
+                    "results/qc/ATACseqQC/{sample}/TSS_profile.pdf",
+                    "results/qc/ATACseqQC/{sample}/CTCF_footprint.pdf",
+                    "results/qc/ATACseqQC/{sample}/CTCF_Vplot.pdf"
+                ],
+                sample = sample
+            ))
     for group in groups:
         wanted_input.extend(expand(
                 [
@@ -330,11 +380,6 @@ def all_input(wildcards):
             ],
             sample = sample
         ))
-    #For individual stuff
-    wanted_input.extend(
-        [
-            "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
-        ]
-    )    
+    
     #Need to add more files as things are made, at least until peak calling for now
     return wanted_input
