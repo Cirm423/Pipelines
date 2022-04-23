@@ -2,7 +2,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - BiocManager
-  - ATACseqQC
-  - ChIPpeakAnno
-  - MotifDb
+  - r-biocmanager
+  - bioconductor-atacseqqc
+  - bioconductor-chippeakanno
+  - bioconductor-motifdb
