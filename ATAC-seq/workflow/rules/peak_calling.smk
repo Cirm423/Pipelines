@@ -83,6 +83,7 @@ rule sm_rep_frip_score:
         "logs/bedtools/intersect/plot_narrow_peaks_frip_score.log"
     conda:
         "../envs/r_plots.yaml"
+    threads: 8
     script:
         "../scripts/plot_frip_score.R"
 
