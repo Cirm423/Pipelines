@@ -38,7 +38,7 @@ rule samtools_sort:
     input:
         "results/bamtools_filtered/{sample}.bam"
     output:
-        temp("results/bamtools_filtered/{sample}.sorted.bam")
+        "results/bamtools_filtered/{sample}.sorted.bam"
     params:
         extra=""
     log:
@@ -68,7 +68,7 @@ rule samtools_sort_pe:
     input:
          "results/orph_rm_pe/{sample}.bam"
     output:
-        temp("results/orph_rm_pe/{sample}.sorted.bam")
+        "results/orph_rm_pe/{sample}.sorted.bam"
     params:
         extra=""
     log:
