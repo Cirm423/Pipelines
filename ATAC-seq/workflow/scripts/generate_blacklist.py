@@ -35,7 +35,7 @@ igenomes = snakemake.input[0]
 blacklist_path = snakemake.output.get("blacklist_path", "")
 
 build = snakemake.params.get("build", "")
-#chromosome = snakemake.params.get("chromosome", "")
+chromosome = snakemake.params.get("chromosome", "")
 blacklist = snakemake.params.get("blacklist", "")
 
 if blacklist:
