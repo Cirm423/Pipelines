@@ -7,7 +7,9 @@ install(snakemake@params[["Txdb"]])
 library(ATACseqQC)
 bamfile <- snakemake@input[[1]]
 bamfile.labels <- gsub(".bam", "", basename(bamfile))
-#Change the outputs from number to names as you make the rule
+pdf(snakemake@output[["LibComplexity"]])
+estimateLibComplexity(readsDupFreq(bamfile))
+dev.off()
 pdf(snakemake@output[["fragmentSizeDistribution"]]) #fragmentSizeDistribution.pdf
 fragSize <- fragSizeDist(bamfile, bamfile.labels)
 dev.off()
@@ -16,29 +18,41 @@ snake_txdb = get(snakemake@params[["Txdb"]])
 txs <- transcripts(snake_txdb)
 library(snakemake@params[["BSgenome"]],character.only=TRUE)
 snake_BS = get(snakemake@params[["BSgenome"]])
+possibleTag <- list("integer"=c("AM", "AS", "CM", "CP", "FI", "H0", "H1", "H2", 
+                                "HI", "IH", "MQ", "NH", "NM", "OP", "PQ", "SM",
+                                "TC", "UQ"), 
+                 "character"=c("BC", "BQ", "BZ", "CB", "CC", "CO", "CQ", "CR",
+                               "CS", "CT", "CY", "E2", "FS", "LB", "MC", "MD",
+                               "MI", "OA", "OC", "OQ", "OX", "PG", "PT", "PU",
+                               "Q2", "QT", "QX", "R2", "RG", "RX", "SA", "TS",
+                               "U2"))
+library(Rsamtools)
+bamTop100 <- scanBam(BamFile(bamfile, yieldSize = 100),
+                     param = ScanBamParam(tag=unlist(possibleTag)))[[1]]$tag
+tags <- names(bamTop100)[lengths(bamTop100)>0]
 seqlev <- paste0("chr", c(1:21, "X", "Y"))
 which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
-gal <- readBamFile(bamfile, which=which, asMates=TRUE, bigFile=TRUE)
+gal <- readBamFile(bamfile, tag=tags which=which, asMates=TRUE, bigFile=TRUE)
 gal1 <- shiftGAlignmentsList(gal) #outbam="shifted.bam" was there
 pt <- PTscore(gal1, txs)
 pdf(snakemake@output[["PTscore"]]) #"PTscore.pdf"
-plot(mcols(pt)[, "log2meanCoverage"], mcols(pt)[, "PT_score"], 
-    xlab="log2 mean coverage",
-    ylab="Promoter vs Transcript")
+plot(pt$log2meanCoverage, pt$PT_score, 
+     xlab="log2 mean coverage",
+     ylab="Promoter vs Transcript")
 dev.off()
 nfr <- NFRscore(gal1, txs)
 pdf(snakemake@output[["NFRscore"]]) #NFRscore.pdf
-plot(mcols(nfr)[, "log2meanCoverage"], mcols(nfr)[, "NFR_score"], 
-    xlab="log2 mean coverage",
-    ylab="Nucleosome Free Regions score",
-    main="NFRscore for 200bp flanking TSSs",
-    xlim=c(-10, 0), ylim=c(-5, 5))
+plot(nfr$log2meanCoverage, nfr$NFR_score, 
+     xlab="log2 mean coverage",
+     ylab="Nucleosome Free Regions score",
+     main="NFRscore for 200bp flanking TSSs",
+     xlim=c(-10, 0), ylim=c(-5, 5))
 dev.off()
 tsse <- TSSEscore(gal1, txs)
 pdf(snakemake@output[["TSSEscore"]]) #TSSEscore.pdf
-hist(mcols(tsse)[, "TSS.enrichment.score"], breaks=100, 
-main="Transcription Start Site (TSS) Enrichment Score", 
-xlab="TSS enrichment score")
+plot(100*(-9:10-.5), tsse$values, type="b", 
+     xlab="distance to TSS",
+     ylab="aggregate TSS score")
 dev.off()
 gc(reset=TRUE)
 genome <- snake_BS

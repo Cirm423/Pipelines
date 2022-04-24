@@ -42,6 +42,7 @@ rule ATACseqQC:
     input:
         "results/filtered/{sample}.sorted.bam"
     output:
+        LibComplexity = report("results/qc/ATACseqQC/{sample}/LibComplexity.pdf", category = "ATACseqQC_{sample}"),
         fragmentSizeDistribution = report("results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf", category = "ATACseqQC_{sample}"),
         PTscore = report("results/qc/ATACseqQC/{sample}/PTscore.pdf", category = "ATACseqQC_{sample}"),
         NFRscore = report("results/qc/ATACseqQC/{sample}/NFRscore.pdf", category = "ATACseqQC_{sample}"),
