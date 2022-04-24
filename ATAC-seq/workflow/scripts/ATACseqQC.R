@@ -12,10 +12,12 @@ pdf(snakemake@output[["fragmentSizeDistribution"]]) #fragmentSizeDistribution.pd
 fragSize <- fragSizeDist(bamfile, bamfile.labels)
 dev.off()
 library(snakemake@params[["Txdb"]],character.only=TRUE)
-txs <- transcripts(snakemake@params[["Txdb"]])
+snake_txdb = get(snakemake@params[["Txdb"]])
+txs <- transcripts(snake_txdb)
 library(snakemake@params[["BSgenome"]],character.only=TRUE)
+snake_BS = get(snakemake@params[["BSgenome"]])
 seqlev <- paste0("chr", c(1:21, "X", "Y"))
-which <- as(seqinfo(snakemake@params[["BSgenome"]])[seqlev], "GRanges")
+which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
 gal <- readBamFile(bamfile, which=which, asMates=TRUE, bigFile=TRUE)
 gal1 <- shiftGAlignmentsList(gal) #outbam="shifted.bam" was there
 pt <- PTscore(gal1, txs)
@@ -39,7 +41,7 @@ main="Transcription Start Site (TSS) Enrichment Score",
 xlab="TSS enrichment score")
 dev.off()
 gc(reset=TRUE)
-genome <- snakemake@params[["BSgenome"]]
+genome <- snake_BS
 objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = ".")
 rm(gal1)
 gc(reset=TRUE)
@@ -50,7 +52,7 @@ bamfiles <- file.path(".",
                     "dinucleosome.bam",
                     "trinucleosome.bam"))
 pdf(snakemake@output[["cumulativePercentage"]]) #cumulativePercentage.pdf
-cumulativePercentage(bamfiles[1:2], as(seqinfo(snakemake@params[["BSgenome"]])[seqlev], "GRanges"))
+cumulativePercentage(bamfiles[1:2], as(seqinfo(snake_BS)[seqlev], "GRanges"))
 dev.off()
 TSS <- promoters(txs, upstream=0, downstream=1)
 TSS <- unique(TSS)
