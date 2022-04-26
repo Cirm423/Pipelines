@@ -58,6 +58,7 @@ rule star_str_bw:
 rule BamCoverage_str1:
     input:
         get_star_bam,
+        get_star_bam_bai,
     output:
         path_merged_cond("results/browser/?.str1.bw"),
     params:
@@ -74,6 +75,7 @@ rule BamCoverage_str1:
 rule BamCoverage_str2:
     input:
         get_star_bam,
+        get_star_bam_bai,
     output:
         path_merged_cond("results/browser/?.str2.bw"),
     params:
