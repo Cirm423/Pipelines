@@ -119,4 +119,5 @@ vp <- vPlot(file.path(snakemake@params[["path"]],"shifted.bam"), pfm=CTCF[[1]],
         upstream=200, downstream=200, 
         ylim=c(30, 250), bandwidth=c(2, 1))
 dev.off()
+pdf(NULL)
 #unlink("Rplots.pdf")
