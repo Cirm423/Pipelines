@@ -305,7 +305,8 @@ def all_input(wildcards):
     # QC with fastQC and multiQC, individual stuff
     wanted_input.extend([
         "results/qc/multiqc/multiqc.html",
-        "results/genrich/plots/plot_narrow_peaks_frip_score.pdf"
+        "results/genrich/plots/plot_narrow_peaks_frip_score.pdf",
+        "results/genrich/plots/plot_narrow_peaks_count.pdf"
     ])
 
     # trimming reads

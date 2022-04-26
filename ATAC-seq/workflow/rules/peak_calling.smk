@@ -43,7 +43,35 @@ rule genrich:
 
  #The bedgraph output above has to be processed into 4 columns (first 3 + a datavalue of choice) for visualization  
 
-#Only Frip score of treatment samples, ignoring controls or inputs (3 next rules).
+#Only Frip score of treatment samples, ignoring controls or inputs.
+
+rule peaks_count:
+    input:
+        peaks="results/genrich/{group}.narrowPeak"
+    output:
+        "results/genrich/peaks_count/{group}.narrow.peaks_count.tsv"
+    log:
+        "logs/genrich/peaks_count/{group}.narrow.peaks_count.log"
+    conda:
+        "../envs/gawk.yaml"
+    shell:
+        "cat {input.peaks} | "
+        " wc -l | "
+        " gawk -v OFS='\t' '{{print \"{wildcards.sample}-{wildcards.control}_{wildcards.peak}_peaks\", $1}}' "
+        " > {output} 2> {log}"
+
+rule sm_report_peaks_count_plot:
+    input:
+        lambda wc: expand("results/genrich/peaks_count/{group}.narrow.peaks_count.tsv", sample = samples.loc[samples['group'].isin(groups)].index)
+    output:
+        report("results/genrich/plots/plot_narrow_peaks_count.pdf", caption="../report/plot_peaks_count_macs2.rst", category="CallPeaks")
+    log:
+        "logs/genrich/plot_narrow_peaks_count.log"
+    conda:
+        "../envs/r_plots.yaml"
+    script:
+        "../scripts/plot_peaks_count_macs2.R"
+
 rule bedtools_intersect:
     input:
         left="results/filtered/{sample}.sorted.bam",
@@ -76,7 +104,7 @@ rule frip_score:
 
 rule sm_rep_frip_score:
     input:
-        expand("results/bedtools_intersect/{sample}.intersected.bed",sample = samples.loc[samples['group'].isin(groups)].index)
+        expand("results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv",sample = samples.loc[samples['group'].isin(groups)].index)
     output:
         report("results/genrich/plots/plot_narrow_peaks_frip_score.pdf", caption="../report/plot_frip_score_genrich_bedtools.rst", category="CallPeaks")
     log:
