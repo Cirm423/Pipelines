@@ -69,7 +69,7 @@ rule BamCoverage_str1:
         "../envs/deeptools.yaml"
     threads: 12
     shell:
-        "bamCoverage -b {input} -o {output} -of bigwig -p {threads} {params.norm} {params.stranded}"
+        "bamCoverage -b {input} -o {output} -of bigwig -p {threads} {params.norm} {params.stranded} 2>{log}"
 
 rule BamCoverage_str2:
     input:
@@ -85,7 +85,7 @@ rule BamCoverage_str2:
         "../envs/deeptools.yaml"
     threads: 12
     shell:
-        "bamCoverage -b {input} -o {output} -of bigwig -p {threads} {params.norm} {params.stranded}"
+        "bamCoverage -b {input} -o {output} -of bigwig -p {threads} {params.norm} {params.stranded} 2>{log}"
 
 
 
