@@ -34,7 +34,7 @@ if (snakemake@params[["BSgenome"]] == "BSgenome.Mmusculus.UCSC.mm10"){
 }
 which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
 gal <- readBamFile(bamfile, tag=tags, which=which, asMates=TRUE, bigFile=TRUE)
-gal1 <- shiftGAlignmentsList(gal) #outbam="shifted.bam" was there
+gal1 <- shiftGAlignmentsList(gal, outbam=file.path(snakemake@params[["path"]],"shifted.bam"))
 pt <- PTscore(gal1, txs)
 pdf(snakemake@output[["PTscore"]]) #"PTscore.pdf"
 plot(pt$log2meanCoverage, pt$PT_score, 
@@ -114,7 +114,7 @@ sigs <- factorFootprints("shifted.bam", pfm=CTCF[[1]],
                         upstream=100, downstream=100)
 dev.off()
 pdf(snakemake@output[["CTCF_Vplot"]]) #CTCF.Vplot.pdf
-vp <- vPlot("shifted.bam", pfm=CTCF[[1]], 
+vp <- vPlot(file.path(snakemake@params[["path"]],"shifted.bam"), pfm=CTCF[[1]], 
         genome=genome, min.score="90%", seqlev=seqlev,
         upstream=200, downstream=200, 
         ylim=c(30, 250), bandwidth=c(2, 1))
