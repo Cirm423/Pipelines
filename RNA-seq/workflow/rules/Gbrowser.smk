@@ -62,7 +62,7 @@ rule BamCoverage_str1:
         path_merged_cond("results/browser/?.str1.bw"),
     params:
         norm = config["params"]["bamcoverage"],
-        stranded = "" if get_strandedness(units)[0] != 0.5 else "--filterRNAstrand forward"
+        stranded = "" if get_strandedness(units)[0] == 0.5 else "--filterRNAstrand forward"
     log: 
         path_merged_cond("logs/browser/?.BamCoverage.log")
     conda:
