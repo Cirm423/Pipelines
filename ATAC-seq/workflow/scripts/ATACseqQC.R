@@ -7,6 +7,7 @@ install(snakemake@params[["Txdb"]])
 library(ATACseqQC)
 bamfile <- snakemake@input[[1]]
 bamfile.labels <- gsub(".bam", "", basename(bamfile))
+pdf(NULL) #This supposedly stops Rplots.pdf from being created
 pdf(snakemake@output[["fragmentSizeDistribution"]]) #fragmentSizeDistribution.pdf
 fragSize <- fragSizeDist(bamfile, bamfile.labels)
 dev.off()
@@ -34,6 +35,7 @@ if (snakemake@params[["BSgenome"]] == "BSgenome.Mmusculus.UCSC.mm10"){
 }
 which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
 gal <- readBamFile(bamfile, tag=tags, which=which, asMates=TRUE, bigFile=TRUE)
+dir.create(snakemake@params[["path"]])
 shiftedBamfile <- file.path(snakemake@params[["path"]], "shifted.bam")
 gal1 <- shiftGAlignmentsList(gal, outbam=shiftedBamfile)
 pt <- PTscore(gal1, txs)
@@ -120,5 +122,4 @@ vp <- vPlot(shiftedBamfile, pfm=CTCF[[1]],
         upstream=200, downstream=200, 
         ylim=c(30, 250), bandwidth=c(2, 1))
 dev.off()
-pdf(NULL)
 #unlink("Rplots.pdf")
