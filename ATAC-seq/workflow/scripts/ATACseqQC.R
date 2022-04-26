@@ -7,9 +7,6 @@ install(snakemake@params[["Txdb"]])
 library(ATACseqQC)
 bamfile <- snakemake@input[[1]]
 bamfile.labels <- gsub(".bam", "", basename(bamfile))
-pdf(snakemake@output[["LibComplexity"]])
-estimateLibComplexity(readsDupFreq(bamfile))
-dev.off()
 pdf(snakemake@output[["fragmentSizeDistribution"]]) #fragmentSizeDistribution.pdf
 fragSize <- fragSizeDist(bamfile, bamfile.labels)
 dev.off()
@@ -30,9 +27,13 @@ library(Rsamtools)
 bamTop100 <- scanBam(BamFile(bamfile, yieldSize = 100),
                      param = ScanBamParam(tag=unlist(possibleTag)))[[1]]$tag
 tags <- names(bamTop100)[lengths(bamTop100)>0]
-seqlev <- paste0("chr", c(1:21, "X", "Y"))
+if (snakemake@params[["BSgenome"]] == "BSgenome.Mmusculus.UCSC.mm10"){
+     seqlev <- paste0("chr", c(1:19, "X", "Y"))
+} else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg38" | snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg19"){
+     seqlev <- paste0("chr", c(1:21, "X", "Y"))
+}
 which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
-gal <- readBamFile(bamfile, tag=tags which=which, asMates=TRUE, bigFile=TRUE)
+gal <- readBamFile(bamfile, tag=tags, which=which, asMates=TRUE, bigFile=TRUE)
 gal1 <- shiftGAlignmentsList(gal) #outbam="shifted.bam" was there
 pt <- PTscore(gal1, txs)
 pdf(snakemake@output[["PTscore"]]) #"PTscore.pdf"
@@ -56,11 +57,11 @@ plot(100*(-9:10-.5), tsse$values, type="b",
 dev.off()
 gc(reset=TRUE)
 genome <- snake_BS
-objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = ".")
+objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = snakemake@params[["path"]])
 rm(gal1)
 gc(reset=TRUE)
 library(ChIPpeakAnno)
-bamfiles <- file.path(".",
+bamfiles <- file.path(snakemake@params[["path"]],
                     c("NucleosomeFree.bam",
                     "mononucleosome.bam",
                     "dinucleosome.bam",
@@ -118,4 +119,4 @@ vp <- vPlot("shifted.bam", pfm=CTCF[[1]],
         upstream=200, downstream=200, 
         ylim=c(30, 250), bandwidth=c(2, 1))
 dev.off()
-unlink("Rplots.pdf")
+#unlink("Rplots.pdf")

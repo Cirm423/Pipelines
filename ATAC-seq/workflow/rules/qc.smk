@@ -42,7 +42,7 @@ rule ATACseqQC:
     input:
         "results/filtered/{sample}.sorted.bam"
     output:
-        LibComplexity = report("results/qc/ATACseqQC/{sample}/LibComplexity.pdf", category = "ATACseqQC_{sample}"),
+        temp(directory("results/qc/ATACseqQC/{sample}/temp")),
         fragmentSizeDistribution = report("results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf", category = "ATACseqQC_{sample}"),
         PTscore = report("results/qc/ATACseqQC/{sample}/PTscore.pdf", category = "ATACseqQC_{sample}"),
         NFRscore = report("results/qc/ATACseqQC/{sample}/NFRscore.pdf", category = "ATACseqQC_{sample}"),
@@ -54,9 +54,11 @@ rule ATACseqQC:
         CTCF_Vplot = report("results/qc/ATACseqQC/{sample}/CTCF_Vplot.pdf", category = "ATACseqQC_{sample}")
     params:
         BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
-        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"]
+        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"],
+        path = "results/qc/ATACseqQC/{sample}/temp"
     log:
         "logs/ATACseqQC/{sample}.log"
+    threads: 8
     conda:
         "../envs/ATACseqQC.yaml"
     script:
