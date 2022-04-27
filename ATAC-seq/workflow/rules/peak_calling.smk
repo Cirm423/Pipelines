@@ -57,20 +57,20 @@ rule peaks_count:
     shell:
         "cat {input.peaks} | "
         " wc -l | "
-        " gawk -v OFS='\t' '{{print \"{wildcards.sample}-{wildcards.control}_{wildcards.peak}_peaks\", $1}}' "
+        " gawk -v OFS='\t' '{{print \"{wildcards.group}_narrow_peaks\", $1}}' "
         " > {output} 2> {log}"
 
 rule sm_report_peaks_count_plot:
     input:
-        lambda wc: expand("results/genrich/peaks_count/{group}.narrow.peaks_count.tsv", sample = samples.loc[samples['group'].isin(groups)].index)
+        lambda wc: expand("results/genrich/peaks_count/{group}.narrow.peaks_count.tsv", group = groups)
     output:
-        report("results/genrich/plots/plot_narrow_peaks_count.pdf", caption="../report/plot_peaks_count_macs2.rst", category="CallPeaks")
+        report("results/genrich/plots/plot_narrow_peaks_count.pdf", caption="../report/plot_peaks_count_genrich.rst", category="CallPeaks")
     log:
         "logs/genrich/plot_narrow_peaks_count.log"
     conda:
         "../envs/r_plots.yaml"
     script:
-        "../scripts/plot_peaks_count_macs2.R"
+        "../scripts/plot_peaks_count_genrich.R"
 
 rule bedtools_intersect:
     input:
@@ -111,7 +111,6 @@ rule sm_rep_frip_score:
         "logs/bedtools/intersect/plot_narrow_peaks_frip_score.log"
     conda:
         "../envs/r_plots.yaml"
-    threads: 24
     script:
         "../scripts/plot_frip_score.R"
 
