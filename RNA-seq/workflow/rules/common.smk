@@ -12,6 +12,8 @@ if config["pca"]["activate"]:
     assert(config["pca"]["activate"] and config["diffexp"]["activate"]), "Pca cannot be activated without activating diffexp"
 assert(not (config["diffexp"]["activate"] and (config["single"]["activate"] or config["TE_single"]["activate"]))), "Single or TE_single cannot be activated at the same time as diffexp"
 
+alternative_types = ["greater","less","two.sided"]
+assert  config["single"]["alternative"] in alternative_types and config["TE_single"]["alternative"] in alternative_types, "The single mode alternative must be either greater, less or two.sided"
 
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
