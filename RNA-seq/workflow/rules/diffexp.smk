@@ -20,7 +20,7 @@ rule pca:
     input:
         "results/deseq2/all.rds",
     output:
-        report("results/pca.svg", "../report/pca.rst"),
+        report("results/pca.svg", caption = "../report/pca.rst", category = "PCA"),
     params:
         pca_labels=config["pca"]["labels"],
     conda:
@@ -36,9 +36,9 @@ rule deseq2:
         "results/deseq2/all.rds",
     output:
         table=report(
-            "results/diffexp/{contrast}.diffexp.tsv", "../report/diffexp.rst"
+            "results/diffexp/{contrast}.diffexp.tsv", caption = "../report/diffexp.rst", category = "Differential expression"
         ),
-        ma_plot=report("results/diffexp/{contrast}.ma-plot.svg", "../report/ma.rst"),
+        ma_plot=report("results/diffexp/{contrast}.ma-plot.svg", caption = "../report/ma.rst", category = "Differential expression"),
     params:
         contrast=get_contrast,
     conda:
@@ -74,7 +74,7 @@ rule pca_TE:
     input:
         "results/deseq2/TE_all.rds",
     output:
-        report("results/TE_pca.svg", "../report/TE_pca.rst"),
+        report("results/TE_pca.svg", caption = "../report/pca_TE.rst", category = "PCA"),
     params:
         pca_labels=config["pca"]["labels"],
     conda:
@@ -89,9 +89,9 @@ rule deseq2_TE:
         "results/deseq2/TE_all.rds",
     output:
         table=report(
-            "results/diffexp/{contrast}.diffexp.TE.tsv", "../report/TE/diffexp.TE.rst"
+            "results/diffexp/{contrast}.diffexp.TE.tsv", caption = "../report/diffexp_TE.rst", category = "Differential expression"
         ),
-        ma_plot=report("results/diffexp/{contrast}.ma-plot.TE.svg", "../report/ma.TE.rst"),
+        ma_plot=report("results/diffexp/{contrast}.ma-plot.TE.svg", caption = "../report/ma_TE.rst", category = "Differential expression"),
     params:
         contrast=get_contrast,
     conda:
