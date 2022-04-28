@@ -40,7 +40,8 @@ rule multiqc:
 
 rule ATACseqQC:
     input:
-        "results/filtered/{sample}.sorted.bam"
+        "results/filtered/{sample}.sorted.bam",
+        "results/filtered/{sample}.sorted.bam.bai"
     output:
         temp(directory("results/qc/ATACseqQC/{sample}/temp")),
         fragmentSizeDistribution = report("results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf", category = "ATACseqQC_{sample}"),
