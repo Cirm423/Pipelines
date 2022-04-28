@@ -117,6 +117,8 @@ properties:
       - cutadapt-pe
       - cutadapt-se
       - star
+      - rsem
+      - bamcoverage
 
 required:
   - samples
