@@ -6,3 +6,6 @@ dependencies:
   - bioconductor-atacseqqc
   - bioconductor-chippeakanno
   - bioconductor-motifdb
+  - bioconductor-genomicalignments
+  - bioconductor-genomicscores
+  - bioconductor-genomicranges

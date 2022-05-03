@@ -30,8 +30,21 @@ bamTop100 <- scanBam(BamFile(bamfile, yieldSize = 100),
 tags <- names(bamTop100)[lengths(bamTop100)>0]
 if (snakemake@params[["BSgenome"]] == "BSgenome.Mmusculus.UCSC.mm10"){
      seqlev <- paste0("chr", c(1:19, "X", "Y"))
-} else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg38" | snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg19"){
+     library(GenomicScores)
+     #This is to avoid an error over number of downloads in Rscript
+     library(AnnotationHub)
+     setAnnotationHubOption("MAX_DOWNLOADS", 100)
+     gsco <- getGScores("phastCons60way.UCSC.mm10")
+} else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg38"){
      seqlev <- paste0("chr", c(1:21, "X", "Y"))
+     install("phastCons100way.UCSC.hg38")
+     library(phastCons100way.UCSC.hg38)
+     gsco <- phastCons100way.UCSC.hg38
+} else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg19"){
+     seqlev <- paste0("chr", c(1:21, "X", "Y"))
+     install("phastCons100way.UCSC.hg19")
+     library(phastCons100way.UCSC.hg19)
+     gsco <- phastCons100way.UCSC.hg19
 }
 which <- as(seqinfo(snake_BS)[seqlev], "GRanges")
 gal <- readBamFile(bamfile, tag=tags, which=which, asMates=TRUE, bigFile=TRUE)
@@ -60,7 +73,7 @@ plot(100*(-9:10-.5), tsse$values, type="b",
 dev.off()
 gc(reset=TRUE)
 genome <- snake_BS
-objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = snakemake@params[["path"]])
+objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, conservation=gsco, outPath = snakemake@params[["path"]])
 rm(gal1)
 gc(reset=TRUE)
 library(ChIPpeakAnno)
