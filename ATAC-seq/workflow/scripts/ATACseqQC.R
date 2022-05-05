@@ -129,6 +129,12 @@ sigs <- factorFootprints(shiftedBamfile, pfm=CTCF[[1]],
                         min.score="90%", seqlev=seqlev,
                         upstream=100, downstream=100)
 dev.off()
+pdf(snakemake@output[["CTCF_footprint"]]) #CTCF.footprint.pdf
+sigs <- factorFootprints(shiftedBamfile, pfm=CTCF[[1]], 
+                        genome=genome,
+                        min.score="90%", seqlev=seqlev,
+                        upstream=100, downstream=100)
+dev.off()
 pdf(snakemake@output[["CTCF_Vplot"]]) #CTCF.Vplot.pdf
 vp <- vPlot(shiftedBamfile, pfm=CTCF[[1]], 
         genome=genome, min.score="90%", seqlev=seqlev,
