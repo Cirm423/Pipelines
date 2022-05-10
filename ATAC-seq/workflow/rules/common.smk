@@ -5,8 +5,8 @@ from smart_open import open
 import yaml
 
 #FOR TESTING ONLY
-with open("config/config.yaml",'r') as f:
-     config = yaml.safe_load(f)
+# with open("config/config.yaml",'r') as f:
+#      config = yaml.safe_load(f)
 
 ##### load config and sample sheets #####
 
