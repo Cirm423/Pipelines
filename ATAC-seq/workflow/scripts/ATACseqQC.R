@@ -123,6 +123,11 @@ dev.off()
 library(MotifDb)
 CTCF <- query(MotifDb, c("CTCF"))
 CTCF <- as.list(CTCF)
+#For some reason pdf plot fails if the method isn't run before opening the pdf, so its run twice, one without and one with pdf
+sigs <- factorFootprints(shiftedBamfile, pfm=CTCF[[1]], 
+                        genome=genome,
+                        min.score="90%", seqlev=seqlev,
+                        upstream=100, downstream=100)
 pdf(snakemake@output[["CTCF_footprint"]]) #CTCF.footprint.pdf
 sigs <- factorFootprints(shiftedBamfile, pfm=CTCF[[1]], 
                         genome=genome,
