@@ -8,7 +8,7 @@
     - [ATACseqQC](#atacseqqc)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
-  - [Plot explanations](#plot-explanations)
+- [Too long, don't want to read](#too-long-dont-want-to-read)
 
 # Starting
 
@@ -34,7 +34,8 @@ The config folder includes the following files:
 - pe_bamtools_filtering_rules.json
 - se_bamtools_filtering_rules.json
 
-Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
+Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Particularly, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
+
 
 # Configuring Snakemake
 
@@ -57,9 +58,11 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep2 |
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch and control samples. Note that **samples without control and with the group "control" or "input" will be considered as controls in the pipeline.** Due to peak calling being made by groups with all the replicates at the same time, this pipeline has 2 special groups, input and control, which won't be considered for peak calling (as treatments). Therefore, you should always use either of these 2 groups as your controls groups. The rest of the fields should be specified for every sample, including controls. All the controls marked for every sample in the same group will be used as contrast for peak calling. In the case above, all J1_Va_Reps will be used for peak calling for both treatment groups.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control and with the group "control" or "input" will be considered as controls in the pipeline.** Due to peak calling being made by groups with all the replicates at the same time, this pipeline has 2 special groups, input and control, which won't be considered for peak calling (as treatments). Therefore, you should always use either of these 2 groups as your controls groups. The rest of the fields should be specified for every sample, including controls. All the controls marked for every sample in the same group will be used as contrast for peak calling. In the case above, all J1_Va_Reps will be used for peak calling for both treatment groups.
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
+
+By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
@@ -83,9 +86,9 @@ or a relative path from where snakemake is run, which is the directory where the
 
 > samples/sample_1/sample_1_R1.fastq.gz
 
-This last approach is the preferred one.
+This latter approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will try to run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting should be set accordingly even for fq only runs as some steps make use of it. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
 The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.
 
@@ -138,14 +141,18 @@ Snakemake will store all the output files in a directory called results. The out
 
     results/bwa/sample1/bwa_output_files
 
-In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. 
+In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. The file `report.html` will also be found in the root directory of the pipeline, in which you can find the rest of the QC and stats that are not included in multiqc.
 
 The peaks and related info will be in a folder called genrich (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.
 
-In the deseq2 results folder you can find `dds_rld` folder which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
-
 Additionally logs for each step will be stored in the logs folder. 
 
-## Plot explanations
+# Too long, don't want to read
 
-Most figures and scores have explanations within their files on how to interpret them, here are some graphs for additional help.
+The basic steps to run the pipe are:
+
+- Make a copy of the pipeline.
+- Put your samples and groups in samples.tsv.
+- Put your units and file paths/sra codes in units.tsv
+- Change config.yaml to single or paired end, set assembly and any specific step option you need.
+- Use `sbatch` to send run_snk.sh to the cluster.
