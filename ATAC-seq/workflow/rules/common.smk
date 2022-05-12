@@ -25,10 +25,10 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
 groups = samples["group"].unique()
-#List of groups to remove
-no_group = ['control','input']
-#We remove control and input group from the groups that will be used to call peaks.
-groups = [x for x in groups if x not in no_group]
+# #List of groups to remove || No use anymore since the way controls are handled changed
+# no_group = ['control','input']
+# #We remove control and input group from the groups that will be used to call peaks.
+# groups = [x for x in groups if x not in no_group]
 ##### wildcard constraints #####
 
 wildcard_constraints:
@@ -224,16 +224,35 @@ def exists_replicates(group):
 
 #Changed this to allow controls to be in a different group as the samples, i.e. in the case of an input
 def get_controls_of_group(group):
-    sample_g = samples[samples['group'] == group]['group']
+    sample_g = samples[samples['group'] == group]
     #controls = samples[pd.isnull(samples["control"])]
     #return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
-    treated = samples[pd.notnull(samples["control"])]
-    return list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
+    if pd.isnull(sample_g["control"]).all():
+        return ""
+    else:
+        treated = samples[pd.notnull(samples["control"])]
+        return expand(["results/genrich/{control}.sorted.bam"],
+            control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
+            )
 
 def get_samples_of_group(group):
-    sample_g = samples[samples['group'] == group]['group']
-    treated = samples[pd.notnull(samples["control"])]
-    return treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+    #Accounting for groups with no control and groups with controls
+    sample_g = samples[samples['group'] == group]
+    if pd.isnull(sample_g["control"]).all():
+        return expand(["results/genrich/{sample}.sorted.bam"],
+            sample = sample_g["sample"].index
+        )
+    else:
+        treated = samples[pd.notnull(samples["control"])]
+        return expand(["results/genrich/{sample}.sorted.bam"],
+            sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+        )
+
+def get_genrich_input(group):
+    gr_input = []
+    gr_input.extend(get_samples_of_group(group))
+    gr_input.extend(get_controls_of_group(group))
+    return gr_input
 
 def get_map_reads_input(wildcards):
     if is_sra_pe(wildcards.sample, wildcards.unit):
@@ -347,6 +366,13 @@ def all_input(wildcards):
                 )
             )
     for sample in samples.index:
+        wanted_input.extend(expand(
+            [   
+                "results/bedtools_intersect/{sample}.intersected.bed",
+                "results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv"
+            ],
+            sample = sample
+        ))
         if ATACseqQC_act:
             wanted_input.extend(expand(
                 [
@@ -372,15 +398,6 @@ def all_input(wildcards):
                 group = group
             )
         )
-    #Only for treatment samples, not controls
-    for sample in samples.loc[samples['group'].isin(groups)].index:
-        wanted_input.extend(expand(
-            [   
-                "results/bedtools_intersect/{sample}.intersected.bed",
-                "results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv"
-            ],
-            sample = sample
-        ))
-    
+        
     #Need to add more files as things are made, at least until peak calling for now
     return wanted_input

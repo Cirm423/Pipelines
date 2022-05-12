@@ -13,21 +13,19 @@ rule genrich_sort:
     wrapper:
         "v1.3.1/bio/samtools/sort"
 
+
 #Genrich manages shifting, Removal of mitochondrial reads, Removal of PCR duplicates, Analysis of multimapping reads. The blacklisted regions are removed previously.
 rule genrich:
     input:
-        samples = lambda wc: expand(["results/genrich/{sample}.sorted.bam"],
-            sample = get_samples_of_group(wc.group)),
-        controls = lambda wc: expand(["results/genrich/{control}.sorted.bam"],
-            control = get_controls_of_group(wc.group)),
+        lambda wc: get_genrich_input(wc.group)
     output:
         peak = "results/genrich/{group}.narrowPeak",
         bed = "results/genrich/{group}.bed",
     log:
         "logs/genrich/{group}.log"
     params:
-        samples = lambda wc, input: ",".join(input.samples),
-        controls = lambda wc, input: ",".join(input.controls),
+        samples = lambda wc: ",".join(get_samples_of_group(wc.group)),
+        controls = lambda wc: "" if len(get_controls_of_group(wc.group)) == 0 else "-c " + ",".join(get_controls_of_group(wc.group)),
         #f Output bedgraph for visualizacion, r remove pcr duplicates, -e for excluding chromosomes, j is ATAC mode
         base = lambda wc, input, output: f"-f {output.bed} -r -j -v",
         #Tells genrich to consider unpaired alignments if single end
@@ -39,7 +37,7 @@ rule genrich:
         "../envs/genrich.yaml"
     threads: 12
     shell:
-        "Genrich {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} -t {params.samples} -c {params.controls} -o {output.peak} 2>{log}"
+        "Genrich {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} -t {params.samples} {params.controls} -o {output.peak} 2>{log}"
 
  #The bedgraph output above has to be processed into 4 columns (first 3 + a datavalue of choice) for visualization  
 

@@ -48,9 +48,9 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control |
 > ------------|---------|--------------|---------|
-> | J1_Va_Rep1  | control | batch1 |  |
-> | J1_Va_Rep2	| control | batch1 |  |
-> | J1_Va_Rep3	| control | batch1 |  |
+> | J1_Va_Rep1  | J1 | batch1 |  |
+> | J1_Va_Rep2	| J1 | batch1 |  |
+> | J1_Va_Rep3	| J1 | batch1 |  |
 > | DnmtDKO_Va_Rep1	| DnmtDKO | batch2 | J1_Va_Rep1 |
 > | DnmtDKO_Va_Rep2	| DnmtDKO | batch2 | J1_Va_Rep2 |
 > | DnmtDKO_Va_Rep3	| DnmtDKO | batch2 | J1_Va_Rep3 |
@@ -58,7 +58,7 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep2 |
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control and with the group "control" or "input" will be considered as controls in the pipeline.** Due to peak calling being made by groups with all the replicates at the same time, this pipeline has 2 special groups, input and control, which won't be considered for peak calling (as treatments). Therefore, you should always use either of these 2 groups as your controls groups. The rest of the fields should be specified for every sample, including controls. All the controls marked for every sample in the same group will be used as contrast for peak calling. In the case above, all J1_Va_Reps will be used for peak calling for both treatment groups.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups *DnmtDKO* and *DnmtTKO* will be done with controls from the *J1* group, while the peak calling for the *J1* group will be done without controls
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 

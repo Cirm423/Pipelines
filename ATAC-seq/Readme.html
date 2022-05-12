@@ -101,19 +101,19 @@ biocrfhpc2:<br>
 <tbody>
 <tr>
 <td>J1_Va_Rep1</td>
-<td>control</td>
+<td>J1</td>
 <td>batch1</td>
 <td></td>
 </tr>
 <tr>
 <td>J1_Va_Rep2</td>
-<td>control</td>
+<td>J1</td>
 <td>batch1</td>
 <td></td>
 </tr>
 <tr>
 <td>J1_Va_Rep3</td>
-<td>control</td>
+<td>J1</td>
 <td>batch1</td>
 <td></td>
 </tr>
@@ -156,7 +156,7 @@ biocrfhpc2:<br>
 </tbody>
 </table>
 </blockquote>
-<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control and with the group &quot;control&quot; or &quot;input&quot; will be considered as controls in the pipeline.</strong> Due to peak calling being made by groups with all the replicates at the same time, this pipeline has 2 special groups, input and control, which won't be considered for peak calling (as treatments). Therefore, you should always use either of these 2 groups as your controls groups. The rest of the fields should be specified for every sample, including controls. All the controls marked for every sample in the same group will be used as contrast for peak calling. In the case above, all J1_Va_Reps will be used for peak calling for both treatment groups.</p>
+<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.</strong> In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups <em>DnmtDKO</em> and <em>DnmtTKO</em> will be done with controls from the <em>J1</em> group, while the peak calling for the <em>J1</em> group will be done without controls</p>
 <p><strong>It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
 <p>By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.</p>
 <p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
