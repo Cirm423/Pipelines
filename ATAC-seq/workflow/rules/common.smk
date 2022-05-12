@@ -228,7 +228,7 @@ def get_controls_of_group(group):
     #controls = samples[pd.isnull(samples["control"])]
     #return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
     treated = samples[pd.notnull(samples["control"])]
-    return pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"])
+    return list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
 
 def get_samples_of_group(group):
     sample_g = samples[samples['group'] == group]['group']
