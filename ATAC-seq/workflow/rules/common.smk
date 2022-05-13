@@ -248,10 +248,10 @@ def get_samples_of_group(group):
             sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
         )
 
-def get_genrich_input(group):
+def get_genrich_input(wildcards):
     gr_input = []
-    gr_input.extend(get_samples_of_group(group))
-    gr_input.extend(get_controls_of_group(group))
+    gr_input.extend(get_samples_of_group(wildcards.group))
+    gr_input.extend(get_controls_of_group(wildcards.group))
     return gr_input
 
 def get_map_reads_input(wildcards):

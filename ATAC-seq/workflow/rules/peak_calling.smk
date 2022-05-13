@@ -17,7 +17,7 @@ rule genrich_sort:
 #Genrich manages shifting, Removal of mitochondrial reads, Removal of PCR duplicates, Analysis of multimapping reads. The blacklisted regions are removed previously.
 rule genrich:
     input:
-        lambda wc: get_genrich_input(wc.group)
+        get_genrich_input
     output:
         peak = "results/genrich/{group}.narrowPeak",
         bed = "results/genrich/{group}.bed",
