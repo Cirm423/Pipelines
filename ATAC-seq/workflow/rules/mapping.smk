@@ -27,6 +27,6 @@ rule merge_bams:
     log:
         "logs/picard/mergebamfiles/{sample}.log"
     params:
-        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=queryname",
+        "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
     wrapper:
         "v0.87.0/bio/picard/mergesamfiles"
