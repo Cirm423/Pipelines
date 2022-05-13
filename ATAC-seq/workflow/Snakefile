@@ -19,6 +19,7 @@ include: "rules/mapping.smk"
 include: "rules/stats.smk"
 include: "rules/filtering.smk"
 include: "rules/peak_calling.smk"
+include: "rules/post-analysis.smk"
 
 rule all:
     input: all_input

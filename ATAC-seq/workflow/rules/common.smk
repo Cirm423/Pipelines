@@ -290,9 +290,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/filtered/stats/{sample}.mapped.flagstat",
-                    "results/filtered/stats/{sample}.mapped.idxstats",
-                    "results/filtered/stats/{sample}.mapped.stats.txt"
+                    "results/mapped/{sample}-{unit}.mapped.flagstat",
+                    "results/mapped/{sample}-{unit}.mapped.idxstats",
+                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -311,7 +311,57 @@ def get_multiqc_input(wildcards):
                     reads = reads                  
                 )
             )
-    #Only Fastqc and cutadapt for now, add qc output as qc is added
+    for sample in samples.index:
+        multiqc_input.extend(
+            expand (
+                [
+                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.flagstat",
+                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.idxstats",
+                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.stats.txt",
+                ],
+                sample = sample
+            )
+        )
+
+        if not config["single_end"]:
+            multiqc_input.extend(
+                expand (
+                    [
+                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.idxstats",
+                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.flagstat",
+                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.stats.txt"
+                    ],
+                    sample = sample
+                )
+            )
+
+        if config["params"]["lc_extrap"]["activate"]:
+                multiqc_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
+        if config["params"]["picard_metrics"]["activate"]:
+            if not config["single_end"]:
+                multiqc_input.extend(
+                    expand(
+                        [
+                            "results/qc/multiple_metrics/{sample}.insert_size_metrics",
+                            "results/qc/multiple_metrics/{sample}.insert_size_histogram.pdf",
+                        ],
+                    sample = sample
+                )
+            )
+            multiqc_input.extend(
+                expand (
+                    [                        
+                        "results/qc/multiple_metrics/{sample}.alignment_summary_metrics",
+                        "results/qc/multiple_metrics/{sample}.base_distribution_by_cycle_metrics",
+                        "results/qc/multiple_metrics/{sample}.base_distribution_by_cycle.pdf",
+                        "results/qc/multiple_metrics/{sample}.quality_by_cycle_metrics",
+                        "results/qc/multiple_metrics/{sample}.quality_by_cycle.pdf",
+                        "results/qc/multiple_metrics/{sample}.quality_distribution_metrics",
+                        "results/qc/multiple_metrics/{sample}.quality_distribution.pdf"
+                    ], 
+                sample = sample
+            )
+        )
     return multiqc_input
 
 def all_input(wildcards):

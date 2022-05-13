@@ -1,22 +1,22 @@
 rule samtools_index:
     input:
-        "results/filtered/{sample}.sorted.bam"
+        "results/{step}/{samples_units}.bam"
     output:
-        "results/filtered/{sample}.sorted.bam.bai"
+        "results/{step}/{samples_units}.bam.bai"
     params:
         extra="" # optional params string
     log:
-        "logs/samtools-index/mapped/{sample}.log"
+        "logs/samtools-index/{step}/{samples_units}.log"
     wrapper:
         "v1.3.1/bio/samtools/index"
         
 rule samtools_flagstat:
     input:
-        "results/filtered/{sample}.sorted.bam"
+        "results/{step}/{samples_units}.bam"
     output:
-        "results/filtered/stats/{sample}.mapped.flagstat"
+        "results/{step,[^./]+}/{samples_units}.{step}.flagstat"
     log:
-        "logs/samtools-flagstat/mapped/{sample}.mapped.log"
+        "logs/samtools-flagstat/{step}/{samples_units}.{step}.log"
     params:
         extra=""
     wrapper:
@@ -24,12 +24,12 @@ rule samtools_flagstat:
 
 rule samtools_idxstats:
     input:
-        bam = "results/filtered/{sample}.sorted.bam",
-        idx = "results/filtered/{sample}.sorted.bam.bai"
+        bam = "results/{step}/{samples_units}.bam",
+        idx = "results/{step}/{samples_units}.bam.bai"
     output:
-        "results/filtered/stats/{sample}.mapped.idxstats"
+        "results/{step,[^./]+}/{samples_units}.{step}.idxstats"
     log:
-        "logs/samtools-idxstats/mapped/{sample}.mapped.log"
+        "logs/samtools-idxstats/{step}/{samples_units}.{step}.log"
     params:
         extra=""
     wrapper:
@@ -37,12 +37,12 @@ rule samtools_idxstats:
 
 rule samtools_stats:
     input:
-        "results/filtered/{sample}.sorted.bam"
+        "results/{step}/{samples_units}.bam"
     output:
-        "results/filtered/stats/{sample}.mapped.stats.txt"
+        "results/{step,[^./]+}/{samples_units}.{step}.stats.txt"
     params:
         extra=""
     log:
-        "logs/samtools-stats/mapped/{sample}.mapped.log"
+        "logs/samtools-stats/{step}/{samples_units}.{step}.log"
     wrapper:
         "v1.3.1/bio/samtools/stats"
