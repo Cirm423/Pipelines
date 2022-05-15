@@ -4,7 +4,7 @@ rule preseq_lc_extrap:
     output:
         "results/preseq/{sample}.lc_extrap"
     params:
-        lambda wildcards, resources: f"-v {'' if config['single_end'] else '-pe -seg_len 100000'} -seed 1 {'-D' if resources.attempt > 1 else ''}" 
+        lambda wildcards, resources: f"-v {'' if config['single_end'] else '-pe -seg_len 1000000000'} -seed 1 {'-D' if resources.attempt > 1 else ''}" 
     log:
         "logs/preseq/{sample}.log"
     resources:
