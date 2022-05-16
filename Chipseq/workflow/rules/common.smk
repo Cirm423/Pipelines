@@ -409,7 +409,7 @@ def all_input(wildcards):
                                 expand(
                                     [
                                         "results/homer/plots/plot_{peak}_annotatepeaks_summary.txt",
-                                        "results/homer/plots/plot_{peak}_annotatepeaks.pdf"
+                                        "results/homer/plots/plot_{peak}_annotatepeaks_summary.pdf"
                                     ],
                                     peak = config["params"]["peak-analysis"]
                                 )
@@ -468,14 +468,21 @@ def all_input(wildcards):
                         "results/macs2_callpeak/{sample}-{control}.{peak}_control_lambda.bdg",
                         "results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",
                         "results/IGV/macs2_callpeak-{peak}/merged_library.{sample}-{control}.{peak}_peaks.igv.txt",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_count.pdf",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_frip_score.pdf",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_macs2.pdf"
+                        "results/macs2_callpeak/plots/plot_{peak}_peaks_count.pdf"
                     ],
                     sample = sample,
                     control = samples.loc[sample]["control"],
                     peak = config["params"]["peak-analysis"],
                     antibody = samples.loc[sample]["antibody"]
+                )
+            )
+            if do_peak_qc:
+                wanted_input.extend(expand(
+                    [
+                        "results/macs2_callpeak/plots/plot_{peak}_peaks_frip_score.pdf",
+                        "results/macs2_callpeak/plots/plot_{peak}_peaks_macs2.pdf"
+                    ],
+                    peak = peak = config["params"]["peak-analysis"]
                 )
             )
             if config["params"]["peak-analysis"] == "broad":
