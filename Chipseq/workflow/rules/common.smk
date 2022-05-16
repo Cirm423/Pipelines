@@ -482,7 +482,7 @@ def all_input(wildcards):
                         "results/macs2_callpeak/plots/plot_{peak}_peaks_frip_score.pdf",
                         "results/macs2_callpeak/plots/plot_{peak}_peaks_macs2.pdf"
                     ],
-                    peak = peak = config["params"]["peak-analysis"]
+                    peak = config["params"]["peak-analysis"]
                 )
             )
             if config["params"]["peak-analysis"] == "broad":
