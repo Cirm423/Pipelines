@@ -113,3 +113,73 @@ rule sm_rep_frip_score:
     script:
         "../scripts/plot_frip_score.R"
 
+rule create_igv_peaks:
+    input:
+        "results/genrich/{group}.narrowPeak"
+    output:
+        "results/IGV/genrich_peaks/merged_library.{group}.narrow_peaks.igv.txt"
+    log:
+        "logs/igv/genrich_peaks/merged_library.{group}.narrow_peaks.log"
+    shell:
+        " find {input} -type f -name '*.narrowPeak' -exec echo -e 'results/IGV/genrich_peaks/narrow/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
+
+rule homer_annotatepeaks:
+    input:
+        peaks="results/genrich/{group}.narrowPeak",
+        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
+    output:
+        annotations="results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt"
+    threads:
+        2
+    params:
+        mode="",
+        extra="-gid"
+    log:
+        "logs/homer/annotate_peaks/{group}.narrow.log"
+    wrapper:
+        "v1.3.1/bio/homer/annotatePeaks"
+
+rule plot_macs_qc:
+    input:
+        lambda wc: expand("results/genrich/{group}.narrowPeak", group = groups)
+    output:  #ToDo: add description to report caption
+        summmary="results/genrich/plots/plot_narrow_peaks_genrich_summary.txt",
+        plot=report("results/genrich/plots/plot_narrow_peaks_genrich.pdf", caption="../report/plot_genrich_qc.rst", category="CallPeaks")
+    params:
+        input = lambda wc, input: ','.join(input),
+        groups = ','.join(groups)
+    log:
+        "logs/genrich/plot_narrow_peaks_genrich.log"
+    conda:
+        "../envs/plot_macs_annot.yaml"
+    shell:
+        "Rscript workflow/scripts/plot_macs_qc.R -i {params.input} -s {params.groups}  -o {output.plot} -p {output.summmary} 2> {log}"
+
+rule plot_homer_annotatepeaks:
+    input:
+        lambda wc: expand("results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt", group = groups)
+    output:  #ToDo: add description to report caption
+        summmary="results/homer/plots/plot_narrow_annotatepeaks_summary.txt",
+        plot=report("results/homer/plots/plot_narrow_annotatepeaks.pdf", caption="../report/plot_annotatepeaks_homer.rst", category="CallPeaks")
+    params:
+        input = lambda wc, input: ','.join(input),
+        groups = ','.join(groups)
+    log:
+        "logs/homer/plot_narrow_annotatepeaks.log"
+    conda:
+        "../envs/plot_macs_annot.yaml"
+    shell:
+        "Rscript workflow/scripts/plot_homer_annotatepeaks.R -i {params.input} -s {params.groups}  -o {output.plot} -p {output.summmary} 2> {log}"
+
+rule plot_sum_annotatepeaks:
+    input:
+        "results/homer/plots/plot_narrow_annotatepeaks_summary.txt"
+    output:
+        report("results/homer/plots/plot_narrow_annotatepeaks_summary.pdf", caption="../report/plot_annotatepeaks_summary_homer.rst", category="CallPeaks")
+    log:
+        "logs/homer/plot_narrow_annotatepeaks_summary.log"
+    conda:
+        "../envs/r_plots.yaml"
+    script:
+        "../scripts/plot_annotatepeaks_summary_homer.R"

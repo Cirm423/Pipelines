@@ -379,6 +379,23 @@ def all_input(wildcards):
         "results/IGV/big_wig/merged_library.bigWig.igv.txt"
     ])
 
+    if do_peak_qc:
+        wanted_input.extend(
+            [
+                "results/genrich/plots/plot_narrow_peaks_genrich.pdf"
+            ]
+        )
+
+    with checkpoints.get_gsize.get().output[0].open() as f:
+        # only produce the following files, if a gsize is specified
+        if f.read().strip() != "":
+            if do_annot:
+                if do_peak_qc:
+                    wanted_input.extend([
+                        "results/homer/plots/plot_narrow_annotatepeaks_summary.txt",
+                        "results/homer/plots/plot_narrow_annotatepeaks_summary.pdf"
+                    ])
+
     # trimming reads
     if config["params"]["trimming"]["activate"]:
         for (sample, unit) in units.index:
@@ -444,7 +461,16 @@ def all_input(wildcards):
                 [
                     "results/genrich/{group}.narrowPeak",
                     "results/genrich/{group}.bed",
+                    "results/IGV/genrich_peaks/merged_library.{group}.narrow_peaks.igv.txt"
 
+                ],
+                group = group
+            )
+        )
+        if do_annot:
+            wanted_input.extend(expand(
+                [
+                    "results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt"
                 ],
                 group = group
             )
