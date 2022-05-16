@@ -55,3 +55,70 @@ rule collect_multiple_metrics:
         "../envs/picard.yaml"
     script:
         "../scripts/picard_metrics.py"
+
+rule genomecov:
+    input:
+        "results/filtered/{sample}.sorted.bam",
+        flag_stats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat",
+            step= "bamtools_filtered" if config["single_end"]
+            else "orph_rm_pe"),
+        stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
+            step= "bamtools_filtered" if config["single_end"]
+            else "orph_rm_pe"),
+    output:
+        "results/bed_graph/{sample}.bedgraph"
+    log:
+        "logs/bed_graph/{sample}.log"
+    params:
+        lambda w, input:
+            "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 1000000/$1}}') {pe_fragment} {extend}".format(
+            flagstats_file=input.flag_stats,
+            pe_fragment="" if config["single_end"] else "-pc",
+            # Estimated fragment size used to extend single-end reads
+            extend=
+                "-fs $(grep ^SN {stats} | "
+                "cut -f 2- | "
+                "grep -m1 'average length:' | "
+                "awk '{{print $NF}}')".format(
+                stats=input.stats)
+            if config["single_end"] else ""
+        )
+    wrapper:
+        "v1.3.1/bio/bedtools/genomecov"
+
+rule sort_genomecov:
+    input:
+        "results/bed_graph/{sample}.bedgraph"
+    output:
+        "results/bed_graph/{sample}.sorted.bedgraph"
+    log:
+        "logs/sort_genomecov/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedSort {input} {output} 2> {log}"
+
+rule bedGraphToBigWig:
+    input:
+        bedGraph="results/bed_graph/{sample}.sorted.bedgraph",
+        chromsizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+    output:
+        "results/big_wig/{sample}.bigWig"
+    log:
+        "logs/big_wig/{sample}.log"
+    params:
+        ""
+    wrapper:
+        "v1.3.1/bio/ucsc/bedGraphToBigWig"
+
+rule create_igv_bigwig:
+    input:
+        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+        expand("results/big_wig/{sample}.bigWig", sample=samples.index)
+    output:
+        "results/IGV/big_wig/merged_library.bigWig.igv.txt"
+    log:
+        "logs/igv/create_igv_bigwig.log"
+    shell:
+        "find {input} -type f -name '*.bigWig' -exec echo -e 'results/IGV/big_wig/\"{{}}\"\t0,0,178' \;  > {output} 2> {log}"

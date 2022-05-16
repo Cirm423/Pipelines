@@ -375,7 +375,8 @@ def all_input(wildcards):
     wanted_input.extend([
         "results/qc/multiqc/multiqc.html",
         "results/genrich/plots/plot_narrow_peaks_frip_score.pdf",
-        "results/genrich/plots/plot_narrow_peaks_count.pdf"
+        "results/genrich/plots/plot_narrow_peaks_count.pdf",
+        "results/IGV/big_wig/merged_library.bigWig.igv.txt"
     ])
 
     # trimming reads
