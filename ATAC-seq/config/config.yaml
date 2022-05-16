@@ -30,10 +30,6 @@ params:
     q-value: 1
     #Comma-separated list of chromosomes to exclude, Mithochondrial is recommended for ATAC
     chromosome: chrM
-  deeptools-plots:
-    # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
-    # May crash due to high memory usage, not recommended unless you do a more exhaustive filtering.
-    activate: False
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True
