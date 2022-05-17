@@ -2,8 +2,6 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 library(BiocManager)
-install(snakemake@params[["BSgenome"]])
-install(snakemake@params[["Txdb"]])
 library(ATACseqQC)
 bamfile <- snakemake@input[[1]]
 bamfile.labels <- gsub(".bam", "", basename(bamfile))
@@ -37,12 +35,10 @@ if (snakemake@params[["BSgenome"]] == "BSgenome.Mmusculus.UCSC.mm10"){
      gsco <- getGScores("phastCons60way.UCSC.mm10")
 } else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg38"){
      seqlev <- paste0("chr", c(1:21, "X", "Y"))
-     install("phastCons100way.UCSC.hg38")
      library(phastCons100way.UCSC.hg38)
      gsco <- phastCons100way.UCSC.hg38
 } else if (snakemake@params[["BSgenome"]] == "BSgenome.Hsapiens.UCSC.hg19"){
      seqlev <- paste0("chr", c(1:21, "X", "Y"))
-     install("phastCons100way.UCSC.hg19")
      library(phastCons100way.UCSC.hg19)
      gsco <- phastCons100way.UCSC.hg19
 }

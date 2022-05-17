@@ -38,10 +38,24 @@ rule multiqc:
     script:
         "../scripts/multiqc.py"
 
+rule ATACseqQC_init:
+    output:
+        touch("results/qc/ATACseqQC/download.done")
+    params:
+        BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
+        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"],
+    log:
+        "logs/ATACseqQC/init.log"
+    conda:
+        "../envs/ATACseqQC.yaml"
+    script:
+        "../scripts/ATACseqQC_init.R"     
+
 rule ATACseqQC:
     input:
         "results/filtered/{sample}.sorted.bam",
-        "results/filtered/{sample}.sorted.bam.bai"
+        "results/filtered/{sample}.sorted.bam.bai",
+        "results/qc/ATACseqQC/download.done"
     output:
         temp(directory("results/qc/ATACseqQC/{sample}/temp")),
         fragmentSizeDistribution = report("results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf", category = "ATACseqQC_{sample}"),
