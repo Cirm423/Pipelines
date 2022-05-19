@@ -69,7 +69,15 @@ plot(100*(-9:10-.5), tsse$values, type="b",
 dev.off()
 gc(reset=TRUE)
 genome <- snake_BS
-objs <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, conservation=gsco, outPath = snakemake@params[["path"]])
+#Seems there is a bug with this function and the conservation, if it gives error run without conservation.
+objs <- tryCatch({
+          splitGAlignmentsByCut(gal1, txs=txs, genome=genome, conservation=gsco, outPath = snakemake@params[["path"]])
+     },
+     error = function(cond) {
+          no_cons <- splitGAlignmentsByCut(gal1, txs=txs, genome=genome, outPath = snakemake@params[["path"]])
+          return(no_cons)
+     }
+)
 rm(gal1)
 gc(reset=TRUE)
 library(ChIPpeakAnno)
