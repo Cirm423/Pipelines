@@ -22,8 +22,6 @@ resources:
 params:
   trimming:
     activate: True
-  # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
-  min-reps-consensus: 1
   # Maximum p-value and q-value (FDR adjusted p-value) for genrich peak calling, if q is specified p is ignored. The values used here are genrich defaults
   callpeak:
     p-value: 0.01
