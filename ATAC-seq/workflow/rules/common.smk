@@ -97,6 +97,10 @@ QC_packages = {
         "BSgenome" : "BSgenome.Mmusculus.UCSC.mm10",
         "Txdb" : "TxDb.Mmusculus.UCSC.mm10.knownGene"        
     }
+    "rn6" : {
+        "BSgenome" : "BSgenome.Rnorvegicus.UCSC.rn6",
+        "Txdb" : "TxDb.Rnorvegicus.UCSC.rn6.refGene"        
+    }
 }
 
 ATACseqQC_act = False
