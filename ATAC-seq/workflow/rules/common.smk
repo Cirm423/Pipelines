@@ -399,6 +399,51 @@ def all_input(wildcards):
                         "results/homer/plots/plot_narrow_annotatepeaks_summary.txt",
                         "results/homer/plots/plot_narrow_annotatepeaks_summary.pdf"
                     ])
+            if do_consensus_peak:
+                if all([exists_replicates(g) for g in samples["group"].unique()]):
+                    wanted_input.extend(
+                        expand(
+                            [
+                                "results/macs2_merged_expand/consensus_narrow-peaks.boolean.saf",
+                                "results/macs2_merged_expand/plots/consensus_narrow-peaks.boolean.intersect.plot.pdf",
+                                "results/IGV/consensus/merged_library.consensus_narrow-peaks.igv.txt"
+                            ],
+                            peak = config["params"]["peak-analysis"],
+                            antibody = antibody
+                        )
+                    )
+                    if do_annot:
+                        wanted_input.extend(
+                            expand(
+                                [
+                                    "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.annotatePeaks.txt",
+                                    "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.boolean.annotatePeaks.txt",
+                                    "results/feature_counts/consensus_narrow-peaks.featureCounts",
+                                    "results/feature_counts/consensus_narrow-peaks.featureCounts.summary",
+                                    "results/feature_counts/consensus_narrow-peaks.featureCounts.jcounts",
+                                    "results/deseq2/dss_rld/consensus_narrow-peaks.dds.rld.RData",
+                                    "results/deseq2/plots/consensus_narrow-peaks.pca_plot.pdf",
+                                    "results/deseq2/plots/consensus_narrow-peaks.heatmap_plot.pdf",
+                                    "results/deseq2/pca_vals/consensus_narrow-peaks.pca.vals.txt",
+                                    "results/deseq2/dists/consensus_narrow-peaks.sample.dists.txt",
+                                    "results/deseq2/sizeFactors/consensus_narrow-peaks.sizeFactors.RData",
+                                    "results/deseq2/sizeFactors/consensus_narrow-peaks.sizeFactors.sizeFactor.txt",
+                                    "results/deseq2/results/consensus_narrow-peaks.deseq2_results.txt",
+                                    "results/deseq2/FDR/consensus_narrow-peaks.deseq2.FDR_0.01.results.txt",
+                                    "results/deseq2/FDR/consensus_narrow-peaks.deseq2.FDR_0.05.results.txt",
+                                    "results/deseq2/FDR/consensus_narrow-peaks.deseq2.FDR_0.01.results.bed",
+                                    "results/deseq2/FDR/consensus_narrow-peaks.deseq2.FDR_0.05.results.bed",
+                                    "results/deseq2/plots/FDR/consensus_narrow-peaks_FDR_0.01_MA_plot.pdf",
+                                    "results/deseq2/plots/FDR/consensus_narrow-peaks_FDR_0.05_MA_plot.pdf",
+                                    "results/deseq2/plots/FDR/consensus_narrow-peaks_FDR_0.01_volcano_plot.pdf",
+                                    "results/deseq2/plots/FDR/consensus_narrow-peaks_FDR_0.05_volcano_plot.pdf",
+                                    "results/deseq2/plots/consensus_narrow-peaks_sample_corr_heatmap.pdf",
+                                    "results/deseq2/plots/consensus_narrow-peaks_scatter_plots.pdf"
+                                ],
+                                peak = config["params"]["peak-analysis"],
+                                antibody = antibody
+                            )
+                        )
 
     # trimming reads
     if config["params"]["trimming"]["activate"]:

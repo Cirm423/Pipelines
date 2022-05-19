@@ -20,6 +20,7 @@ include: "rules/stats.smk"
 include: "rules/filtering.smk"
 include: "rules/peak_calling.smk"
 include: "rules/post-analysis.smk"
+include: "rules/diff_analysis.smk"
 
 rule all:
     input: all_input
