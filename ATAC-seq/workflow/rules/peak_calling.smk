@@ -60,7 +60,7 @@ rule peaks_count:
 
 rule sm_report_peaks_count_plot:
     input:
-        lambda wc: expand("results/genrich/peaks_count/{group}.narrow.peaks_count.tsv", group = groups)
+        expand("results/genrich/peaks_count/{group}.narrow.peaks_count.tsv", group = groups)
     output:
         report("results/genrich/plots/plot_narrow_peaks_count.pdf", caption="../report/plot_peaks_count_genrich.rst", category="CallPeaks")
     log:
@@ -142,7 +142,7 @@ rule homer_annotatepeaks:
 
 rule plot_macs_qc:
     input:
-        lambda wc: expand("results/genrich/{group}.narrowPeak", group = groups)
+        expand("results/genrich/{group}.narrowPeak", group = groups)
     output:  #ToDo: add description to report caption
         summmary="results/genrich/plots/plot_narrow_peaks_genrich_summary.txt",
         plot=report("results/genrich/plots/plot_narrow_peaks_genrich.pdf", caption="../report/plot_genrich_qc.rst", category="CallPeaks")
@@ -158,7 +158,7 @@ rule plot_macs_qc:
 
 rule plot_homer_annotatepeaks:
     input:
-        lambda wc: expand("results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt", group = groups)
+        expand("results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt", group = groups)
     output:  #ToDo: add description to report caption
         summmary="results/homer/plots/plot_narrow_annotatepeaks_summary.txt",
         plot=report("results/homer/plots/plot_narrow_annotatepeaks.pdf", caption="../report/plot_annotatepeaks_homer.rst", category="CallPeaks")
