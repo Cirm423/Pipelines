@@ -122,7 +122,7 @@ rule feature_counts:
     input:
         sam=expand("results/filtered/{sample}.sorted.bam",
             sample = samples.index),
-        annotation="results/macs2_merged_expand/consensus_narrow-peaks.boolean.saf"
+        annotation="results/genrich_merged_expand/consensus_narrow-peaks.boolean.saf"
     output:
         multiext("results/feature_counts/consensus_narrow-peaks",
                  ".featureCounts",
