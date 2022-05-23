@@ -1,6 +1,16 @@
+rule modify_peak_name:
+    input:
+        "results/genrich/{group}.narrowPeak"
+    output:
+        "results/genrich/{group}.modified.narrowPeak"
+    log:
+        "logs/genrich/{group}_modify_peak_name.log"
+    shell:
+        "sed 's/peak_/{wildcards.group}.narrow_peak_/g' {input} > {output} 2>{log}"
+
 rule bedtools_merge_narrow:
     input:
-        expand("results/genrich/{group}.narrowPeak", group = groups)
+        expand("results/genrich/{group}.modified.narrowPeak", group = groups)
     output:
         "results/bedtools/merged/consensus_narrow-peaks.txt"
     params:
