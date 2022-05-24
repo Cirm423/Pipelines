@@ -54,39 +54,58 @@ else:
         script:
             "../scripts/genomepy.py"
 
-
-    rule move_annotation_ucsc:
-        input:
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.sizes",
-            fai=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.fai",
-            fa=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa",
-        output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
-        params:
-            folder=f"{config['resources']['path']}{config['resources']['ref']['assembly']}"
-        cache: True
-        log:
-            f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
-        shell:
-            "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
-
-rule bwa_index:
-    input:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+rule get_spike_in_genome:
     output:
-        idx=multiext((f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        multiext(f"{config['resources']['path']}{config['resources']['ref']['spike_assembly']}/{config['resources']['ref']['spike_assembly']}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
     log:
-        f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
+        f"logs/get-genome_{config['resources']['ref']['spike_assembly']}.log",
     params:
-        algorithm="bwtsw",
-    resources:
-        mem_mb=369000,
+        provider="NCBI",
+        assembly=f"{config['resources']['ref']['spike_assembly']}",
     cache: True
-    wrapper:
-        "v1.3.1/bio/bwa/index"
+    conda:
+        "../envs/genomepy.yaml"
+    script:
+        "../scripts/genomepy.py"
 
+rule move_annotation:
+    input:
+        gtf=f"{config['resources']['path']}{{assembly}}/{{assembly}}.annotation.gtf",
+        bed=f"{config['resources']['path']}{{assembly}}/{{assembly}}.annotation.bed",
+        sizes=f"{config['resources']['path']}{{assembly}}/{{assembly}}.fa.sizes",
+        fai=f"{config['resources']['path']}{{assembly}}/{{assembly}}.fa.fai",
+        fa=f"{config['resources']['path']}{{assembly}}/{{assembly}}.fa",
+    output:
+        multiext(f"{config['resources']['path']}{{assembly}}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+    params:
+        folder=f"{config['resources']['path']}{{assembly}}"
+    cache: True
+    log:
+        "logs/unzip_annotation_{assembly}.log"
+    shell:
+        "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
+
+
+rule bowtie2_build:
+    input:
+        f"{config['resources']['path']}{{assembly}}.fa",
+    output:
+        multiext(
+            f"{config['resources']['path']}{{assembly}}.fa",
+            ".1.bt2",
+            ".2.bt2",
+            ".3.bt2",
+            ".4.bt2",
+            ".rev.1.bt2",
+            ".rev.2.bt2",
+        ),
+    log:
+        "logs/bowtie2_build/build_{assembly}.log",
+    params:
+        extra="",  # optional parameters
+    threads: 8
+    wrapper:
+        "v1.5.0/bio/bowtie2/build"
 
 if genecode_assembly:
 
