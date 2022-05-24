@@ -15,6 +15,8 @@ resources:
     n_chromosomes: 48
     # Genecode or UCSC assembly name
     assembly: GRCh38
+    # Genome used for spike in (From NCBI). Recommended one is the default (E. coli K-12 MG1655)
+    spike_assembly: ASM584v2
     # for testing data, select only one chromosome otherwise leave empty
     chromosome:
     # specify release version number of igenomes list to use (see https://github.com/nf-core/chipseq/releases), default: 1.2.2
@@ -26,7 +28,7 @@ resources:
 
 params:
   trimming:
-    activate: True
+    activate: False
   # choose "narrow" or "broad" for macs2 callpeak analysis, for documentation and source code please see https://github.com/macs3-project/MACS
   peak-analysis: "broad"
   # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
