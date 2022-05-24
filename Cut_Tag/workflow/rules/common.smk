@@ -182,6 +182,50 @@ def get_map_reads_input(wildcards):
         return "results/trimmed/{sample}-{unit}.fastq.gz"
     return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
 
+def get_unit_R1_of_sample(wildcards):
+    unit_list = []
+    for unit in units.loc[wildcards.sample, "unit"]:
+        if config["params"]["trimming"]["activate"]:
+            if is_sra_pe(wildcards.sample,unit):
+                unit_list.append(f"results/trimmed/{wildcards.sample}-{unit}_1.fastq.gz")
+            elif is_single_end(wildcards.sample, unit):
+                unit_list.append(f"results/trimmed/{wildcards.sample}-{unit}.fastq.gz")
+            else:
+                unit_list.append(f"results/trimmed/{wildcards.sample}-{unit}_1.fastq.gz")
+        else:
+            if is_sra_se(wildcards.sample, unit):
+                unit_list.append(f"resources/sra-se-reads/{units.loc[ (wildcards.sample, unit), 'sra_accession' ]}.fastq.gz")
+            elif is_sra_pe(wildcards.sample, unit):
+                unit_list.append(f"resources/sra-pe-reads/{units.loc[ (wildcards.sample, unit), 'sra_accession' ]}_1.fastq.gz")
+            elif is_single_end(wildcards.sample, unit):
+                unit_list.append(units.loc[ (wildcards.sample, unit), "fq1" ])
+            else:
+                u = units.loc[ (wildcards.sample, unit), ["fq1", "fq2"] ].dropna()
+                unit_list.append(f"{u.fq1}")
+    return unit_list
+
+def get_unit_R2_of_sample(wildcards):
+    unit_list = []
+    for unit in units.loc[wildcards.sample, "unit"]:
+        if config["params"]["trimming"]["activate"]:
+            if is_sra_pe(wildcards.sample,unit):
+                unit_list.append(f"results/trimmed/{wildcards.sample}-{unit}_2.fastq.gz")
+            elif is_single_end(wildcards.sample, unit):
+                unit_list.append("")
+            else:
+                unit_list.append(f"results/trimmed/{wildcards.sample}-{unit}_2.fastq.gz")
+        else:
+            if is_sra_se(wildcards.sample, unit):
+                unit_list.append("")
+            elif is_sra_pe(wildcards.sample, unit):
+                unit_list.append(f"resources/sra-pe-reads/{units.loc[ (wildcards.sample, unit), 'sra_accession' ]}_2.fastq.gz")
+            elif is_single_end(wildcards.sample, unit):
+                unit_list.append("")
+            else:
+                u = units.loc[ (wildcards.sample, unit), ["fq1", "fq2"] ].dropna()
+                unit_list.append(f"{u.fq2}")
+    return unit_list
+
 def get_read_group(wildcards):
     """Denote sample name and platform in read group."""
     return r"-R '@RG\tID:{sample}-{unit}\tSM:{sample}-{unit}\tPL:{platform}'".format(
