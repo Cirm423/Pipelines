@@ -90,3 +90,52 @@ rule merge_se_pe:
         "../envs/coreutils.yaml"
     shell:
         "ln -sr {input} {output}"
+
+rule bamtobed:
+    input:
+        "results/filtered/{sample}.sorted.bam",
+    output:
+        temp("results/filtered/{sample}.bed"),
+    log:
+        "logs/bamtobed/{sample}.log",
+    conda:
+        "../envs/bedtools.yaml"
+    shell:
+        "bedtools bamtobed -bedpe -i {input} > {output} 2> {log}"
+
+rule clean_bed:
+    input:
+        "results/filtered/{sample}.bed",
+    output:
+        temp("results/filtered/{sample}_clean.bed"),
+    log:
+        "logs/bamtobed/{sample}.clean.log"
+    shell:
+        "awk '$1==$4 && $6-$2 < 1000 {print $0}' {input} > {output} 2>{log}"
+
+rule fragment_bed:
+    input:
+        "results/filtered/{sample}_clean.bed",
+    output:
+        temp("results/filtered/{sample}_fragments.bed"),
+    log:
+        "logs/bamtobed/{sample}.fragment.log"
+    shell:
+        "cut -f 1,2,6 {input} | sort -k1,1 -k2,2n -k3,3n > {output}"
+
+rule genomecov_bed:
+    input:
+        bed="results/filtered/{sample}_fragments.bed",
+        ref=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes",
+        flag_stats="results/mapped/{sample}_spike-in.bam.flagstat",
+    output:
+        "results/bed_graph/{sample}_normalized.bedgraph"
+    log:
+        "logs/bed_graph/{sample}.log"
+    params:
+        lambda w, input:
+            "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 10000/$1}}')".format(
+            flagstats_file=input.flag_stats,
+        )
+    wrapper:
+        "v1.3.1/bio/bedtools/genomecov"

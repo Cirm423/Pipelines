@@ -69,14 +69,28 @@ rule bowtie2_spike:
     log:
         "logs/bowtie2/{sample}_spike-in.log",
     params:
-        extra="",  # optional parameters
+        extra="--end-to-end --very-sensitive --no-overlap --no-dovetail --no-mixed --no-discordant --phred33 -I 10 -X 700",  # optional parameters
     threads: 8  # Use at least two threads
     wrapper:
         "v1.5.0/bio/bowtie2/align"
 
+rule samtools_sort_mapped:
+    input:
+        "results/mapped/{sample}.bam"
+    output:
+        "results/mapped/{sample}.sorted.bam"
+    params:
+        extra=""
+    log:
+        "logs/bamtools_filtered/{sample}.sorted.log"
+    threads:
+        8
+    wrapper:
+        "v1.3.1/bio/samtools/sort"
+
 rule mark_merged_duplicates:
     input:
-        "results/merged/{sample}.bam"
+        "results/merged/{sample}.sorted.bam"
     output:
         bam=temp("results/picard_dedup/{sample}.bam"),
         metrics="results/picard_dedup/{sample}.metrics.txt"

@@ -34,3 +34,15 @@ rule samtools_stats:
         "logs/samtools-stats/{step}/{samples_units}.{step}.log"
     wrapper:
         "v1.3.1/bio/samtools/stats"
+
+rule samtools_flagstat_spike:
+    input:
+        "results/mapped/{sample}_spike-in.bam"
+    output:
+        "results/mapped/{sample}_spike-in.bam.flagstat"
+    log:
+        "logs/samtools-flagstat/mapped/{sample}_spike-in.log"
+    params:
+        extra=""
+    wrapper:
+        "v1.3.1/bio/samtools/flagstat"
