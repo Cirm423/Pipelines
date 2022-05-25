@@ -26,6 +26,10 @@ validate(units, schema="../schemas/units.schema.yaml")
 build = config["resources"]["ref"]["assembly"]
 chromosome = config["resources"]["ref"]["chromosome"]
 
+#Check that the control samples are actually in the sample table
+
+assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
+
 ##### wildcard constraints #####
 
 wildcard_constraints:

@@ -25,6 +25,11 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
 groups = samples["group"].unique()
+
+#The pipe should always be run in paired end mode
+
+config["single_end"] = False
+
 # #List of groups to remove || No use anymore since the way controls are handled changed
 # no_group = ['control','input']
 # #We remove control and input group from the groups that will be used to call peaks.
