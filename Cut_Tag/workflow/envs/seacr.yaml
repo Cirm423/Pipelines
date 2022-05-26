@@ -2,7 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - numpy
-  - pandas
-  - matplotlib
-  - upsetplot
+  - seacr =1.3

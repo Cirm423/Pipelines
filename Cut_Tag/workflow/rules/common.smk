@@ -122,12 +122,12 @@ def get_sample_control_peak_combinations_list():
     sam_contr = []
     for sample in samples.index:
         if not is_control(sample):
-            sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
+            sam_contr.extend(expand(["{sample}-{control}"], sample = sample, control = samples.loc[sample]["control"]))
     return sam_contr
 
 def get_peaks_count_plot_input():
     return expand(
-        "results/macs2_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
+        "results/sacr_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
         sam_contr_peak = get_sample_control_peak_combinations_list()
     )
 
@@ -139,21 +139,27 @@ def get_frip_score_input():
 
 def get_macs2_peaks():
     return expand(
-        "results/macs2_callpeak/{sam_contr_peak}_peaks.{peak}Peak",
-        sam_contr_peak = get_sample_control_peak_combinations_list(), peak =config["params"]["peak-analysis"]
+        "results/seacr_callpeak/{sam_contr_peak}.bed.peaks",
+        sam_contr_peak = get_sample_control_peak_combinations_list()
     )
 
 def get_sample_control_peak_combinations_list_ab(antibody):
     sam_contr = []
     for sample in samples.index:
         if not is_control(sample) and samples.loc[sample]["antibody"]==antibody:
-            sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
+            sam_contr.extend(expand(["{sample}-{control}"], sample = sample, control = samples.loc[sample]["control"]))
     return sam_contr
 
 def get_macs2_peaks_ab(wildcards):
     return expand(
-        "results/macs2_callpeak/{sam_contr_peak}_peaks.{peak}Peak",
-        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody), peak =config["params"]["peak-analysis"]
+        "results/seacr_callpeak/{sam_contr_peak}.bed.peaks",
+        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
+    )
+
+def get_macs2_peaks_ab_sorted(wildcards):
+    return expand(
+        "results/seacr_callpeak/{sam_contr_peak}.sorted.bed.peaks",
+        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
     )
 
 def get_plot_homer_annotatepeaks_input():
