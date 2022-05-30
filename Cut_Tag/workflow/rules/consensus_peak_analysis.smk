@@ -46,7 +46,7 @@ rule filter_consensus_peaks:
     output:
         "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
     params:
-        f"' \$10 >= {config["params"]["min-reps-consensus"]} {{print \$0}}'"
+        f"' \$10 >= {config['params']['min-reps-consensus']} {{print \$0}}'"
     log:
         "results/seacr_merged/{antibody}.consensus_peaks.filter.log"
     shell:

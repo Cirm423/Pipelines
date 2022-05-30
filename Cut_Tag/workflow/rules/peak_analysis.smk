@@ -126,9 +126,9 @@ rule create_igv_peaks:
     output:
         "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt"
     log:
-        "logs/igv/create_igv_peaks/merged_library.{sample}-{control}.{peak}_peaks.log"
+        "logs/igv/create_igv_peaks/merged_library.{sample}-{control}.peaks.log"
     shell:
-        " find {input} -type f -name '*_peaks.{wildcards.peak}Peak' -exec echo -e 'results/IGV/macs2_callpeak/{wildcards.peak}/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
+        " find {input} -type f -name '*.bed.peaks' -exec echo -e 'results/IGV/seacr_callpeak/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
 
 rule homer_annotatepeaks:
     input:
