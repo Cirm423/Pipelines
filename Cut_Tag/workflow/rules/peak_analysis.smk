@@ -46,17 +46,17 @@ rule seacr_callpeak:
     params:
         "non stringent"
     log:
-        "logs/sacr/{sample}-{control}.log"
+        "logs/seacr/{sample}-{control}.log"
     shell:
-        "sacr {input.sample} {input.control} {params} {output} 2>{log}"
+        "seacr {input.sample} {input.control} {params} {output} 2>{log}"
 
 rule peaks_count:
     input:
         peaks="results/seacr_callpeak/{sample}-{control}.bed.peaks"
     output:
-        "results/sacr_callpeak/peaks_count/{sample}-{control}.peaks_count.tsv"
+        "results/seacr_callpeak/peaks_count/{sample}-{control}.peaks_count.tsv"
     log:
-        "logs/sacr_callpeak/peaks_count/{sample}-{control}.peaks_count.log"
+        "logs/seacr_callpeak/peaks_count/{sample}-{control}.peaks_count.log"
     conda:
         "../envs/gawk.yaml"
     shell:
@@ -69,9 +69,9 @@ rule sm_report_peaks_count_plot:
     input:
         get_peaks_count_plot_input()
     output:
-        report("results/macs2_callpeak/plots/plot_peaks_count.pdf", caption="../report/plot_peaks_count_macs2.rst", category="CallPeaks")
+        report("results/seacr_callpeak/plots/plot_peaks_count.pdf", caption="../report/plot_peaks_count_macs2.rst", category="CallPeaks")
     log:
-        "logs/sacr_callpeak/plot_peaks_count.log"
+        "logs/seacr_callpeak/plot_peaks_count.log"
     conda:
         "../envs/r_plots.yaml"
     script:
@@ -112,7 +112,7 @@ rule sm_rep_frip_score:
     input:
         get_frip_score_input()
     output:
-        report("results/sacr_callpeak/plots/plot_peaks_frip_score.pdf", caption="../report/plot_frip_score_macs2_bedtools.rst", category="CallPeaks")
+        report("results/seacr_callpeak/plots/plot_peaks_frip_score.pdf", caption="../report/plot_frip_score_macs2_bedtools.rst", category="CallPeaks")
     log:
         "logs/bedtools/intersect/plot_peaks_frip_score.log"
     conda:
@@ -124,7 +124,7 @@ rule create_igv_peaks:
     input:
         "results/seacr_callpeak/{sample}-{control}.bed.peaks"
     output:
-        "results/IGV/sacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt"
+        "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt"
     log:
         "logs/igv/create_igv_peaks/merged_library.{sample}-{control}.{peak}_peaks.log"
     shell:
@@ -151,13 +151,13 @@ rule plot_macs_qc:
     input:
         get_macs2_peaks()
     output:  #ToDo: add description to report caption
-        summmary="results/macs2_callpeak/plots/plot_{peak}_peaks_macs2_summary.txt",
-        plot=report("results/macs2_callpeak/plots/plot_{peak}_peaks_macs2.pdf", caption="../report/plot_macs2_qc.rst", category="CallPeaks")
+        summmary="results/seacr_callpeak/plots/plot_peaks_seacr_summary.txt",
+        plot=report("results/seacr_callpeak/plots/plot_peaks_seacr.pdf", caption="../report/plot_macs2_qc.rst", category="CallPeaks")
     params:
         input = lambda wc, input: ','.join(input),
         sample_control_combinations = ','.join(get_sample_control_peak_combinations_list())
     log:
-        "logs/macs2_callpeak/plot_{peak}_peaks_macs2.log"
+        "logs/seacr_callpeak/plot_peaks_seacr.log"
     conda:
         "../envs/plot_macs_annot.yaml"
     shell:

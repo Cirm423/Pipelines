@@ -127,7 +127,7 @@ def get_sample_control_peak_combinations_list():
 
 def get_peaks_count_plot_input():
     return expand(
-        "results/sacr_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
+        "results/seacr_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
         sam_contr_peak = get_sample_control_peak_combinations_list()
     )
 
@@ -336,12 +336,10 @@ def get_multiqc_input(wildcards):
                 expand (
                     [
                         "results/deeptools/{sample}-{control}.fingerprint_qcmetrics.txt",
-                        "results/deeptools/{sample}-{control}.fingerprint_counts.txt",
-                        "results/macs2_callpeak/{sample}-{control}.{peak}_peaks.xls"
+                        "results/deeptools/{sample}-{control}.fingerprint_counts.txt"
                     ],
                 sample = sample,
-                control = samples.loc[sample]["control"],
-                peak = config["params"]["peak-analysis"]
+                control = samples.loc[sample]["control"]
             )
         )
         if config["params"]["lc_extrap"]["activate"]:
@@ -455,34 +453,29 @@ def all_input(wildcards):
                         wanted_input.extend(
                             expand(
                                 [
-                                    "results/homer/annotate_peaks/{sample}-{control}.{peak}_peaks.annotatePeaks.txt"
+                                    "results/homer/annotate_peaks/{sample}-{control}.peaks.annotatePeaks.txt"
                                 ],
                                 sample = sample,
-                                control = samples.loc[sample]["control"],
-                                peak = config["params"]["peak-analysis"]
+                                control = samples.loc[sample]["control"]
                             )
                         )
                         if do_peak_qc:
                             wanted_input.extend(
-                                expand(
                                     [
-                                        "results/homer/plots/plot_{peak}_annotatepeaks_summary.txt",
-                                        "results/homer/plots/plot_{peak}_annotatepeaks_summary.pdf"
+                                        "results/homer/plots/plot_annotatepeaks_summary.txt",
+                                        "results/homer/plots/plot_annotatepeaks_summary.pdf"
                                     ],
-                                    peak = config["params"]["peak-analysis"]
                                 )
-                            )
                     if do_consensus_peak:
                         for antibody in samples["antibody"]:
                             if exists_multiple_groups(antibody) or exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [
-                                            "results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.saf",
-                                            "results/macs2_merged_expand/plots/{antibody}.consensus_{peak}-peaks.boolean.intersect.plot.pdf",
-                                            "results/IGV/consensus/merged_library.{antibody}.consensus_{peak}-peaks.igv.txt"
+                                            "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.saf",
+                                            "results/macs2_merged_expand/plots/{antibody}.consensus_peaks.boolean.intersect.plot.pdf",
+                                            "results/IGV/consensus/merged_library.{antibody}.consensus_peaks.igv.txt"
                                         ],
-                                        peak = config["params"]["peak-analysis"],
                                         antibody = antibody
                                     )
                                 )
@@ -490,31 +483,30 @@ def all_input(wildcards):
                                     wanted_input.extend(
                                         expand(
                                             [
-                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt",
-                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.boolean.annotatePeaks.txt",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.summary",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.jcounts",
-                                                "results/deseq2/dss_rld/{antibody}.consensus_{peak}-peaks.dds.rld.RData",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.pca_plot.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.heatmap_plot.pdf",
-                                                "results/deseq2/pca_vals/{antibody}.consensus_{peak}-peaks.pca.vals.txt",
-                                                "results/deseq2/dists/{antibody}.consensus_{peak}-peaks.sample.dists.txt",
-                                                "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.RData",
-                                                "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.sizeFactor.txt",
-                                                "results/deseq2/results/{antibody}.consensus_{peak}-peaks.deseq2_results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.bed",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.bed",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_MA_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_MA_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_volcano_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_volcano_plot.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_sample_corr_heatmap.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_scatter_plots.pdf"
+                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.annotatePeaks.txt",
+                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.boolean.annotatePeaks.txt",
+                                                "results/feature_counts/{antibody}.consensus_peaks.featureCounts",
+                                                "results/feature_counts/{antibody}.consensus_peaks.featureCounts.summary",
+                                                "results/feature_counts/{antibody}.consensus_peaks.featureCounts.jcounts",
+                                                "results/deseq2/dss_rld/{antibody}.consensus_peaks.dds.rld.RData",
+                                                "results/deseq2/plots/{antibody}.consensus_peaks.pca_plot.pdf",
+                                                "results/deseq2/plots/{antibody}.consensus_peaks.heatmap_plot.pdf",
+                                                "results/deseq2/pca_vals/{antibody}.consensus_peaks.pca.vals.txt",
+                                                "results/deseq2/dists/{antibody}.consensus_peaks.sample.dists.txt",
+                                                "results/deseq2/sizeFactors/{antibody}.consensus_peaks.sizeFactors.RData",
+                                                "results/deseq2/sizeFactors/{antibody}.consensus_peaks.sizeFactors.sizeFactor.txt",
+                                                "results/deseq2/results/{antibody}.consensus_peaks.deseq2_results.txt",
+                                                "results/deseq2/FDR/{antibody}.consensus_peaks.deseq2.FDR_0.01.results.txt",
+                                                "results/deseq2/FDR/{antibody}.consensus_peaks.deseq2.FDR_0.05.results.txt",
+                                                "results/deseq2/FDR/{antibody}.consensus_peaks.deseq2.FDR_0.01.results.bed",
+                                                "results/deseq2/FDR/{antibody}.consensus_peaks.deseq2.FDR_0.05.results.bed",
+                                                "results/deseq2/plots/FDR/{antibody}.consensus_peaks_FDR_0.01_MA_plot.pdf",
+                                                "results/deseq2/plots/FDR/{antibody}.consensus_peaks_FDR_0.05_MA_plot.pdf",
+                                                "results/deseq2/plots/FDR/{antibody}.consensus_peaks_FDR_0.01_volcano_plot.pdf",
+                                                "results/deseq2/plots/FDR/{antibody}.consensus_peaks_FDR_0.05_volcano_plot.pdf",
+                                                "results/deseq2/plots/{antibody}.consensus_peaks_sample_corr_heatmap.pdf",
+                                                "results/deseq2/plots/{antibody}.consensus_peaks_scatter_plots.pdf"
                                             ],
-                                            peak = config["params"]["peak-analysis"],
                                             antibody = antibody
                                         )
                                     )
@@ -522,48 +514,20 @@ def all_input(wildcards):
                 expand(
                     [
                         "results/deeptools/{sample}-{control}.plot_fingerprint.pdf",
-                        "results/macs2_callpeak/{sample}-{control}.{peak}_treat_pileup.bdg",
-                        "results/macs2_callpeak/{sample}-{control}.{peak}_control_lambda.bdg",
-                        "results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",
-                        "results/IGV/macs2_callpeak-{peak}/merged_library.{sample}-{control}.{peak}_peaks.igv.txt",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_count.pdf"
+                        "results/seacr_callpeak/{sample}-{control}.bed.peaks",
+                        "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt",
+                        "results/seacr_callpeak/plots/plot_peaks_count.pdf"
                     ],
                     sample = sample,
-                    control = samples.loc[sample]["control"],
-                    peak = config["params"]["peak-analysis"],
-                    antibody = samples.loc[sample]["antibody"]
+                    control = samples.loc[sample]["control"]
                 )
             )
             if do_peak_qc:
-                wanted_input.extend(expand(
+                wanted_input.extend(
                     [
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_frip_score.pdf",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_macs2.pdf"
-                    ],
-                    peak = config["params"]["peak-analysis"]
-                )
-            )
-            if config["params"]["peak-analysis"] == "broad":
-                wanted_input.extend(
-                    expand(
-                        [
-                            "results/macs2_callpeak/{sample}-{control}.{peak}_peaks.gappedPeak"
-                        ],
-                        sample = sample,
-                        control = samples.loc[sample]["control"],
-                        peak = config["params"]["peak-analysis"]
-                    )
-                )
-            if config["params"]["peak-analysis"] == "narrow":
-                wanted_input.extend(
-                    expand(
-                        [
-                            "results/macs2_callpeak/{sample}-{control}.{peak}_summits.bed"
-                        ],
-                        sample = sample,
-                        control = samples.loc[sample]["control"],
-                        peak = config["params"]["peak-analysis"]
-                    )
+                        "results/seacr_callpeak/plots/plot_peaks_frip_score.pdf",
+                        "results/seacr_callpeak/plots/plot_peaks_seacr.pdf"
+                    ]
                 )
     return wanted_input
 

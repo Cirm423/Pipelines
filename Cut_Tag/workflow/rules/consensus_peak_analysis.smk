@@ -48,7 +48,7 @@ rule filter_consensus_peaks:
     params:
         f"' \$10 >= {config["params"]["min-reps-consensus"]} {{print \$0}}'"
     log:
-        "results/sacr_merged/{antibody}.consensus_peaks.filter.log"
+        "results/seacr_merged/{antibody}.consensus_peaks.filter.log"
     shell:
         "awk {params} {input} > {output} 2>{log}"
 
