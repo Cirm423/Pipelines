@@ -88,10 +88,10 @@ rule move_annotation:
 
 rule bowtie2_build:
     input:
-        f"{config['resources']['path']}{{assembly}}.fa",
+        ref=f"{config['resources']['path']}{{assembly}}.fa",
     output:
         multiext(
-            f"{config['resources']['path']}{{assembly}}.fa",
+            f"{config['resources']['path']}{{assembly}}",
             ".1.bt2",
             ".2.bt2",
             ".3.bt2",
@@ -104,6 +104,7 @@ rule bowtie2_build:
     params:
         extra="",  # optional parameters
     threads: 8
+    cache: True
     wrapper:
         "v1.5.0/bio/bowtie2/build"
 
