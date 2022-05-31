@@ -2,7 +2,7 @@ rule merge_units_R1:
     input:
         get_unit_R1_of_sample
     output:
-        "results/merged_units/{sample}_R1.fastq.gz"
+        temp("results/merged_units/{sample}_R1.fastq.gz")
     params:
         files = lambda wc, input: " ".join(input)
     log:
@@ -18,7 +18,7 @@ rule merge_units_R2:
     input:
         get_unit_R2_of_sample
     output:
-        "results/merged_units/{sample}_R2.fastq.gz"
+        temp("results/merged_units/{sample}_R2.fastq.gz")
     params:
         files = lambda wc, input: " ".join(input)
     log:
@@ -69,10 +69,12 @@ rule bowtie2_spike:
     log:
         "logs/bowtie2/{sample}_spike-in.log",
     params:
-        extra="--end-to-end --very-sensitive --no-overlap --no-dovetail --no-mixed --no-discordant --phred33 -I 10 -X 700",  # optional parameters
+        extra="--no-overlap --no-dovetail --end-to-end --very-sensitive --no-mixed --no-discordant --phred33 -I 10 -X 700",  # optional parameters
     threads: 8  # Use at least two threads
-    wrapper:
-        "v1.5.0/bio/bowtie2/align"
+    conda:
+        "../envs/bowtie2.yaml"
+    script:
+        "../scripts/bowtie2.py"
 
 rule samtools_sort_mapped:
     input:
@@ -90,10 +92,10 @@ rule samtools_sort_mapped:
 
 rule mark_merged_duplicates:
     input:
-        "results/merged/{sample}.sorted.bam"
+        "results/mapped/{sample}.sorted.bam"
     output:
-        bam=temp("results/picard_dedup/{sample}.bam"),
-        metrics="results/picard_dedup/{sample}.metrics.txt"
+        bam=temp("results/picard_dedup/{sample}.sorted.bam"),
+        metrics="results/picard_dedup/{sample}.sorted.metrics.txt"
     log:
         "logs/picard/picard_dedup/{sample}.log"
     params:

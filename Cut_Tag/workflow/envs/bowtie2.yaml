@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - bowtie2 =2.4
+  - samtools =1.14
+  - snakemake-wrapper-utils

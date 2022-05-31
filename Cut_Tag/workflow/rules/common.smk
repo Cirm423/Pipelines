@@ -25,7 +25,7 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
 chromosome = config["resources"]["ref"]["chromosome"]
-
+antibodies = samples["antibody"].unique()
 #The pipe should always be run in paired end mode
 
 config["single_end"] = False
@@ -36,9 +36,16 @@ assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index
 
 ##### wildcard constraints #####
 
+
+#List of ab to remove
+no_ab = ['igg']
+#We remove IgG from the groups that will be used for consensus analysis.
+antibodies = [x for x in antibodies if x.lower() not in no_ab]
+
 wildcard_constraints:
     sample = "|".join(samples.index),
-    unit = "|".join(units["unit"])
+    unit = "|".join(units["unit"]),
+    antibody = "|".join(antibodies)
 
 ####### helpers ###########
 
@@ -163,12 +170,12 @@ def get_macs2_peaks_ab_sorted(wildcards):
     )
 
 def get_plot_homer_annotatepeaks_input():
-    return expand("results/homer/annotate_peaks/{sam_contr_peak}_peaks.annotatePeaks.txt",
+    return expand("results/homer/annotate_peaks/{sam_contr_peak}.peaks.annotatePeaks.txt",
         sam_contr_peak = get_sample_control_peak_combinations_list()
     )
 
 def get_samtools_view_filter_input(wildcards):
-    return ["results/picard_dedup/{sample}.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
+    return ["results/picard_dedup/{sample}.sorted.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
         prefix="chr{chr}_".format(chr=chromosome) if chromosome else "",
         build=build
     )]
@@ -269,9 +276,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    "results/mapped/{sample}.sorted.mapped.flagstat",
+                    "results/mapped/{sample}.sorted.mapped.idxstats",
+                    "results/mapped/{sample}.sorted.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -294,10 +301,10 @@ def get_multiqc_input(wildcards):
         multiqc_input.extend(
             expand (
                 [
-                    "results/picard_dedup/{sample}.metrics.txt",
-                    "results/picard_dedup/{sample}.picard_dedup.flagstat",
-                    "results/picard_dedup/{sample}.picard_dedup.idxstats",
-                    "results/picard_dedup/{sample}.picard_dedup.stats.txt",
+                    "results/picard_dedup/{sample}.sorted.metrics.txt",
+                    "results/picard_dedup/{sample}.sorted.picard_dedup.flagstat",
+                    "results/picard_dedup/{sample}.sorted.picard_dedup.idxstats",
+                    "results/picard_dedup/{sample}.sorted.picard_dedup.stats.txt",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.flagstat",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.idxstats",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.stats.txt",
@@ -467,7 +474,7 @@ def all_input(wildcards):
                                     ],
                                 )
                     if do_consensus_peak:
-                        for antibody in samples["antibody"]:
+                        for antibody in antibodies:
                             if exists_multiple_groups(antibody) or exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
