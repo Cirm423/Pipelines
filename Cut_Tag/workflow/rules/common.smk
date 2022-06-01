@@ -146,7 +146,7 @@ def get_frip_score_input():
 
 def get_macs2_peaks():
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.bed.peaks",
+        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed",
         sam_contr_peak = get_sample_control_peak_combinations_list()
     )
 
@@ -159,13 +159,13 @@ def get_sample_control_peak_combinations_list_ab(antibody):
 
 def get_macs2_peaks_ab(wildcards):
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.bed.peaks",
+        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed",
         sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
     )
 
 def get_macs2_peaks_ab_sorted(wildcards):
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.sorted.bed.peaks",
+        "results/seacr_callpeak/{sam_contr_peak}.sorted.stringent.bed",
         sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
     )
 
@@ -523,7 +523,7 @@ def all_input(wildcards):
                 expand(
                     [
                         "results/deeptools/{sample}-{control}.plot_fingerprint.pdf",
-                        "results/seacr_callpeak/{sample}-{control}.bed.peaks",
+                        "results/seacr_callpeak/{sample}-{control}.stringent.bed",
                         "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt",
                         "results/seacr_callpeak/plots/plot_peaks_count.pdf"
                     ],

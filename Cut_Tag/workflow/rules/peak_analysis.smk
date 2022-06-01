@@ -36,23 +36,34 @@ rule plot_fingerprint:
     script:
         "../scripts/deeptools/plotfingerprint.py"
 
+rule prep_seacr:
+    output:
+        temp("SEACR_1.3.R")
+    conda:
+        "../envs/seacr.yaml"
+    shell:
+        "ln $(which SEACR_1.3.R) ./SEACR_1.3.R"
 
 rule seacr_callpeak:
     input:
+        "SEACR_1.3.R",
         sample="results/bed_graph/{sample}_normalized.bedgraph",
         control="results/bed_graph/{control}_normalized.bedgraph",
     output:
-        "results/seacr_callpeak/{sample}-{control}.bed.peaks"
+        "results/seacr_callpeak/{sample}-{control}.stringent.bed"
     params:
-        "non stringent"
+        extra="non stringent",
+        out_prefix = lambda wc, output: output[0].split(".stringent.bed")[0]
     log:
         "logs/seacr/{sample}-{control}.log"
+    conda:
+        "../envs/seacr.yaml"
     shell:
-        "seacr {input.sample} {input.control} {params} {output} 2>{log}"
+        "bash SEACR_1.3.sh {input.sample} {input.control} {params.extra} {params.out_prefix} 2>{log}"
 
 rule peaks_count:
     input:
-        peaks="results/seacr_callpeak/{sample}-{control}.bed.peaks"
+        peaks="results/seacr_callpeak/{sample}-{control}.stringent.bed"
     output:
         "results/seacr_callpeak/peaks_count/{sample}-{control}.peaks_count.tsv"
     log:
@@ -80,7 +91,7 @@ rule sm_report_peaks_count_plot:
 rule bedtools_intersect:
     input:
         left="results/filtered/{sample}.sorted.bam",
-        right="results/seacr_callpeak/{sample}-{control}.bed.peaks"
+        right="results/seacr_callpeak/{sample}-{control}.stringent.bed"
     output:
         "results/bedtools_intersect/{sample}-{control}.intersected.bed"
     params:
@@ -122,17 +133,17 @@ rule sm_rep_frip_score:
 #May fail
 rule create_igv_peaks:
     input:
-        "results/seacr_callpeak/{sample}-{control}.bed.peaks"
+        "results/seacr_callpeak/{sample}-{control}.stringent.bed"
     output:
         "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt"
     log:
         "logs/igv/create_igv_peaks/merged_library.{sample}-{control}.peaks.log"
     shell:
-        " find {input} -type f -name '*.bed.peaks' -exec echo -e 'results/IGV/seacr_callpeak/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
+        " find {input} -type f -name '*.stringent.bed' -exec echo -e 'results/IGV/seacr_callpeak/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
 
 rule homer_annotatepeaks:
     input:
-        peaks="results/seacr_callpeak/{sample}-{control}.bed.peaks",
+        peaks="results/seacr_callpeak/{sample}-{control}.stringent.bed",
         genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
         gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
     output:

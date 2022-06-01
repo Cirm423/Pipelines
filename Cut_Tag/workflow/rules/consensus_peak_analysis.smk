@@ -1,10 +1,20 @@
 import os
 
+rule modify_bed_name:
+    input:
+        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed"
+    output:
+        "results/seacr_callpeak/{sam_contr_peak}.modified.stringent.bed"
+    log:
+        "logs/seacr_callpeak/modify/{sam_contr_peak}.log"
+    shell:
+        "awk '{{OFS = \"\\t\"}} {{n=split(FILENAME,array,\"/\"); t=split(array[n],array2,\".\"); print \$0, array2[1]}}' {input} > {output} 2>{log}"
+
 rule sort_bed:
     input:
-        "results/seacr_callpeak/{sam_contr_peak}.bed.peaks"
+        "results/seacr_callpeak/{sam_contr_peak}.modified.stringent.bed"
     output:
-        "results/seacr_callpeak/{sam_contr_peak}.sorted.bed.peaks"
+        "results/seacr_callpeak/{sam_contr_peak}.sorted.stringent.bed"
     log:
         "logs/seacr_callpeak/sort/{sam_contr_peak}.log"
     threads: 8
