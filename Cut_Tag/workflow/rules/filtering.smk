@@ -111,7 +111,7 @@ rule clean_bed:
     log:
         "logs/bamtobed/{sample}.clean.log"
     shell:
-        "awk '$1==$4 && $6-$2 < 1000 {print $0}' {input} > {output} 2>{log}"
+        "awk '$1==$4 && $6-$2 < 1000 {{print $0}}' {input} > {output} 2>{log}"
 
 rule fragment_bed:
     input:
