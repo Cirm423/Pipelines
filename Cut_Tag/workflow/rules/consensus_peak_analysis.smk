@@ -8,7 +8,7 @@ rule modify_bed_name:
     log:
         "logs/seacr_callpeak/modify/{sam_contr_peak}.log"
     shell:
-        "awk '{{OFS = \"\\t\"}} {{n=split(FILENAME,array,\"/\"); t=split(array[n],array2,\".\"); print \$0, array2[1]}}' {input} > {output} 2>{log}"
+        "awk '{{OFS = \"\\t\"}} {{n=split(FILENAME,array,\"/\"); t=split(array[n],array2,\".\"); print $0, array2[1]}}' {input} > {output} 2>{log}"
 
 rule sort_bed:
     input:
@@ -56,7 +56,7 @@ rule filter_consensus_peaks:
     output:
         "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
     params:
-        f"' \$10 >= {config['params']['min-reps-consensus']} {{print \$0}}'"
+        f"' $10 >= {config['params']['min-reps-consensus']} {{print $0}}'"
     log:
         "results/seacr_merged/{antibody}.consensus_peaks.filter.log"
     shell:
