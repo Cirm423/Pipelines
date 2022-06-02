@@ -158,22 +158,6 @@ rule homer_annotatepeaks:
     wrapper:
         "v1.3.1/bio/homer/annotatePeaks"
 
-rule plot_macs_qc:
-    input:
-        get_macs2_peaks()
-    output:  #ToDo: add description to report caption
-        summmary="results/seacr_callpeak/plots/plot_peaks_seacr_summary.txt",
-        plot=report("results/seacr_callpeak/plots/plot_peaks_seacr.pdf", caption="../report/plot_macs2_qc.rst", category="CallPeaks")
-    params:
-        input = lambda wc, input: ','.join(input),
-        sample_control_combinations = ','.join(get_sample_control_peak_combinations_list())
-    log:
-        "logs/seacr_callpeak/plot_peaks_seacr.log"
-    conda:
-        "../envs/plot_macs_annot.yaml"
-    shell:
-        "Rscript workflow/scripts/plot_macs_qc.R -i {params.input} -s {params.sample_control_combinations}  -o {output.plot} -p {output.summmary} 2> {log}"
-
 rule plot_homer_annotatepeaks:
     input:
         get_plot_homer_annotatepeaks_input()

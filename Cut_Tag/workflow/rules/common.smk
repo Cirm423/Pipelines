@@ -534,8 +534,7 @@ def all_input(wildcards):
             if do_peak_qc:
                 wanted_input.extend(
                     [
-                        "results/seacr_callpeak/plots/plot_peaks_frip_score.pdf",
-                        "results/seacr_callpeak/plots/plot_peaks_seacr.pdf"
+                        "results/seacr_callpeak/plots/plot_peaks_frip_score.pdf"
                     ]
                 )
     return wanted_input
