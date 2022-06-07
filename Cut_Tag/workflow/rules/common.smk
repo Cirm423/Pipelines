@@ -34,6 +34,10 @@ config["single_end"] = False
 
 assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
 
+#Check peak mode is either stringent or relaxed
+
+assert config['params']['peak-analysis'] == "relaxed" or config['params']['peak-analysis'] == "stringent", "The peak-analysis setting must be either 'relaxed' or 'stringent'"
+
 ##### wildcard constraints #####
 
 
@@ -146,8 +150,9 @@ def get_frip_score_input():
 
 def get_macs2_peaks():
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
+        "results/seacr_callpeak/{sam_contr_peak}.{mode}.bed",
+        sam_contr_peak = get_sample_control_peak_combinations_list(),
+        mode = config['params']['peak-analysis']
     )
 
 def get_sample_control_peak_combinations_list_ab(antibody):
@@ -159,14 +164,16 @@ def get_sample_control_peak_combinations_list_ab(antibody):
 
 def get_macs2_peaks_ab(wildcards):
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed",
-        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
+        "results/seacr_callpeak/{sam_contr_peak}.{mode}.bed",
+        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody),
+        mode = config['params']['peak-analysis']
     )
 
 def get_macs2_peaks_ab_sorted(wildcards):
     return expand(
-        "results/seacr_callpeak/{sam_contr_peak}.sorted.stringent.bed",
-        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody)
+        "results/seacr_callpeak/{sam_contr_peak}.sorted.{mode}.bed",
+        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody),
+        mode = config['params']['peak-analysis']
     )
 
 def get_plot_homer_annotatepeaks_input():
@@ -523,12 +530,13 @@ def all_input(wildcards):
                 expand(
                     [
                         "results/deeptools/{sample}-{control}.plot_fingerprint.pdf",
-                        "results/seacr_callpeak/{sample}-{control}.stringent.bed",
+                        "results/seacr_callpeak/{sample}-{control}.{mode}.bed",
                         "results/IGV/seacr_callpeak/merged_library.{sample}-{control}.peaks.igv.txt",
                         "results/seacr_callpeak/plots/plot_peaks_count.pdf"
                     ],
                     sample = sample,
-                    control = samples.loc[sample]["control"]
+                    control = samples.loc[sample]["control"],
+                    mode = config['params']['peak-analysis']
                 )
             )
             if do_peak_qc:

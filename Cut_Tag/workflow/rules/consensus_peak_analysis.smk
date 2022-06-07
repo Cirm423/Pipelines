@@ -2,9 +2,9 @@ import os
 
 rule modify_bed_name:
     input:
-        "results/seacr_callpeak/{sam_contr_peak}.stringent.bed"
+        f"results/seacr_callpeak/{{sam_contr_peak}}.{config['params']['peak-analysis']}.bed"
     output:
-        "results/seacr_callpeak/{sam_contr_peak}.modified.stringent.bed"
+        f"results/seacr_callpeak/{{sam_contr_peak}}.modified.{config['params']['peak-analysis']}.bed"
     log:
         "logs/seacr_callpeak/modify/{sam_contr_peak}.log"
     shell:
@@ -12,9 +12,9 @@ rule modify_bed_name:
 
 rule sort_bed:
     input:
-        "results/seacr_callpeak/{sam_contr_peak}.modified.stringent.bed"
+        f"results/seacr_callpeak/{{sam_contr_peak}}.modified.{config['params']['peak-analysis']}.bed"
     output:
-        "results/seacr_callpeak/{sam_contr_peak}.sorted.stringent.bed"
+        f"results/seacr_callpeak/{{sam_contr_peak}}.sorted.{config['params']['peak-analysis']}.bed"
     log:
         "logs/seacr_callpeak/sort/{sam_contr_peak}.log"
     threads: 8

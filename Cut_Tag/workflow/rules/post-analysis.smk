@@ -127,7 +127,7 @@ rule create_region:
     input:
         get_macs2_peaks()
     output:
-        "results/macs2_callpeak/Peak_region.bed"
+        "results/seacr_callpeak/Peak_region.bed"
     conda:
         "../envs/bedtools.yaml"
     shell:
@@ -136,7 +136,7 @@ rule create_region:
 rule compute_matrix:
     input:
          #bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
-         bed="results/macs2_callpeak/Peak_region.bed",
+         bed="results/seacr_callpeak/Peak_region.bed",
          bigwig=expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
         # Usable output variables, their extensions and which option they implicitly call are listed here:

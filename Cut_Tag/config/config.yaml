@@ -28,8 +28,8 @@ resources:
 params:
   trimming:
     activate: False
-  # choose "narrow" or "broad" for macs2 callpeak analysis, for documentation and source code please see https://github.com/macs3-project/MACS
-  peak-analysis: "broad"
+  # choose "relaxed" or "stringent" for seacr callpeak analysis, for documentation and source code please see https://github.com/FredHutch/SEACR/
+  peak-analysis: "relaxed"
   # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
   min-reps-consensus: 1
   callpeak:
