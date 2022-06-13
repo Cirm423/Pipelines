@@ -40,7 +40,7 @@ rule multiqc:
 
 rule ATACseqQC_init:
     output:
-        touch("results/qc/ATACseqQC/download.done")
+        temp(touch("results/qc/ATACseqQC/download.done"))
     params:
         BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
         Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"],
