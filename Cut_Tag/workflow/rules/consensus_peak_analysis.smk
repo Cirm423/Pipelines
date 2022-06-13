@@ -8,7 +8,7 @@ rule modify_bed_name:
     log:
         "logs/seacr_callpeak/modify/{sam_contr_peak}.log"
     shell:
-        "awk '{{OFS = \"\\t\"}} {{n=split(FILENAME,array,\"/\"); t=split(array[n],array2,\".\"); print $0, array2[1]}}' {input} > {output} 2>{log}"
+        "awk '{{OFS = \"\\t\"}} {{n=split(FILENAME,array,\"/\"); t=split(array[n],array2,\".\"); print $0, array2[1] \"_peak_\" ++counter}}' {input} > {output} 2>{log}"
 
 rule sort_bed:
     input:
