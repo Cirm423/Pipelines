@@ -35,54 +35,53 @@ rule bedtools_merge_peaks:
     wrapper:
         "v1.3.1/bio/bedtools/merge"
 
-# rule macs2_merged_expand:
-#     input:
-#         "results/bedtools/merged/{antibody}.consensus_peaks.txt"
-#     output:
-#         bool_txt="results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.txt",
-#         bool_intersect="results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.intersect.txt"
-#     params:
-#         sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab(wildcards.antibody),
-#         narrow_param="--is_narrow_peak" if config["params"]["peak-analysis"] == "narrow" else "",
-#         min_reps_consensus=config["params"]["min-reps-consensus"]
-#     log:
-#         "logs/macs2_merged_expand/{antibody}.consensus_peaks.boolean.log"
-#     script:
-#         "../scripts/macs2_merged_expand.py"
-
-rule filter_consensus_peaks:
+rule macs2_merged_expand:
     input:
         "results/bedtools/merged/{antibody}.consensus_peaks.txt"
     output:
-        "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
+        bool_txt="results/seacr_merged/{antibody}.consensus_peaks.boolean.txt",
+        bool_intersect="results/seacr_merged/{antibody}.consensus_peaks.boolean.intersect.txt"
     params:
-        f"' $10 >= {config['params']['min-reps-consensus']} {{print $0}}'"
+        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab(wildcards.antibody),
+        min_reps_consensus=config["params"]["min-reps-consensus"]
     log:
-        "logs/seacr_merged/{antibody}.consensus_peaks.filter.log"
-    shell:
-        "awk {params} {input} > {output} 2>{log}"
+        "logs/seacr_merged/{antibody}.consensus_peaks.boolean.log"
+    script:
+        "../scripts/seacr_merged_expand.py"
+
+# rule filter_consensus_peaks:
+#     input:
+#         "results/bedtools/merged/{antibody}.consensus_peaks.txt"
+#     output:
+#         "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
+#     params:
+#         f"' $10 >= {config['params']['min-reps-consensus']} {{print $0}}'"
+#     log:
+#         "logs/seacr_merged/{antibody}.consensus_peaks.filter.log"
+#     shell:
+#         "awk {params} {input} > {output} 2>{log}"
 
 rule create_consensus_bed:
     input:
-        "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.txt"
+        "results/seacr_merged/{antibody}.consensus_peaks.boolean.txt"
     output:
-        "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.bed"
+        "results/seacr_merged/{antibody}.consensus_peaks.boolean.bed"
     conda:
         "../envs/gawk.yaml"
     log:
-        "logs/macs2_merged_expand/{antibody}.consensus_peaks.boolean.bed.log"
+        "logs/seacr_merged/{antibody}.consensus_peaks.boolean.bed.log"
     shell:
         "gawk -v FS='\t' -v OFS='\t' 'FNR  > 1 {{ print $1, $2, $3, $4 \"0\", \"+\"}}' {input} > {output} 2> {log}"
 
 rule create_consensus_saf:
     input:
-        "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.txt"
+        "results/seacr_merged/{antibody}.consensus_peaks.boolean.txt"
     output:
-        "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.saf"
+        "results/seacr_merged/{antibody}.consensus_peaks.boolean.saf"
     conda:
         "../envs/gawk.yaml"
     log:
-        "logs/macs2_merged_expand/{antibody}.consensus_peaks.boolean.bed.log"
+        "logs/seacr_merged/{antibody}.consensus_peaks.boolean.bed.log"
     shell:
         "$(echo -e 'GeneID\tChr\tStart\tEnd\tStrand' > {output} && "
         " gawk -v FS='\t' -v OFS='\t' 'FNR > 1 {{ print $4, $1, $2, $3,  \" + \" }}' {input} >> {output}) "
@@ -95,14 +94,16 @@ rule plot_peak_consensus:
        report("results/seacr_merged/plots/{antibody}.consensus_peaks.pdf", caption="../report/plot_consensus_peak_intersect.rst", category="ConsensusPeak")
     params:
         lambda wildcards, output: os.path.dirname(output[0])
+    log:
+        "logs/seacr_merged/{antibody}.plot_consensus_peaks.log"
     conda:
         "../envs/consensus_plot.yaml"
     shell:
-        "Rscript workflow/scripts/consensus_peaks.py --peaks {input} --outpath {params} 2> {log}"
+        "python workflow/scripts/consensus_peaks.py --peaks {input} --outpath {params} 2> {log}"
 
 rule create_consensus_igv:
     input:
-        "results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.bed"
+        "results/seacr_merged/{antibody}.consensus_peaks.boolean.bed"
     output:
         "results/IGV/consensus/merged_library.{antibody}.consensus_peaks.igv.txt"
     log:
@@ -112,7 +113,7 @@ rule create_consensus_igv:
 
 rule homer_consensus_annotatepeaks:
     input:
-        peaks="results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.bed",
+        peaks="results/seacr_merged/{antibody}.consensus_peaks.boolean.bed",
         genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
         gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
     output:
@@ -144,7 +145,7 @@ rule trim_homer_consensus_annotatepeaks:
 rule merge_bool_and_annotatepeaks:
     input:
         trim="results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.annotatePeaks.trimmed.txt",
-        bool="results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.txt"
+        bool="results/seacr_merged/{antibody}.consensus_peaks.boolean.txt"
     output:
         "results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.boolean.annotatePeaks.txt"
     log:
@@ -159,7 +160,7 @@ rule feature_counts:
         sam=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
             sample=get_samples_of_antibody(wc.antibody),
             control=get_controls_of_antibody(wc.antibody)),
-        annotation="results/macs2_merged_expand/{antibody}.consensus_peaks.boolean.saf"
+        annotation="results/seacr_merged/{antibody}.consensus_peaks.boolean.saf"
     output:
         multiext("results/feature_counts/{antibody}.consensus_peaks",
                  ".featureCounts",

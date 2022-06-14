@@ -39,7 +39,7 @@ if len(peak_file_list) > 10:
 peak_df_list = list()
 for i in list(range(len(peak_file_list))):
     peaks_i = pd.read_csv(peak_file_list[i], sep='\t', header=None, usecols=[0,1,2,8,9], names=['chrom','start','end','sample_reps','count'])
-    peaks_i['sample_reps'] = peaks_i['sample_reps'].replace(".peaks.bed.stringent.bed", "", regex=True)
+    peaks_i['sample_reps'] = peaks_i['sample_reps'].replace(r"_peak_[0-9]*", "", regex=True)
     peak_df_list.append(peaks_i)
     reps2 = peaks_i[peaks_i["count"]>1]
 

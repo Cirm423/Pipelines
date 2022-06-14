@@ -486,16 +486,14 @@ def all_input(wildcards):
                                 wanted_input.extend(
                                     expand(
                                         [
-                                            #"results/seacr_merged/{antibody}.consensus_peaks.boolean.saf",
-                                            #"results/seacr_merged/plots/{antibody}.consensus_peaks.boolean.intersect.plot.pdf",
-                                            #"results/IGV/consensus/merged_library.{antibody}.consensus_peaks.igv.txt"
-                                            "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
+                                            "results/seacr_merged/{antibody}.consensus_peaks.boolean.saf",
+                                            "results/seacr_merged/plots/{antibody}.consensus_peaks.pdf",
+                                            "results/IGV/consensus/merged_library.{antibody}.consensus_peaks.igv.txt"
                                         ],
                                         antibody = antibody
                                     )
                                 )
-                                #This is always negative for testing purposes, remove second part for normal run
-                                if do_annot and not do_consensus_peak:
+                                if do_annot:
                                     wanted_input.extend(
                                         expand(
                                             [

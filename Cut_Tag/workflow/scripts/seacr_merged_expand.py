@@ -3,6 +3,7 @@
 
 ### source: https://github.com/nf-core/chipseq/blob/master/bin/macs2_merged_expand.py
 ### own changes and adjustments for snakemake-workflow chipseq are marked with "# AVI: " in comment
+### Further changes to adapt to SEACR bed file output were done to this script
 
 
 # MIT License
@@ -90,7 +91,9 @@ def makedir(path):
 ## 2) narrowPeak
 ## sort -k1,1 -k2,2n <MACS_NARROWPEAK_FILE_LIST> | mergeBed -c 2,3,4,5,6,7,8,9,10 -o collapse,collapse,collapse,collapse,collapse,collapse,collapse,collapse,collapse > merged_peaks.txt
 
-def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, isNarrow=False, minReplicates=1):
+## Removed isNarrow parameter and adapted the code for SEACR merged bedfile output
+
+def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, minReplicates=1):
     makedir(os.path.dirname(OutFile))
 
     combFreqDict = {}
@@ -99,14 +102,12 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, isNarrow
     fin = open(MergedIntervalTxtFile, 'r')
     fout = open(OutFile, 'w')
     oFields = ['chr', 'start', 'end', 'interval_id', 'num_peaks', 'num_samples'] + [x + '.bool' for x in
-                                                                                    SampleNameList] + [x + '.fc' for x
+                                                                                    SampleNameList] + [x + '.ts' for x
                                                                                                        in
                                                                                                        SampleNameList] + [
-                  x + '.qval' for x in SampleNameList] + [x + '.pval' for x in SampleNameList] + [x + '.start' for x in
+                  x + '.ms' for x in SampleNameList] + [x + '.msr' for x in SampleNameList] + [x + '.start' for x in
                                                                                                   SampleNameList] + [
                   x + '.end' for x in SampleNameList]
-    if isNarrow:
-        oFields += [x + '.summit' for x in SampleNameList]
     fout.write('\t'.join(oFields) + '\n')
     while True:
         line = fin.readline()
@@ -118,14 +119,11 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, isNarrow
             mend = int(lspl[2]);
             starts = [int(x) for x in lspl[3].split(',')];
             ends = [int(x) for x in lspl[4].split(',')]
-            names = lspl[5].split(',');
-            fcs = [float(x) for x in lspl[8].split(',')]
-            pvals = [float(x) for x in lspl[9].split(',')];
-            qvals = [float(x) for x in lspl[10].split(',')]
-            summits = []
-            if isNarrow:
-                summits = [int(x) for x in lspl[11].split(',')]
-
+            ts = [float(x) for x in lspl[5].split(',')]
+            ms = [float(x) for x in lspl[6].split(',')];
+            msr = [str(x) for x in lspl[7].split(',')]
+            names = lspl[8].split(',');
+            
             ## GROUP SAMPLES BY REMOVING TRAILING *_R*
             groupDict = {}
             for sID in ['_'.join(x.split('_')[:-2]) for x in names]:
@@ -142,48 +140,42 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, isNarrow
                     passRepThreshList += sIDs
 
             ## GET VALUES FROM INDIVIDUAL PEAK SETS
-            fcDict = {};
-            qvalDict = {};
-            pvalDict = {};
+            tsDict = {};
+            msDict = {};
+            msrDict = {};
             startDict = {};
             endDict = {};
-            summitDict = {}
             for idx in range(len(names)):
                 sample = '_'.join(names[idx].split('_')[:-2])
                 if sample in passRepThreshList:
-                    if sample not in fcDict:
-                        fcDict[sample] = []
-                    fcDict[sample].append(str(fcs[idx]))
-                    if sample not in qvalDict:
-                        qvalDict[sample] = []
-                    qvalDict[sample].append(str(qvals[idx]))
-                    if sample not in pvalDict:
-                        pvalDict[sample] = []
-                    pvalDict[sample].append(str(pvals[idx]))
+                    if sample not in tsDict:
+                        tsDict[sample] = []
+                    tsDict[sample].append(str(ts[idx]))
+                    if sample not in msDict:
+                        msDict[sample] = []
+                    msDict[sample].append(str(ms[idx]))
+                    if sample not in msrDict:
+                        msrDict[sample] = []
+                    msrDict[sample].append(str(msr[idx]))
                     if sample not in startDict:
                         startDict[sample] = []
                     startDict[sample].append(str(starts[idx]))
                     if sample not in endDict:
                         endDict[sample] = []
                     endDict[sample].append(str(ends[idx]))
-                    if isNarrow:
-                        if sample not in summitDict:
-                            summitDict[sample] = []
-                        summitDict[sample].append(str(summits[idx]))
 
-            samples = sorted(fcDict.keys())
+            samples = sorted(tsDict.keys())
             if samples != []:
                 numSamples = len(samples)
                 boolList = ['TRUE' if x in samples else 'FALSE' for x in SampleNameList]
-                fcList = [';'.join(fcDict[x]) if x in samples else 'NA' for x in SampleNameList]
-                qvalList = [';'.join(qvalDict[x]) if x in samples else 'NA' for x in SampleNameList]
-                pvalList = [';'.join(pvalDict[x]) if x in samples else 'NA' for x in SampleNameList]
+                tsList = [';'.join(tsDict[x]) if x in samples else 'NA' for x in SampleNameList]
+                msList = [';'.join(msDict[x]) if x in samples else 'NA' for x in SampleNameList]
+                msrList = [';'.join(msrDict[x]) if x in samples else 'NA' for x in SampleNameList]
                 startList = [';'.join(startDict[x]) if x in samples else 'NA' for x in SampleNameList]
                 endList = [';'.join(endDict[x]) if x in samples else 'NA' for x in SampleNameList]
                 oList = [str(x) for x in [chromID, mstart, mend, 'Interval_' + str(totalOutIntervals + 1), len(names),
-                                          numSamples] + boolList + fcList + qvalList + pvalList + startList + endList]
-                if isNarrow:
-                    oList += [';'.join(summitDict[x]) if x in samples else 'NA' for x in SampleNameList]
+                                          numSamples] + boolList + tsList + msList + msrList + startList + endList]
+
                 fout.write('\t'.join(oList) + '\n')
 
                 tsamples = tuple(sorted(samples))
@@ -215,5 +207,4 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, isNarrow
 # AVI: arguments adapted to snakemake
 macs2_merged_expand(MergedIntervalTxtFile=snakemake.input[0],
                     SampleNameList=list(snakemake.params.get("sample_control_peak")), OutFile=snakemake.output.get("bool_txt"),
-                    isNarrow=snakemake.params.get("narrow_param"),
                     minReplicates=int(snakemake.params.get("min_reps_consensus")))
