@@ -32,6 +32,7 @@ params:
   peak-analysis: "relaxed"
   # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
   min-reps-consensus: 1
+  #Not currently used, peaks are always normalized against spike for now
   callpeak:
     p-value: 0.05
     q-value:
