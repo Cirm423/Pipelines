@@ -1,5 +1,5 @@
 # parent_id: spp
-# parent_name: 'ChIP-seq processing pipeline'
+# parent_name: 'Cut&Tag processing pipeline'
 # id: nsc_coefficient
 # section_name: 'Normalized strand cross-correlation coefficient (NSC)'
 # description: "The normalized strand cross-correlation coefficient is a quality control metric based on strand-shift cross-correlation plot.

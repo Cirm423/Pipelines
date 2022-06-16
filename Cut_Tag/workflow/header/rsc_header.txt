@@ -1,5 +1,5 @@
 # parent_id: spp
-# parent_name: 'ChIP-seq processing pipeline'
+# parent_name: 'Cut&Tag processing pipeline'
 # id: rsc_coefficient
 # section_name: 'Relative strand cross-correlation coefficient (RSC)'
 # description: "The relative strand cross-correlation coefficient is a quality control metric based on strand-shift cross-correlation plot.

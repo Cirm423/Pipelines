@@ -1,5 +1,5 @@
 # parent_id: spp
-# parent_name: 'ChIP-seq processing pipeline'
+# parent_name: 'Cut&Tag processing pipeline'
 # parent_description: 'The pipeline calculates the strand-shift cross-correlation and also the normalized and relative strand cross-correlation coefficients for each sample.'
 # id: strand_shift_correlation
 # section_name: 'Strand-shift cross-correlation'
