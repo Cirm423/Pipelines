@@ -118,10 +118,10 @@ For organisms other than human or mouse simply indicate the assembly name presen
 ### ATACseqQC
 
 ATACseqQC is an R package used to produce some specific ATACseq QC plots. Unfortunately, it needs assembly specific packages to run and not many are available at the moment. Thus, ATACseqQC will only run when one of the following assemblies are selected in the config:
-> |    | Human | Mouse |
-> -----|----|-----|
+> |    | Human | Mouse | Rat |
+> -----|----|-----|-----|
 > |**Gencode**|GRCh38, GRCh37|GRCm38|
-> |**UCSC**|h38, h19|mm10|
+> |**UCSC**|h38, h19|mm10| rn6 | 
 
 # Running Snakemake
 
