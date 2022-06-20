@@ -10,19 +10,19 @@
   - [Plot explanations](#plot-explanations)
     - [Phantompeaks](#phantompeaks)
     - [Deeptools](#deeptools)
-- [Acknowledgements](#acknowledgements)
+- [Too long, don't want to read](#too-long-dont-want-to-read)
 
 # Starting
 
-This readme provides instructions on how to run the snakemake ChIP-seq pipeline on a cluster.
+This readme provides instructions on how to run the snakemake Cut&Tag pipeline on a cluster.
 
 To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:
 > hpc2:\
-> /home/share/dcyleung/snakemake/ChIP-seq/\
+> /home/share/dcyleung/snakemake/Cut_Tag/\
 > biocrfhpc1:\
-> /home4/share/dcyleung/snakemake/ChIP-seq/\
+> /home4/share/dcyleung/snakemake/Cut_Tag/\
 > biocrfhpc2:\
-> /data1/share/dcyleung/Pipeline/snakemake/ChIP-seq/
+> /data1/share/dcyleung/Pipeline/snakemake/Cut_Tag/
 
 and place it in your own folder, preferentially in its own folder since snakemake will create many new files.
 
@@ -36,7 +36,8 @@ The config folder includes the following files:
 - pe_bamtools_filtering_rules.json
 - se_bamtools_filtering_rules.json
 
-Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
+Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Particularly, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
+
 
 # Configuring Snakemake
 
@@ -49,27 +50,35 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control | antibody |
 > ------------|---------|--------------|---------|----------|
-> | A1  | treated | batch1 | B1 | H3K9me3 |
-> | B1	| untreated | batch1 |  | H3K9me3 |
-> | A2	| treated | batch2 | B2 | RPB1 |
-> | B2	| untreated | batch2 |  | RPB1 |
+> | J1_Va_Rep1  | J1 | batch1 |  | IgG  |
+> | J1_Va_Rep2	| J1 | batch1 |  | IgG  |
+> | J1_Va_Rep3	| J1 | batch1 |  | IgG  |
+> | DnmtDKO_Va_Rep1	| DnmtDKO | batch2 | J1_Va_Rep1 | H3K27me3 |
+> | DnmtDKO_Va_Rep2	| DnmtDKO | batch2 | J1_Va_Rep2 | H3K27me3 |
+> | DnmtDKO_Va_Rep3	| DnmtDKO | batch2 | J1_Va_Rep3 | H3K27me3 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep1 | H3K27me3 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep2 | H3K27me3 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep3 | H3K27me3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that **samples without control will be considered as controls in the pipeline.** The rest of the fields should be specified for every sample, including controls.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups *DnmtDKO* and *DnmtTKO* will be done with controls from the *J1* group, while the peak calling for the *J1* group will be done without controls
 
-**It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
+**It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
+
+By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
 > | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
 > --------------|--------|-------------------|-----------------|-----|----|------|----------|
-> | A1  | lane1 | | | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | ILLUMINA |
-> | A1  | lane2 | | | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | ILLUMINA |
-> | B1	| lane1 | | | B1.lane1.R1... | B1.lane1.R2...| | ILLUMINA |
-> | B1	| lane2 | | | ... | ... | | ... |
-> | A2	| lane1 | | | ... | ... | | ... |
-> | A2	| lane2 | | | ... | ... | | ... |
-> | B2	| lane1 | | | ... | ... | | ... |
-> | B2	| lane2 | | | ... | ... | | ... |
+> | J1_Va_Rep1  | 1 | | | J1_1.lane1.R1.fastq.gz | J1_1.lane1.R2.fastq.gz | | ILLUMINA |
+> | J1_Va_Rep2  | 1 | | | J1_2.lane1.R1.fastq.gz | J1_2.lane1.R2.fastq.gz | | ILLUMINA |
+> | J1_Va_Rep3	| 1 | | | J1_3.lane1.R1.fastq.gz | J1_3.lane1.R2.fastq.gz| | ILLUMINA |
+> | DnmtDKO_Va_Rep1	| 1 | | |  |  | SRR10194959 | ILLUMINA |
+> | DnmtDKO_Va_Rep2	| 1 | | |  |  | SRR10194960 | ILLUMINA |
+> | DnmtDKO_Va_Rep3	| 1 | | |  |  | SRR10194961 | ILLUMINA |
+> | DnmtTKO_Va_Rep1	| 1 | | |  |  | SRR10194962 | ILLUMINA |
+> | DnmtTKO_Va_Rep2	| 1 | | |  |  | SRR10194963 | ILLUMINA |
+> | DnmtTKO_Va_Rep3	| 1 | | |  |  | SRR10194964 | ILLUMINA |
 
 You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 
@@ -79,9 +88,9 @@ or a relative path from where snakemake is run, which is the directory where the
 
 > samples/sample_1/sample_1_R1.fastq.gz
 
-This last approach is the preferred one.
+This latter approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will try to run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting should be set accordingly even for fq only runs as some steps make use of it. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
 The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.
 
@@ -122,13 +131,13 @@ Additionally, snakemake is configured to run up to 5 simultaneous jobs by defaul
 
 # Output
 
-Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like star, rsem, etc; with sample folders within them. For example:
+Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like bwa, fastqc, etc; with sample folders within them. For example:
 
-    results/rsem/pe/sample1/star_output_files
+    results/bwa/sample1/bwa_output_files
 
-In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc. You can download these files and view in a browser. 
+In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. The file `report.html` will also be found in the root directory of the pipeline, in which you can find the rest of the QC and stats that are not included in multiqc.
 
-In the deseq2 results folder you can find `dds_rld` folder which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.
+The peaks and related info will be in a folder called genrich (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.
 
 Additionally logs for each step will be stored in the logs folder. 
 
@@ -151,8 +160,12 @@ For measuring cumulative enrichment, determines how well a ChIP-seq sample can b
 ![image](Images/fingerprint.png)
 From Deeptools manual
 
-# Acknowledgements
+# Too long, don't want to read
 
-This pipeline is based on the pipeline made by jafors:
+The basic steps to run the pipe are:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5245549.svg)](https://doi.org/10.5281/zenodo.5245549) [Snakemake workflow: rna-seq-star-deseq2](https://github.com/snakemake-workflows/rna-seq-star-deseq2)
+- Make a copy of the pipeline.
+- Put your samples and groups in samples.tsv.
+- Put your units and file paths/sra codes in units.tsv
+- Change config.yaml to single or paired end, set assembly and any specific step option you need.
+- Use `sbatch` to send run_snk.sh to the cluster.
