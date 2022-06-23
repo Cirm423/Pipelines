@@ -1,0 +1,7 @@
+sample	unit	fragment_len_mean	fragment_len_sd	fq1	fq2	sra_accession	platform
+A549_ACE2_mock_1	1					SRR15000166	ILLUMINA
+A549_ACE2_mock_1	2					SRR15000167	ILLUMINA
+A549_ACE2_mock_2	1			Mock_2_u1.fq1	Mock_2_u1.fq2		ILLUMINA
+A549_ACE2_mock_2	2			Mock_2_u2.fq1	Mock_2_u2.fq2		ILLUMINA
+A549_ACE2_cov_1	1					SRR15000167	ILLUMINA
+A549_ACE2_cov_2	1			cov2_2_u1.fq1			ILLUMINA
