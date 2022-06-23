@@ -25,6 +25,10 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 build = config["resources"]["ref"]["assembly"]
 
+# Check that the mode is correct
+
+assert config["params"]["mode"] == "bwameth" or config["params"]["mode"] == "bismark", "The pipeline mode has to be either 'bwameth' or 'bismark'"
+
 ##### wildcard constraints #####
 
 wildcard_constraints:
@@ -105,10 +109,6 @@ def get_fastqs(wildcards):
         u = units.loc[ (wildcards.sample, wildcards.unit), ["fq1", "fq2"] ].dropna()
         return [ f"{u.fq1}", f"{u.fq2}" ]
 
-def is_control(sample):
-    control = samples.loc[sample]["control"]
-    return pd.isna(control) or pd.isnull(control)
-
 def get_unit_R1_of_sample(wildcards):
     unit_list = []
     for unit in units.loc[wildcards.sample, "unit"]:
@@ -153,71 +153,6 @@ def get_unit_R2_of_sample(wildcards):
                 unit_list.append(f"{u.fq2}")
     return unit_list
 
-def get_sample_control_peak_combinations_list():
-    sam_contr = []
-    for sample in samples.index:
-        if not is_control(sample):
-            sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
-    return sam_contr
-
-def get_peaks_count_plot_input():
-    return expand(
-        "results/macs2_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-def get_frip_score_input():
-    return expand(
-        "results/bedtools_intersect/{sam_contr_peak}.peaks_frip.tsv",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-def get_macs2_peaks():
-    return expand(
-        "results/macs2_callpeak/{sam_contr_peak}_peaks.{peak}Peak",
-        sam_contr_peak = get_sample_control_peak_combinations_list(), peak =config["params"]["peak-analysis"]
-    )
-
-def get_sample_control_peak_combinations_list_ab(antibody):
-    sam_contr = []
-    for sample in samples.index:
-        if not is_control(sample) and samples.loc[sample]["antibody"]==antibody:
-            sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
-    return sam_contr
-
-def get_macs2_peaks_ab(wildcards):
-    return expand(
-        "results/macs2_callpeak/{sam_contr_peak}_peaks.{peak}Peak",
-        sam_contr_peak = get_sample_control_peak_combinations_list_ab(wildcards.antibody), peak =config["params"]["peak-analysis"]
-    )
-
-def get_plot_homer_annotatepeaks_input():
-    return expand("results/homer/annotate_peaks/{sam_contr_peak}_peaks.annotatePeaks.txt",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-def get_samtools_view_filter_input(wildcards):
-    return ["results/picard_dedup/{sample}.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
-        prefix="chr{chr}_".format(chr=chromosome) if chromosome else "",
-        build=build
-    )]
-
-def exists_multiple_groups(antibody):
-    return len(samples[samples["antibody"] == antibody]["group"].unique()) > 1
-
-def exists_replicates(antibody):
-    return len(samples[samples["antibody"] == antibody]["sample"].unique()) > 1
-
-def get_controls_of_antibody(antibody):
-    groups = samples[samples["antibody"] == antibody]["group"]
-    controls = samples[pd.isnull(samples["control"])]
-    return controls[controls["group"].index.isin(list(groups.index))]["sample"]
-
-def get_samples_of_antibody(antibody):
-    groups = samples[samples["antibody"] == antibody]["group"]
-    treated = samples[pd.notnull(samples["control"])]
-    return treated[treated["group"].index.isin(list(groups.index))]["sample"]
-
 def get_map_reads_input(wildcards):
     if is_sra_pe(wildcards.sample, wildcards.unit):
         return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
@@ -232,6 +167,13 @@ def get_read_group(wildcards):
         unit=wildcards.unit,
         platform=units.loc[(wildcards.sample, wildcards.unit), "platform"])
 
+#Change this when bismark is added
+def get_dedup_bam(wildcards):
+    if config["params"]["mode"] == "bwameth":
+        return "results/picard_dedup/{sample}.sorted.bam"
+    else:
+        return ""
+        
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
