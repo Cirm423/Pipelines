@@ -2,8 +2,8 @@ rule methyldackel:
     input:
         bam = "results/picard_dedup/{sample}.bam",
         bai = "results/picard_dedup/{sample}.bam.bai",
-        fa = f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
-        fai = f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai",
+        fa = f"{assembly_path}{assembly}.fa",
+        fai = f"{assembly_path}{assembly}.fa.fai",
     output:
         bg = "results/methyldackel/{sample}_CpG.bedgraph",
         txt = "results/methyldackel/{sample}_methyldackel.txt"

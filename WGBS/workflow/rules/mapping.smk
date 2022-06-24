@@ -37,7 +37,7 @@ rule bwa_meth:
     output:
         temp("results/mapped/{sample}.sam")
     params:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.c2t.fa"
+        f"{assembly_path}{assembly}.c2t.fa"
     log:
         "logs/bwa/bwa_meth/{sample}-{unit}.log"
     threads: 8

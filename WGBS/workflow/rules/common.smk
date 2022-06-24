@@ -23,7 +23,8 @@ units.index = units.index.set_levels(
     [i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
-build = config["resources"]["ref"]["assembly"]
+assembly = config["resources"]["ref"]["assembly"]
+assembly_path = {config['resources']['path']} + {config['resources']['ref']['assembly']} + "/"
 
 # Check that the mode is correct
 
@@ -296,6 +297,15 @@ def all_input(wildcards):
                 sample = sample
             )
         )
+        if config["params"]["mode"] == "bwameth":
+            wanted_input.expand(
+                expand(
+                    [
+                        "results/methyldackel/{sample}_CpG.bedgraph"
+                    ],
+                    sample = sample
+                )
+            )
     return wanted_input
 
 

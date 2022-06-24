@@ -19,7 +19,7 @@ rule qualimap:
     output:
         "results/qc/qualimap/{sample}"
     params:
-        genome = lambda wc: "-gd HUMAN" if "h" in config['resources']['ref']['assembly'] else "-gd MOUSE" if "m" in config['resources']['ref']['assembly'] else "",
+        genome = lambda wc: "-gd HUMAN" if "h" in assembly else "-gd MOUSE" if "m" in assembly else "",
     log:
         "logs/qc/{sample}_qualimap.log"
     conda:
