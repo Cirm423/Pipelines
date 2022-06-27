@@ -93,7 +93,7 @@ rule bismark_genome_preparation_fa:
     output:
         directory(f"{assembly_path}Bisulfite_Genome")
     log:
-        "logs/bismark/{assembly}_index.log"
+        f"logs/bismark/{assembly}_index.log"
     params:
         ""  # optional params string
     wrapper:

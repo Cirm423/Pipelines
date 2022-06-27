@@ -39,7 +39,7 @@ rule bwa_meth:
     params:
         f"{assembly_path}{assembly}.c2t.fa"
     log:
-        "logs/bwa/bwa_meth/{sample}-{unit}.log"
+        "logs/bwa/bwa_meth/{sample}.log"
     threads: 8
     conda:
         "../envs/bwa_meth.yaml"

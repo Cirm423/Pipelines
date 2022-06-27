@@ -24,7 +24,7 @@ units.index = units.index.set_levels(
 validate(units, schema="../schemas/units.schema.yaml")
 
 assembly = config["resources"]["ref"]["assembly"]
-assembly_path = {config['resources']['path']} + {config['resources']['ref']['assembly']} + "/"
+assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
 
 # Check that the mode is correct
 
@@ -231,7 +231,7 @@ def get_multiqc_input(wildcards):
                     "results/picard_dedup/{sample}.metrics.txt",
                     "results/picard_dedup/{sample}.picard_dedup.flagstat",
                     "results/picard_dedup/{sample}.picard_dedup.idxstats",
-                    "results/picard_dedup/{sample}.picard_dedup.stats.txt"
+                    "results/picard_dedup/{sample}.picard_dedup.stats.txt",
                     "results/qualimap/{sample}_qualimap"
                 ],
                 sample = sample
@@ -243,9 +243,6 @@ def get_multiqc_input(wildcards):
     return multiqc_input
 
 def all_input(wildcards):
-    do_annot = config["params"]["peak-annotation-analysis"]["activate"]
-    do_peak_qc = config["params"]["peak-qc"]["activate"]
-    do_consensus_peak = config["params"]["consensus-peak-analysis"]["activate"]
 
     wanted_input = []
 
@@ -294,17 +291,8 @@ def all_input(wildcards):
 
     # Methylation, depending on bismark or bwameth
     for sample in samples.index:
-        wanted_input.extend(
-            expand (
-                [
-                    "results/IGV/big_wig/merged_library.bigWig.igv.txt",
-                    "results/phantompeakqualtools/{sample}.phantompeak.pdf"
-                ],
-                sample = sample
-            )
-        )
         if config["params"]["mode"] == "bwameth":
-            wanted_input.expand(
+            wanted_input.extend(
                 expand(
                     [
                         "results/methyldackel/{sample}_CpG.bedgraph"
@@ -312,6 +300,34 @@ def all_input(wildcards):
                     sample = sample
                 )
             )
+        else:
+            if config["single_end"]:
+                wanted_input.extend(
+                    expand(
+                        [
+                            "results/qc/bismark/{sample}-se.M-bias_R1.png",
+                            "results/bismark/meth/{sample}-se.M-bias.txt",
+                            "results/bismark/meth/{sample}-se_splitting_report.txt",
+                            "results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",
+                            "results/bismark/meth_cpg/{sample}-se.bedGraph.gz"
+                        ],
+                        sample=sample
+                    )
+                )
+            else:
+                wanted_input.extend(
+                    expand(
+                        [
+                            "results/qc/bismark/{sample}-pe.M-bias_R1.png",
+                            "results/qc/bismark/{sample}-pe.M-bias_R2.png",
+                            "results/bismark/meth/{sample}-pe.M-bias.txt",
+                            "results/bismark/meth/{sample}-pe_splitting_report.txt",
+                            "results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
+                            "results/bismark/meth_cpg/{sample}-pe.bedGraph.gz"
+                        ],
+                        sample=sample
+                    )
+                )                
     return wanted_input
 
 

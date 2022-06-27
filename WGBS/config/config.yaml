@@ -18,7 +18,7 @@ params:
   trimming:
     activate: True
   #Chose between bismark or bwameth to use for mapping. bwameth will use methyldackel to extract methylation metrics.
-  mode: "bwameth"
+  mode: "bismark"
   # Params to use for bismark. Only used when the mode is set to bismark.
   bismark:
     #Params for mapping
@@ -49,6 +49,8 @@ params:
       cytosine_report: False
       #The minimum number of times any methylation state (methylated or unmethylated) has to be seen for a nucleotide before its methylation percentage is reported
       cutoff: 1
+      #Any extra parameters not mentioned here
+      extra: ""
   # Params to use for methildackel. Only used when the mode is set to bwameth.
   methyldackel:
     # Adds CHG and CHH methylation in addition to CpG. Will produce very large files.

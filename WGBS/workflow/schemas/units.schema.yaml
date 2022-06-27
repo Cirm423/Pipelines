@@ -17,9 +17,6 @@ properties:
   sra_accession:
     type: string
     description: accession numbers of samples for sra download
-  platform:
-    type: string
-    description: name of the sequencing platform used
   anyOf:
     - required:
       - fq1
@@ -28,4 +25,3 @@ properties:
 required:
   - sample
   - unit
-  - platform

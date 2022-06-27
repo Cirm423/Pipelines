@@ -16,9 +16,9 @@ include: "rules/ref.smk"
 include: "rules/qc.smk"
 include: "rules/cutadapt.smk"
 include: "rules/mapping.smk"
-include: "rules/filtering.smk"
 include: "rules/stats.smk"
 include: "rules/utils.smk"
+include: "rules/methylation.smk"
 include: "rules/post-analysis.smk"
 
 rule all:

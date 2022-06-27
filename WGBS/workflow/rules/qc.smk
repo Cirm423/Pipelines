@@ -48,7 +48,7 @@ rule qualimap:
     log:
         "logs/qualimap/{sample}.log"
     params:
-        gcref= "-gd HUMAN" if h in assembly else "-gd MOUSE" if m in assembly else ""
+        gcref = "-gd HUMAN" if "h" in assembly else "-gd MOUSE" if "m" in assembly else ""
     threads: 8
     conda:
         "../envs/qualimap.yaml"
