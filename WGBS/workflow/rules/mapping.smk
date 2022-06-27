@@ -85,3 +85,54 @@ rule mark_merged_duplicates:
         "REMOVE_DUPLICATES=false ASSUME_SORTED=true PROGRAM_RECORD_ID='null' VALIDATION_STRINGENCY=LENIENT",
     wrapper:
         "v0.87.0/bio/picard/markduplicates"
+
+rule bismark_map_pe:
+    input:
+        fq_1="results/merged_units/{sample}_R1.fastq.gz",
+        fq_2="results/merged_units/{sample}_R2.fastq.gz",
+        genome=f"{assembly_path}{assembly}.fa",
+        bismark_indexes_dir=f"{assembly_path}Bisulfite_Genome",
+        #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
+    output:
+        bam=temp("results/bismark/bams/{sample}_pe.bam"),
+        report="results/bismark/bams/{sample}_PE_report.txt",
+    log:
+        "logs/bismark/map/{sample}.log"
+    params:
+        extra=config["params"]["bismark"]["map"]["extra"],
+        basename='{sample}'
+    threads: 24
+    wrapper:
+        "v1.7.0/bio/bismark/bismark"
+
+rule bismark_map_se:
+    input:
+        fq="results/merged_units/{sample}_R1.fastq.gz",
+        genome=f"{assembly_path}{assembly}.fa",
+        bismark_indexes_dir=f"{assembly_path}Bisulfite_Genome",
+        #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
+    output:
+        bam=temp("results/bismark/bams/{sample}_se.bam"),
+        report="results/bismark/reports/{sample}_SE_report.txt",
+    log:
+        "logs/bismark/map/{sample}.log",
+    params:
+        # optional params string
+        extra=config["params"]["bismark"]["map"]["extra"],
+        basename='{sample}'
+    threads: 24
+    wrapper:
+        "v1.7.0/bio/bismark/bismark"
+
+rule deduplicate_bismark:
+    input: 
+        get_bismark_bam
+    output:
+        bam="results/bismark/bams/{sample}.deduplicated.bam",
+        report="results/bismark/reports/{sample}.deduplication_report.txt",
+    log:
+        "logs/bismark/{sample}.deduplicated.log",
+    params:
+        extra= lambda wc: "-s" if config["single_end"] else "-p"  # optional params string
+    wrapper:
+        "v1.7.0/bio/bismark/deduplicate_bismark"

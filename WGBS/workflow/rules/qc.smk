@@ -25,7 +25,36 @@ rule fastqc_trimmed:
     threads: 6
     wrapper:
         "v1.3.1/bio/fastqc"
-    
+
+rule sort_deduplicated:
+    input:
+        get_dedup_bam
+    output:
+        temp("results/qualimap/{sample}.sorted.bam")
+    params:
+        extra=""
+    log:
+        "logs/qualimap/{sample}.sorted.log"
+    threads:
+        8
+    wrapper:
+        "v1.3.1/bio/samtools/sort"
+
+rule qualimap:
+    input:
+        "results/qualimap/{sample}.sorted.bam"
+    output:
+        directory("results/qualimap/{sample}_qualimap")
+    log:
+        "logs/qualimap/{sample}.log"
+    params:
+        gcref= "-gd HUMAN" if h in assembly else "-gd MOUSE" if m in assembly else ""
+    threads: 8
+    conda:
+        "../envs/qualimap.yaml"
+    script:
+        "qualimap bamqc {params.gcref} -bam {input} -outdir {output} --collect-overlap-pairs -nt {threads}"
+
 rule multiqc:
     input:
         get_multiqc_input

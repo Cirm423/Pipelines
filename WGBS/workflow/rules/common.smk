@@ -168,12 +168,18 @@ def get_read_group(wildcards):
         unit=wildcards.unit,
         platform=units.loc[(wildcards.sample, wildcards.unit), "platform"])
 
+def get_bismark_bam(wildcards):
+    if config["single_end"]:
+        return f"results/bismark/bams/{wildcards.sample}_se.bam"
+    else:
+        return f"results/bismark/bams/{wildcards.sample}_pe.bam"
+
 #Change this when bismark is added
 def get_dedup_bam(wildcards):
     if config["params"]["mode"] == "bwameth":
-        return "results/picard_dedup/{sample}.sorted.bam"
+        return "results/picard_dedup/{sample}.bam"
     else:
-        return ""
+        return "results/bismark/bams/{sample}.deduplicated.bam"
         
 def get_multiqc_input(wildcards):
     multiqc_input = []
@@ -226,7 +232,7 @@ def get_multiqc_input(wildcards):
                     "results/picard_dedup/{sample}.picard_dedup.flagstat",
                     "results/picard_dedup/{sample}.picard_dedup.idxstats",
                     "results/picard_dedup/{sample}.picard_dedup.stats.txt"
-                    "results/qc/qualimap/{sample}"
+                    "results/qualimap/{sample}_qualimap"
                 ],
                 sample = sample
             )

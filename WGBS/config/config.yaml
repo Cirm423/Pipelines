@@ -19,6 +19,36 @@ params:
     activate: True
   #Chose between bismark or bwameth to use for mapping. bwameth will use methyldackel to extract methylation metrics.
   mode: "bwameth"
+  # Params to use for bismark. Only used when the mode is set to bismark.
+  bismark:
+    #Params for mapping
+    map:
+      # optional params string, e.g: -L 20 -N 0 -I 0 -X 500 (default values)
+      # For both SE and PE reads (don't set PE only parameters for SE)
+      # Useful options to tune:
+      # (for bowtie2)
+      # -N: The maximum number of mismatches permitted in the "seed", i.e. the first L base pairs
+      # of the read (deafault: 0)
+      # -L: The "seed length" (deafault: 20)
+      # -I: The minimum insert size for valid paired-end alignments. ~ min fragment size filter (for
+      # PE reads)
+      # -X: The maximum insert size for valid paired-end alignments. ~ max fragment size filter (for
+      # PE reads)
+      # --gzip: Gzip intermediate fastq files
+      # --ambiguous --un : add ambiguous or unmapped reads output
+      # --non_directional : for non directional libraries
+      # Further info https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#appendix-ii-bismark
+      extra: "--gzip"
+    extract:
+      #Params for methylation extraction. Used for both PE and SE. There are some default parameters already set:
+      #SE: --gzip --bedGraph --counts 
+      #PE: --no-overlap --gzip --bedGraph --counts 
+      #Specifying this option will merge all four possible strand-specific methylation info into context-dependent output files: CpG, CHG, CHH
+      comprehensive: True
+      #Produces a genome-wide methylation report for all cytosines in the genome
+      cytosine_report: False
+      #The minimum number of times any methylation state (methylated or unmethylated) has to be seen for a nucleotide before its methylation percentage is reported
+      cutoff: 1
   # Params to use for methildackel. Only used when the mode is set to bwameth.
   methyldackel:
     # Adds CHG and CHH methylation in addition to CpG. Will produce very large files.
