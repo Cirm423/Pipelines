@@ -170,16 +170,16 @@ def get_read_group(wildcards):
 
 def get_bismark_bam(wildcards):
     if config["single_end"]:
-        return f"results/bismark/bams/{wildcards.sample}_se.bam"
+        return f"results/bismark_mapped/{wildcards.sample}_se.bam"
     else:
-        return f"results/bismark/bams/{wildcards.sample}_pe.bam"
+        return f"results/bismark_mapped/{wildcards.sample}_pe.bam"
 
 #Change this when bismark is added
 def get_dedup_bam(wildcards):
     if config["params"]["mode"] == "bwameth":
         return "results/picard_dedup/{sample}.bam"
     else:
-        return "results/bismark/bams/{sample}.deduplicated.bam"
+        return "results/bismark_mapped/{sample}.deduplicated.bam"
         
 def get_multiqc_input(wildcards):
     multiqc_input = []
@@ -225,18 +225,58 @@ def get_multiqc_input(wildcards):
         multiqc_input.extend(
             expand (
                 [
-                    "results/mapped/{sample}.mapped.flagstat",
-                    "results/mapped/{sample}.mapped.idxstats",
-                    "results/mapped/{sample}.mapped.stats.txt",
-                    "results/picard_dedup/{sample}.metrics.txt",
-                    "results/picard_dedup/{sample}.picard_dedup.flagstat",
-                    "results/picard_dedup/{sample}.picard_dedup.idxstats",
-                    "results/picard_dedup/{sample}.picard_dedup.stats.txt",
                     "results/qualimap/{sample}_qualimap"
                 ],
                 sample = sample
             )
         )
+        if config["params"]["mode"] == "bwameth":
+            multiqc_input.extend(
+                expand(
+                    [
+                        "results/mapped/{sample}.mapped.flagstat",
+                        "results/mapped/{sample}.mapped.idxstats",
+                        "results/mapped/{sample}.mapped.stats.txt",
+                        "results/picard_dedup/{sample}.metrics.txt",
+                        "results/picard_dedup/{sample}.picard_dedup.flagstat",
+                        "results/picard_dedup/{sample}.picard_dedup.idxstats",
+                        "results/picard_dedup/{sample}.picard_dedup.stats.txt",
+                        "results/methyldackel/{sample}_methyldackel.txt"                 
+                    ],
+                    sample=sample
+                )
+            )
+        else:
+            if config["single_end"]:
+                multiqc_input.extend(
+                    expand(
+                        [
+                            "results/bismark_mapped/{sample}_se.bismark_mapped.flagstat",
+                            "results/bismark_mapped/{sample}_se.bismark_mapped.idxstats",
+                            "results/bismark_mapped/{sample}_se.bismark_mapped.stats.txt",                            
+                            "results/bismark_mapped/{sample}_SE_report.txt",
+                            "results/bismark/reports/{sample}.deduplication_report.txt",
+                            "results/bismark/meth/{sample}-se_splitting_report.txt",
+                            "results/bismark/meth/{sample}-se.M-bias.txt"
+                        ],
+                        sample=sample
+                    )
+                )
+            else:
+                multiqc_input.extend(
+                    expand(
+                        [
+                            "results/bismark_mapped/{sample}_pe.bismark_mapped.flagstat",
+                            "results/bismark_mapped/{sample}_pe.bismark_mapped.idxstats",
+                            "results/bismark_mapped/{sample}_pe.bismark_mapped.stats.txt",
+                            "results/bismark_mapped/{sample}_PE_report.txt",
+                            "results/bismark/reports/{sample}.deduplication_report.txt",
+                            "results/bismark/meth/{sample}-pe_splitting_report.txt",
+                            "results/bismark/meth/{sample}-pe.M-bias.txt"
+                        ],
+                        sample=sample
+                    )
+                )            
         if config["params"]["lc_extrap"]["activate"]:
                 multiqc_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
 

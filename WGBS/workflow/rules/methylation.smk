@@ -26,7 +26,7 @@ rule methyldackel:
 
 rule bismark_methylation_extractor_pe:
     input: 
-        "results/bismark/bams/{sample}.deduplicated.bam"
+        "results/bismark_mapped/{sample}.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-pe.M-bias_R1.png",
         # Only for PE BAMS:
@@ -65,7 +65,7 @@ rule bismark_methylation_extractor_pe:
 
 rule bismark_methylation_extractor_se:
     input: 
-        "results/bismark/bams/{sample}.deduplicated.bam"
+        "results/bismark_mapped/{sample}.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-se.M-bias_R1.png",
         # Only for PE BAMS:

@@ -94,8 +94,8 @@ rule bismark_map_pe:
         bismark_indexes_dir=f"{assembly_path}Bisulfite_Genome",
         #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
     output:
-        bam=temp("results/bismark/bams/{sample}_pe.bam"),
-        report="results/bismark/bams/{sample}_PE_report.txt",
+        bam=temp("results/bismark_mapped/{sample}_pe.bam"),
+        report="results/bismark_mapped/{sample}_PE_report.txt",
     log:
         "logs/bismark/map/{sample}.log"
     params:
@@ -112,7 +112,7 @@ rule bismark_map_se:
         bismark_indexes_dir=f"{assembly_path}Bisulfite_Genome",
         #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
     output:
-        bam=temp("results/bismark/bams/{sample}_se.bam"),
+        bam=temp("results/bismark_mapped/{sample}_se.bam"),
         report="results/bismark/reports/{sample}_SE_report.txt",
     log:
         "logs/bismark/map/{sample}.log",
@@ -128,7 +128,7 @@ rule deduplicate_bismark:
     input: 
         get_bismark_bam
     output:
-        bam="results/bismark/bams/{sample}.deduplicated.bam",
+        bam="results/bismark_mapped/{sample}.deduplicated.bam",
         report="results/bismark/reports/{sample}.deduplication_report.txt",
     log:
         "logs/bismark/{sample}.deduplicated.log",
