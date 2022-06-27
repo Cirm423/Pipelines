@@ -34,7 +34,7 @@ rule bowtie2:
     input:
         sample=["results/merged_units/{sample}_R1.fastq.gz"] if config["single_end"] else ["results/merged_units/{sample}_R1.fastq.gz","results/merged_units/{sample}_R2.fastq.gz"],
         idx=multiext(
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}",
+            f"{assembly_path}{assembly}",
             ".1.bt2",
             ".2.bt2",
             ".3.bt2",
@@ -56,7 +56,7 @@ rule bowtie2_spike:
     input:
         sample=["results/merged_units/{sample}_R1.fastq.gz"] if config["single_end"] else ["results/merged_units/{sample}_R1.fastq.gz","results/merged_units/{sample}_R2.fastq.gz"],
         idx=multiext(
-            f"{config['resources']['path']}{config['resources']['ref']['spike_assembly']}",
+            f"{spike_path}{spike_assembly}",
             ".1.bt2",
             ".2.bt2",
             ".3.bt2",

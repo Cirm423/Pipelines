@@ -126,7 +126,7 @@ rule fragment_bed:
 rule genomecov_bed:
     input:
         bed="results/filtered/{sample}_fragments.bed",
-        ref=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes",
+        ref=f"{assembly_path}{assembly}.chrom.sizes",
         flag_stats="results/mapped/{sample}_spike-in.bam.flagstat",
     output:
         "results/bed_graph/{sample}_normalized.bedgraph"

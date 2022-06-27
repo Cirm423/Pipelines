@@ -26,6 +26,9 @@ validate(units, schema="../schemas/units.schema.yaml")
 build = config["resources"]["ref"]["assembly"]
 groups = samples["group"].unique()
 
+assembly = config["resources"]["ref"]["assembly"]
+assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
+
 #The pipe should always be run in paired end mode
 
 config["single_end"] = False

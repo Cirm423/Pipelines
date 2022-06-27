@@ -2,7 +2,7 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".fa",".annotation.gtf"),
+            multiext(f"{assembly_path}{assembly}",".fa",".annotation.gtf"),
         log:
             f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
@@ -14,9 +14,9 @@ if genecode_assembly:
     
     rule genome_faidx:
         input:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+            f"{assembly_path}{assembly}.fa",
         output:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa.fai",
+            f"{assembly_path}{assembly}.fa.fai",
         log:
             f"logs/genome-faidx_{config['resources']['ref']['assembly']}.log",
         params:
@@ -27,9 +27,9 @@ if genecode_assembly:
 
     rule annot_gtf2bed:
         input:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf",
+            f"{assembly_path}{assembly}.annotation.gtf",
         output:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+            f"{assembly_path}{assembly}.annotation.bed",
         log:
             "logs/annot_gtf2bed.log",
         cache: True
@@ -42,7 +42,7 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
+            multiext(f"{assembly_path}{assembly}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
         log:
             f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
         params:
@@ -55,28 +55,28 @@ else:
             "../scripts/genomepy.py"
 
 
-    rule move_annotation_ucsc:
-        input:
-            gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.sizes",
-            fai=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.fai",
-            fa=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa",
-        output:
-            multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
-        params:
-            folder=f"{config['resources']['path']}{config['resources']['ref']['assembly']}"
-        cache: True
-        log:
-            f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
-        shell:
-            "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
+    # rule move_annotation_ucsc:
+    #     input:
+    #         gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.gtf",
+    #         bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.annotation.bed",
+    #         sizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.sizes",
+    #         fai=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa.fai",
+    #         fa=f"{config['resources']['path']}{config['resources']['ref']['assembly']}/{config['resources']['ref']['assembly']}.fa",
+    #     output:
+    #         multiext(f"{config['resources']['path']}{config['resources']['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+    #     params:
+    #         folder=f"{config['resources']['path']}{config['resources']['ref']['assembly']}"
+    #     cache: True
+    #     log:
+    #         f"logs/unzip_annotation_{config['resources']['ref']['assembly']}.log"
+    #     shell:
+    #         "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
 
 rule bwa_index:
     input:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+        f"{assembly_path}{assembly}.fa",
     output:
-        idx=multiext((f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        idx=multiext((f"{assembly_path}{assembly}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
         f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
     params:
@@ -92,9 +92,9 @@ if genecode_assembly:
 
     rule faToTwoBit_fa:
         input:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
+            f"{assembly_path}{assembly}.fa",
         output:
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.2bit"),
+            temp(f"{assembly_path}{assembly}.2bit"),
         log:
             "logs/browser/fa_to_2bit.log"
         params:
@@ -104,9 +104,9 @@ if genecode_assembly:
 
     rule twoBitInfo:
         input:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.2bit"
+            f"{assembly_path}{assembly}.2bit"
         output:
-            temp(f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.tmp")
+            temp(f"{assembly_path}{assembly}.chrom.sizes.tmp")
         log:
             "logs/browser/chrom.sizes.log"
         params:
@@ -116,9 +116,9 @@ if genecode_assembly:
 
     rule twoBitInfo_sort:
         input:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.tmp"
+            f"{assembly_path}{assembly}.chrom.sizes.tmp"
         output:
-            f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+            f"{assembly_path}{assembly}.chrom.sizes"
         cache: True
         shell:
             "sort -k2rn {input} > {output}"
@@ -126,9 +126,9 @@ if genecode_assembly:
 
 rule twoBitInfo_sort_tobedtools:
     input:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+        f"{assembly_path}{assembly}.chrom.sizes"
     output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.bedtools"
+        f"{assembly_path}{assembly}.chrom.sizes.bedtools"
     cache: True
     shell:
         "sort -k1,1 -k2,2n {input} > {output}"
@@ -175,9 +175,9 @@ rule generate_igenomes_blacklist:
     input:
         f"{config['resources']['path']}igenomes.yaml"
     output:
-        blacklist_path=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.bed"
+        blacklist_path=f"{assembly_path}{assembly}.blacklist.bed"
     params:
-        build = config["resources"]["ref"]["assembly"],
+        build = assembly,
         chromosome = "",
         blacklist = config["resources"]["ref"]["blacklist"]
     log:
@@ -189,9 +189,9 @@ rule generate_igenomes_blacklist:
 
 rule bedtools_sort_blacklist:
     input:
-        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.bed"
+        in_file=f"{assembly_path}{assembly}.blacklist.bed"
     output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted"
+        f"{assembly_path}{assembly}.blacklist.sorted"
     params:
         extra=""
     log:
@@ -201,9 +201,9 @@ rule bedtools_sort_blacklist:
 
 rule bedtools_format_blacklist:
     input:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted"
+        f"{assembly_path}{assembly}.blacklist.sorted"
     output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist_formated.sorted"
+        f"{assembly_path}{assembly}.blacklist_formated.sorted"
     log:
         "logs/ref/blacklist.format.log"
     run:
@@ -224,10 +224,10 @@ rule bedtools_format_blacklist:
 
 rule bedtools_complement_blacklist:
     input:
-        in_file=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist_formated.sorted",
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes.bedtools"
+        in_file=f"{assembly_path}{assembly}.blacklist_formated.sorted",
+        genome=f"{assembly_path}{assembly}.chrom.sizes.bedtools"
     output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement"
+        f"{assembly_path}{assembly}.blacklist.sorted.complement"
     params:
         extra=""
     log:
@@ -239,10 +239,10 @@ checkpoint get_gsize:
     input:
         f"{config['resources']['path']}igenomes.yaml"
     output:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.gsize.txt"
+        f"{assembly_path}{assembly}.gsize.txt"
     params:
         extra=config["resources"]["ref"]["macs-gsize"],
-        build=config["resources"]["ref"]["assembly"]
+        build=assembly
     log:
         "logs/ref/gsize.log"
     conda:

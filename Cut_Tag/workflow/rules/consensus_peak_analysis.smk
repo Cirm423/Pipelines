@@ -114,8 +114,8 @@ rule create_consensus_igv:
 rule homer_consensus_annotatepeaks:
     input:
         peaks="results/seacr_merged/{antibody}.consensus_peaks.boolean.bed",
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
-        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
+        genome=f"{assembly_path}{assembly}.fa",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf"
     output:
         annotations="results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.annotatePeaks.txt"
     threads:

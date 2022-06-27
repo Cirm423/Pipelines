@@ -87,8 +87,8 @@ rule create_consensus_igv:
 rule homer_consensus_annotatepeaks:
     input:
         peaks="results/genrich_merged_expand/consensus_narrow-peaks.boolean.bed",
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
-        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
+        genome=f"{assembly_path}{assembly}.fa",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf"
     output:
         annotations="results/homer/annotate_consensus_peaks/consensus_narrow-peaks.annotatePeaks.txt"
     threads:

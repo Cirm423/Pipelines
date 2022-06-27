@@ -126,8 +126,8 @@ rule create_igv_peaks:
 rule homer_annotatepeaks:
     input:
         peaks="results/genrich/{group}.narrowPeak",
-        genome=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa",
-        gtf=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.gtf"
+        genome=f"{assembly_path}{assembly}.fa",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf"
     output:
         annotations="results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt"
     threads:

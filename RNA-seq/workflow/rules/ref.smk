@@ -27,7 +27,7 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
+            multiext(f"{config['resources']}{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
         log:
             f"logs/get-genome_{config['ref']['assembly']}.log",
         params:
@@ -40,22 +40,22 @@ else:
             "../scripts/genomepy.py"
 
 
-    rule move_annotation_ucsc:
-        input:
-            gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf",
-            bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed",
-            sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
-            fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
-            fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
-        output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
-        params:
-            folder=f"{config['resources']}{config['ref']['assembly']}"
-        cache: True
-        log:
-            f"logs/unzip_annotation_{config['ref']['assembly']}.log"
-        shell:
-            "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
+    # rule move_annotation_ucsc:
+    #     input:
+    #         gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf",
+    #         bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed",
+    #         sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
+    #         fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
+    #         fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
+    #     output:
+    #         multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+    #     params:
+    #         folder=f"{config['resources']}{config['ref']['assembly']}"
+    #     cache: True
+    #     log:
+    #         f"logs/unzip_annotation_{config['ref']['assembly']}.log"
+    #     shell:
+    #         "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
 
 rule bwa_index:
     input:

@@ -26,6 +26,12 @@ validate(units, schema="../schemas/units.schema.yaml")
 build = config["resources"]["ref"]["assembly"]
 chromosome = config["resources"]["ref"]["chromosome"]
 antibodies = samples["antibody"].unique()
+
+assembly = config["resources"]["ref"]["assembly"]
+assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
+spike_assembly = config['resources']['ref']['spike_assembly']
+spike_path = config['resources']['path'] + config['resources']['ref']['spike_assembly'] + "/"
+
 #The pipe should always be run in paired end mode
 
 config["single_end"] = False
@@ -182,7 +188,7 @@ def get_plot_homer_annotatepeaks_input():
     )
 
 def get_samtools_view_filter_input(wildcards):
-    return ["results/picard_dedup/{sample}.sorted.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
+    return ["results/picard_dedup/{sample}.sorted.bam", f"{assembly_path}{assembly}.blacklist.sorted.complement".format(
         prefix="chr{chr}_".format(chr=chromosome) if chromosome else "",
         build=build
     )]

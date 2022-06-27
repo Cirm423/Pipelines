@@ -17,7 +17,7 @@ rule preseq_lc_extrap:
 rule collect_multiple_metrics:
     input:
          bam="results/filtered/{sample}.sorted.bam",
-         ref=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"
+         ref=f"{assembly_path}{assembly}.fa"
     output: #ToDo: add descriptions to report captions
         # Through the output file extensions the different tools for the metrics can be selected
         # so that it is not necessary to specify them under params with the "PROGRAM" option.

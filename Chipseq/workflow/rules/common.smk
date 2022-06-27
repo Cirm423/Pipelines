@@ -26,6 +26,9 @@ validate(units, schema="../schemas/units.schema.yaml")
 build = config["resources"]["ref"]["assembly"]
 chromosome = config["resources"]["ref"]["chromosome"]
 
+assembly = config["resources"]["ref"]["assembly"]
+assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
+
 #Check that the control samples are actually in the sample table
 
 assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
@@ -158,7 +161,7 @@ def get_plot_homer_annotatepeaks_input():
     )
 
 def get_samtools_view_filter_input(wildcards):
-    return ["results/picard_dedup/{sample}.bam", f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement".format(
+    return ["results/picard_dedup/{sample}.bam", f"{assembly_path}{assembly}.blacklist.sorted.complement".format(
         prefix="chr{chr}_".format(chr=chromosome) if chromosome else "",
         build=build
     )]

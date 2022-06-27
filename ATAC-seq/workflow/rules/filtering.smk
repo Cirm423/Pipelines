@@ -1,7 +1,7 @@
 rule samtools_view_filter:
     input:
         "results/merged/{sample}.bam", 
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.blacklist.sorted.complement"
+        f"{assembly_path}{assembly}.blacklist.sorted.complement"
     output:
         temp("results/sam-view/{sample}.bam")
     params:

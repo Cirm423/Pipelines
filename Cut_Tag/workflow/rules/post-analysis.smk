@@ -17,7 +17,7 @@ rule preseq_lc_extrap:
 rule collect_multiple_metrics:
     input:
          bam="results/filtered/{sample}.sorted.bam",
-         ref=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.fa"
+         ref=f"{assembly_path}{assembly}.fa"
     output: #ToDo: add descriptions to report captions
         # Through the output file extensions the different tools for the metrics can be selected
         # so that it is not necessary to specify them under params with the "PROGRAM" option.
@@ -102,7 +102,7 @@ rule sort_genomecov:
 rule bedGraphToBigWig:
     input:
         bedGraph="results/bed_graph/{sample}.sorted.bedgraph",
-        chromsizes=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.chrom.sizes"
+        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/{sample}.bigWig"
     log:
@@ -114,7 +114,7 @@ rule bedGraphToBigWig:
 
 rule create_igv_bigwig:
     input:
-        f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+        f"{assembly_path}{assembly}.annotation.bed",
         expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
         "results/IGV/big_wig/merged_library.bigWig.igv.txt"
@@ -135,7 +135,7 @@ rule create_region:
 
 rule compute_matrix:
     input:
-         #bed=f"{config['resources']['path']}{config['resources']['ref']['assembly']}.annotation.bed",
+         #bed=f"{assembly_path}{assembly}.annotation.bed",
          bed="results/seacr_callpeak/Peak_region.bed",
          bigwig=expand("results/big_wig/{sample}.bigWig", sample=samples.index)
     output:
