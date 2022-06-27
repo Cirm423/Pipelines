@@ -254,7 +254,7 @@ def get_multiqc_input(wildcards):
                             "results/bismark_mapped/{sample}_se.bismark_mapped.flagstat",
                             "results/bismark_mapped/{sample}_se.bismark_mapped.idxstats",
                             "results/bismark_mapped/{sample}_se.bismark_mapped.stats.txt",                            
-                            "results/bismark_mapped/{sample}_SE_report.txt",
+                            "results/bismark/reports/{sample}_SE_report.txt",
                             "results/bismark/reports/{sample}.deduplication_report.txt",
                             "results/bismark/meth/{sample}-se_splitting_report.txt",
                             "results/bismark/meth/{sample}-se.M-bias.txt"
@@ -269,7 +269,7 @@ def get_multiqc_input(wildcards):
                             "results/bismark_mapped/{sample}_pe.bismark_mapped.flagstat",
                             "results/bismark_mapped/{sample}_pe.bismark_mapped.idxstats",
                             "results/bismark_mapped/{sample}_pe.bismark_mapped.stats.txt",
-                            "results/bismark_mapped/{sample}_PE_report.txt",
+                            "results/bismark/reports/{sample}_PE_report.txt",
                             "results/bismark/reports/{sample}.deduplication_report.txt",
                             "results/bismark/meth/{sample}-pe_splitting_report.txt",
                             "results/bismark/meth/{sample}-pe.M-bias.txt"

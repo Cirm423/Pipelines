@@ -95,7 +95,7 @@ rule bismark_map_pe:
         #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
     output:
         bam=temp("results/bismark_mapped/{sample}_pe.bam"),
-        report="results/bismark_mapped/{sample}_PE_report.txt",
+        report="results/bismark/reports/{sample}_PE_report.txt",
     log:
         "logs/bismark/map/{sample}.log"
     params:
