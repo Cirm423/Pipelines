@@ -21,7 +21,7 @@ export LANG=en_US.UTF-8
 
 # Setting the resources folder for snakemake
 
-export SNAKEMAKE_OUTPUT_CACHE=/data1/share/dcyleung/Pipeline/resources
+export SNAKEMAKE_OUTPUT_CACHE=/data1/share/dcyleung/Pipeline/snakemake/resources
 
 # Create the directory where the slurm logs from snakemake subtasks will go
 

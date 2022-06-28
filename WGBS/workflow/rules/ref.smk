@@ -81,6 +81,7 @@ rule bwa_index_meth:
         f"logs/bwa_meth_index_{assembly}.log",
     resources:
         mem_mb=369000,
+    threads: 24
     cache: True
     conda:
         "../envs/bwa_meth.yaml"
@@ -96,6 +97,8 @@ rule bismark_genome_preparation_fa:
         f"logs/bismark/{assembly}_index.log"
     params:
         ""  # optional params string
+    threads: 24
+    cache: True
     wrapper:
         "v1.7.0/bio/bismark/bismark_genome_preparation"
 
