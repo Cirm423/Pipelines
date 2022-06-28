@@ -42,8 +42,8 @@ rule ATACseqQC_init:
     output:
         temp(touch("results/qc/ATACseqQC/download.done"))
     params:
-        BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
-        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"],
+        BSgenome = QC_packages[assembly]["BSgenome"],
+        Txdb = QC_packages[assembly]["Txdb"],
     log:
         "logs/ATACseqQC/init.log"
     conda:
@@ -68,8 +68,8 @@ rule ATACseqQC:
         CTCF_footprint = report("results/qc/ATACseqQC/{sample}/CTCF_footprint.pdf", category = "ATACseqQC_{sample}"),
         CTCF_Vplot = report("results/qc/ATACseqQC/{sample}/CTCF_Vplot.pdf", category = "ATACseqQC_{sample}")
     params:
-        BSgenome = QC_packages[config['resources']['ref']['assembly']]["BSgenome"],
-        Txdb = QC_packages[config['resources']['ref']['assembly']]["Txdb"],
+        BSgenome = QC_packages[assembly]["BSgenome"],
+        Txdb = QC_packages[assembly]["Txdb"],
         path = "results/qc/ATACseqQC/{sample}/temp"
     log:
         "logs/ATACseqQC/{sample}.log"

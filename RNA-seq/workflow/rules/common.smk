@@ -30,8 +30,8 @@ units = (
 )
 validate(units, schema="../schemas/units.schema.yaml")
 
-assembly = config["resources"]["ref"]["assembly"]
-assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
+assembly = config["ref"]["assembly"]
+assembly_path = config['resources'] + config['ref']['assembly'] + "/"
 
 if config["single"]["activate"] or config["TE_single"]["activate"]:
     assert(len(samples.loc[samples["condition"]=="control"])==1), "For single analysis one of the samples has to be called 'control'"

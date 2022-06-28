@@ -75,7 +75,7 @@ genecode = {
 }
 
 genecode_assembly = False
-if config['resources']['ref']['assembly'] in genecode.keys():
+if assembly in genecode.keys():
     genecode_assembly = True
 
 ####### ATACseqQC packages ######
@@ -112,7 +112,7 @@ QC_packages = {
 }
 
 ATACseqQC_act = False
-if config['resources']['ref']['assembly'] in QC_packages.keys():
+if assembly in QC_packages.keys():
     ATACseqQC_act = True
 
 ####### helpers ###########

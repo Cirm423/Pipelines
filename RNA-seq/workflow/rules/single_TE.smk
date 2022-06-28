@@ -17,7 +17,7 @@ rule TE_single_signal:
     input:
         bed="results/TE_single/{sample}/Aligned.out.bed",
         fac="results/Factor",
-        annot=f"{config['resources']}{config['ref']['assembly']}.rmsk.bed",
+        annot=f"{assembly_path}{assembly}.rmsk.bed",
         log=get_star_log,
     output:
         tmp=temp("results/TE_single/{sample}/Aligned.out.bed.sorted"),

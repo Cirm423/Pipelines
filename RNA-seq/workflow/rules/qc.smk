@@ -2,7 +2,7 @@
 
 rule rseqc_gtf2bed:
     input:
-        f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
+        f"{assembly_path}{assembly}.annotation.gtf",
     output:
         bed="results/qc/rseqc/annotation.bed",
         db=temp("results/qc/rseqc/annotation.db"),

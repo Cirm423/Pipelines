@@ -5,7 +5,7 @@ rule align_pe:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        index=f"{config['resources']}star_genome_{config['ref']['assembly']}",
+        index=f"{assembly_path}star_genome_{assembly}",
     output:
         path_merged_cond("results/star/pe/?/Aligned.out.bam"),
         path_merged_cond("results/star/pe/?/Aligned.toTranscriptome.out.bam"),
@@ -16,7 +16,7 @@ rule align_pe:
     params:
         index=lambda wc, input: input.index,
         extra="--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
-            f"{config['resources']}{config['ref']['assembly']}.annotation.gtf", config["params"]["star"]
+            f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
     threads: 24
     wrapper:
@@ -26,7 +26,7 @@ rule align_pe:
 rule align_se:
     input:
         fq1=get_map_reads_input_R1,
-        index=f"{config['resources']}star_genome_{config['ref']['assembly']}",
+        index=f"{assembly_path}star_genome_{assembly}",
     output:
         path_merged_cond("results/star/se/?/Aligned.out.bam"),
         path_merged_cond("results/star/se/?/Aligned.toTranscriptome.out.bam"),
@@ -37,7 +37,7 @@ rule align_se:
     params:
         index=lambda wc, input: input.index,
         extra="--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
-            f"{config['resources']}{config['ref']['assembly']}.annotation.gtf", config["params"]["star"]
+            f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
     threads: 24
     wrapper:
@@ -47,7 +47,7 @@ rule align_pe_2pass:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        index=f"{config['resources']}star_genome_{config['ref']['assembly']}",
+        index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
         path_merged_cond("results/star/pe2/?/Aligned.out.bam"),
@@ -58,7 +58,7 @@ rule align_pe_2pass:
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
-            f"{config['resources']}{config['ref']['assembly']}.annotation.gtf", input.sj, config["params"]["star"]
+            f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
     threads: 24
     wrapper:
@@ -68,7 +68,7 @@ rule align_pe_2pass:
 rule align_se_2pass:
     input:
         fq1=get_map_reads_input_R1,
-        index=f"{config['resources']}star_genome_{config['ref']['assembly']}",
+        index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
         path_merged_cond("results/star/se2/?/Aligned.out.bam"),
@@ -79,7 +79,7 @@ rule align_se_2pass:
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
-            f"{config['resources']}{config['ref']['assembly']}.annotation.gtf", input.sj, config["params"]["star"]
+            f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
     threads: 24
     wrapper:
@@ -205,7 +205,7 @@ rule rsem_pe:
         #     ),
         # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
         bai=get_star_bam_bai,
-        reference=f"{config['resources']}rsem_reference_{config['ref']['assembly']}.seq",
+        reference=f"{assembly_path}rsem_reference_{assembly}.seq",
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
         # this file contains per-gene quantification data for the sample
@@ -240,7 +240,7 @@ rule rsem_se:
         #     ),
         # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
         bai=get_star_bam_bai,
-        reference=f"{config['resources']}rsem_reference_{config['ref']['assembly']}.seq",
+        reference=f"{assembly_path}rsem_reference_{assembly}.seq",
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
         # this file contains per-gene quantification data for the sample
