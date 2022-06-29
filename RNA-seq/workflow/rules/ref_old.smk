@@ -1,6 +1,6 @@
 rule get_genome:
     output:
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta",
     log:
         f"logs/get-genome_{config['ref']['build']}_{config['ref']['release']}.log",
     params:
@@ -15,7 +15,7 @@ rule get_genome:
 
 rule get_annotation:
     output:
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.gtf",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.gtf",
     params:
         species=config["ref"]["species"],
         fmt="gtf",
@@ -31,9 +31,9 @@ rule get_annotation:
 
 rule genome_faidx:
     input:
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta",
     output:
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta.fai",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta.fai",
     log:
         f"logs/genome-faidx_{config['ref']['build']}_{config['ref']['release']}.log",
     cache: True
@@ -43,9 +43,9 @@ rule genome_faidx:
 
 rule bwa_index:
     input:
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta",
     output:
-        multiext((f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        multiext((f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
         f"logs/bwa_index_{config['ref']['build']}_{config['ref']['release']}.log",
     resources:
@@ -57,13 +57,13 @@ rule bwa_index:
 
 rule star_index:
     input:
-        fasta=f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta",
-        annotation=f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.gtf",
+        fasta=f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta",
+        annotation=f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.gtf",
     output:
-        directory(f"{config['resources']}star_genome_{config['ref']['build']}_{config['ref']['release']}"),
+        directory(f"{assembly_path}star_genome_{config['ref']['build']}_{config['ref']['release']}"),
     threads: 24
     params:
-        extra=f"--sjdbGTFfile {config['resources']}{config['ref']['build']}_{config['ref']['release']}.gtf --sjdbOverhang 100",
+        extra=f"--sjdbGTFfile {assembly_path}{config['ref']['build']}_{config['ref']['release']}.gtf --sjdbOverhang 100",
     log:
         f"logs/star_index_genome_{config['ref']['build']}_{config['ref']['release']}.log",
     cache: True
@@ -73,22 +73,22 @@ rule star_index:
 rule rsem_ref:
     input:
         # reference FASTA with either the entire genome or transcript sequences
-        f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.gtf",
-        reference_genome=f"{config['resources']}{config['ref']['build']}_{config['ref']['release']}.fasta",
+        f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.gtf",
+        reference_genome=f"{assembly_path}{config['ref']['build']}_{config['ref']['release']}.fasta",
     output:
         # one of the index files created and used by RSEM (required)
-        seq=f"{config['resources']}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.seq",
+        seq=f"{assembly_path}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.seq",
         # RSEM produces a number of other files which may optionally be specified as output; these may be provided so that snakemake is aware of them, but the wrapper doesn't do anything with this information other than to verify that the file path prefixes match that of output.seq.
         # for example,
-        grp=f"{config['resources']}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.grp",
-        ti=f"{config['resources']}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.ti",
+        grp=f"{assembly_path}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.grp",
+        ti=f"{assembly_path}rsem_reference_{config['ref']['build']}_{config['ref']['release']}.ti",
     threads: 4
     params:
         # optional additional parameters, for example,
         #extra="--gtf annotations.gtf",
         # if building the index against a reference transcript set
-        extra=f"--gtf {config['resources']}{config['ref']['build']}_{config['ref']['release']}.gtf",
-        out_ref = f"{config['resources']}rsem_reference_{config['ref']['build']}_{config['ref']['release']}",
+        extra=f"--gtf {assembly_path}{config['ref']['build']}_{config['ref']['release']}.gtf",
+        out_ref = f"{assembly_path}rsem_reference_{config['ref']['build']}_{config['ref']['release']}",
     log:
         f"logs/rsem/prepare-reference_{config['ref']['build']}_{config['ref']['release']}.log",
     cache: True

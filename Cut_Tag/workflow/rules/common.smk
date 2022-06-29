@@ -576,10 +576,10 @@ genecode = {
 }
 
 genecode_assembly = False
-if config['resources']['ref']['assembly'] in genecode.keys():
+if assembly in genecode.keys():
     genecode_assembly = True
 
 def get_assembly_rmsk(wc):
     if genecode_assembly:
-        return genecode[config['resources']['ref']['assembly']]["rmsk"]
-    return config['resources']['ref']['assembly']
+        return genecode[assembly]["rmsk"]
+    return assembly

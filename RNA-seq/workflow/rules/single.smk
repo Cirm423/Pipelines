@@ -10,9 +10,9 @@ rule get_factor:
 
 rule gene_name:
     input:
-        f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
+        f"{assembly_path}{assembly}.annotation.gtf",
     output:
-        f"{config['resources']}{config['ref']['assembly']}.gtf.gene_name",
+        f"{assembly_path}{assembly}.gtf.gene_name",
     cache: True
     log:
         "logs/gene_name.log",
@@ -22,7 +22,7 @@ rule gene_name:
 rule prepare_single:
     input:
         treat = get_single_input,
-        id_name = f"{config['resources']}{config['ref']['assembly']}.gtf.gene_name",
+        id_name = f"{assembly_path}{assembly}.gtf.gene_name",
         factor = "results/Factor",
     output:
         "results/single/{sample}.signal"

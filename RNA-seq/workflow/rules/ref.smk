@@ -2,11 +2,11 @@ if genecode_assembly:
 
     rule get_genome_gencode:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}",".fa",".annotation.gtf"),
+            multiext(f"{assembly_path}{assembly}",".fa",".annotation.gtf"),
         log:
-            f"logs/get-genome_{config['ref']['assembly']}.log",
+            f"logs/get-genome_{assembly}.log",
         params:
-            assembly=f"{config['ref']['assembly']}",
+            assembly=f"{assembly}",
         cache: True
         run:
             shell(f"wget -O {output[0]}.gz {genecode[config['ref']['assembly']]['assembly']} && gzip -d {output[0]}.gz")
@@ -14,11 +14,11 @@ if genecode_assembly:
     
     rule genome_faidx:
         input:
-            f"{config['resources']}{config['ref']['assembly']}.fa",
+            f"{assembly_path}{assembly}.fa",
         output:
-            f"{config['resources']}{config['ref']['assembly']}.fa.fai",
+            f"{assembly_path}{assembly}.fa.fai",
         log:
-            f"logs/genome-faidx_{config['ref']['assembly']}.log",
+            f"logs/genome-faidx_{assembly}.log",
         cache: True
         wrapper:
             "0.77.0/bio/samtools/faidx"
@@ -27,12 +27,12 @@ else:
 
     rule get_genome_ucsc:
         output:
-            multiext(f"{config['resources']}{config['ref']['assembly']}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
+            multiext(f"{assembly_path}{assembly}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
         log:
-            f"logs/get-genome_{config['ref']['assembly']}.log",
+            f"logs/get-genome_{assembly}.log",
         params:
             provider="UCSC",
-            assembly=f"{config['ref']['assembly']}",
+            assembly=f"{assembly}",
         cache: True
         conda:
             "../envs/genomepy.yaml"
@@ -42,28 +42,28 @@ else:
 
     # rule move_annotation_ucsc:
     #     input:
-    #         gtf=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.gtf",
-    #         bed=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.annotation.bed",
-    #         sizes=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.sizes",
-    #         fai=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa.fai",
-    #         fa=f"{config['resources']}{config['ref']['assembly']}/{config['ref']['assembly']}.fa",
+    #         gtf=f"{config['resources']}{assembly}/{assembly}.annotation.gtf",
+    #         bed=f"{config['resources']}{assembly}/{assembly}.annotation.bed",
+    #         sizes=f"{config['resources']}{assembly}/{assembly}.fa.sizes",
+    #         fai=f"{config['resources']}{assembly}/{assembly}.fa.fai",
+    #         fa=f"{config['resources']}{assembly}/{assembly}.fa",
     #     output:
-    #         multiext(f"{config['resources']}{config['ref']['assembly']}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
+    #         multiext(f"{config['resources']}{assembly}",".annotation.gtf",".annotation.bed",".chrom.sizes",".fa.fai",".fa")
     #     params:
-    #         folder=f"{config['resources']}{config['ref']['assembly']}"
+    #         folder=f"{config['resources']}{assembly}"
     #     cache: True
     #     log:
-    #         f"logs/unzip_annotation_{config['ref']['assembly']}.log"
+    #         f"logs/unzip_annotation_{assembly}.log"
     #     shell:
     #         "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
 
 rule bwa_index:
     input:
-        f"{config['resources']}{config['ref']['assembly']}.fa",
+        f"{assembly_path}{assembly}.fa",
     output:
-        multiext((f"{config['resources']}{config['ref']['assembly']}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
+        multiext((f"{assembly_path}{assembly}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
-        f"logs/bwa_index_{config['ref']['assembly']}.log",
+        f"logs/bwa_index_{assembly}.log",
     resources:
         mem_mb=369000,
     cache: True
@@ -73,15 +73,15 @@ rule bwa_index:
 
 rule star_index:
     input:
-        fasta=f"{config['resources']}{config['ref']['assembly']}.fa",
-        annotation=f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
+        fasta=f"{assembly_path}{assembly}.fa",
+        annotation=f"{assembly_path}{assembly}.annotation.gtf",
     output:
-        directory(f"{config['resources']}star_genome_{config['ref']['assembly']}"),
+        directory(f"{assembly_path}star_genome_{assembly}"),
     threads: 24
     params:
-        extra=f"--sjdbGTFfile {config['resources']}{config['ref']['assembly']}.annotation.gtf --sjdbOverhang 100",
+        extra=f"--sjdbGTFfile {assembly_path}{assembly}.annotation.gtf --sjdbOverhang 100",
     log:
-        f"logs/star_index_genome_{config['ref']['assembly']}.log",
+        f"logs/star_index_genome_{assembly}.log",
     cache: True
     wrapper:
         "0.77.0/bio/star/index"
@@ -89,21 +89,21 @@ rule star_index:
 rule rsem_ref:
     input:
         # reference FASTA with either the entire genome or transcript sequences
-        f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
-        reference_genome=f"{config['resources']}{config['ref']['assembly']}.fa",
+        f"{assembly_path}{assembly}.annotation.gtf",
+        reference_genome=f"{assembly_path}{assembly}.fa",
     output:
         # one of the index files created and used by RSEM (required)
-        multiext(f"{config['resources']}rsem_reference_{config['ref']['assembly']}",".seq",".grp",".ti")
+        multiext(f"{assembly_path}rsem_reference_{assembly}",".seq",".grp",".ti")
         # RSEM produces a number of other files which may optionally be specified as output (later 2 above); these may be provided so that snakemake is aware of them, but the wrapper doesn't do anything with this information other than to verify that the file path prefixes match that of output.seq.
     threads: 4
     params:
         # optional additional parameters, for example,
         #extra="--gtf annotations.gtf",
         # if building the index against a reference transcript set
-        extra=f"--gtf {config['resources']}{config['ref']['assembly']}.annotation.gtf",
-        out_ref = f"{config['resources']}rsem_reference_{config['ref']['assembly']}",
+        extra=f"--gtf {assembly_path}{assembly}.annotation.gtf",
+        out_ref = f"{assembly_path}rsem_reference_{assembly}",
     log:
-        f"logs/rsem/prepare-reference_{config['ref']['assembly']}.log",
+        f"logs/rsem/prepare-reference_{assembly}.log",
     conda:
         "../envs/rsem.yaml"
     cache: True
@@ -112,24 +112,24 @@ rule rsem_ref:
 
 rule get_rmsk:
     output:
-        temp(f"{config['resources']}{config['ref']['assembly']}.rmsk.txt"),
+        temp(f"{assembly_path}{assembly}.rmsk.txt"),
     log:
-        f"logs/get_rmsk_{config['ref']['assembly']}.log",
+        f"logs/get_rmsk_{assembly}.log",
     params:
         assembly = get_assembly_rmsk,
-        dir = f"{config['resources']}",
+        dir = f"{assembly_path}",
     shell:
         "wget https://hgdownload.soe.ucsc.edu/goldenPath/{params.assembly}/database/rmsk.txt.gz -P {params.dir} && gzip -dc {params.dir}rmsk.txt.gz > {output} && rm {params.dir}rmsk.txt.gz 2>{log}"
 
 rule rmsk_to_bed:
     input:
-        f"{config['resources']}{config['ref']['assembly']}.rmsk.txt",
+        f"{assembly_path}{assembly}.rmsk.txt",
     output:
-        f"{config['resources']}{config['ref']['assembly']}.rmsk.bed",
+        f"{assembly_path}{assembly}.rmsk.bed",
     params:
-        assemb={config['ref']['assembly']}
+        assemb={assembly}
     log:
-        f"logs/rsem/rmsk_to_bed-{config['ref']['assembly']}",
+        f"logs/rsem/rmsk_to_bed-{assembly}",
     cache: True
     shell:
         r"""awk 'BEGIN{{OFS="\t"}} {{print $6,$7,$8,$6";"$7";"$8";"$11";"$12";"$13,$2,$10}}' {input} > {output} 2>{log}"""
@@ -140,9 +140,9 @@ if genecode_assembly:
 
     rule annot_gtf2bed:
         input:
-            f"{config['resources']}{config['ref']['assembly']}.annotation.gtf",
+            f"{assembly_path}{assembly}.annotation.gtf",
         output:
-            f"{config['resources']}{config['ref']['assembly']}.annotation.bed",
+            f"{assembly_path}{assembly}.annotation.bed",
         log:
             "logs/annot_gtf2bed.log",
         cache: True
@@ -154,9 +154,9 @@ if genecode_assembly:
 
 rule rmsk_bed2gtf:
     input:
-        f"{config['resources']}{config['ref']['assembly']}.rmsk.bed",
+        f"{assembly_path}{assembly}.rmsk.bed",
     output:
-        f"{config['resources']}{config['ref']['assembly']}.rmsk.gtf",
+        f"{assembly_path}{assembly}.rmsk.gtf",
     log:
         "logs/rmsk_bed2gtf.log",
     cache: True

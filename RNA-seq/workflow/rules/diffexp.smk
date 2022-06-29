@@ -53,7 +53,7 @@ rule deseq2:
 rule deseq2_init_TE:
     input:
         bam=lambda wc: get_star_output_all_units(wc, fi='bam'),
-        gtf=f"{config['resources']}{config['ref']['assembly']}.rmsk.gtf",
+        gtf=f"{assembly_path}{assembly}.rmsk.gtf",
     output:
         "results/deseq2/TE_all.rds",
         "results/deseq2/TE_normcounts.tsv",

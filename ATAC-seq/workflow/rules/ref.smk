@@ -4,13 +4,13 @@ if genecode_assembly:
         output:
             multiext(f"{assembly_path}{assembly}",".fa",".annotation.gtf"),
         log:
-            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+            f"logs/get-genome_{assembly}.log",
         params:
-            assembly=f"{config['resources']['ref']['assembly']}",
+            assembly=f"{assembly}",
         cache: True
         run:
-            shell(f"wget -O {output[0]}.gz {genecode[config['resources']['ref']['assembly']]['assembly']} && gzip -d {output[0]}.gz")
-            shell(f"wget -O {output[1]}.gz {genecode[config['resources']['ref']['assembly']]['gtf']} && gzip -d {output[1]}.gz")
+            shell(f"wget -O {output[0]}.gz {genecode[assembly]['assembly']} && gzip -d {output[0]}.gz")
+            shell(f"wget -O {output[1]}.gz {genecode[assembly]['gtf']} && gzip -d {output[1]}.gz")
     
     rule genome_faidx:
         input:
@@ -18,7 +18,7 @@ if genecode_assembly:
         output:
             f"{assembly_path}{assembly}.fa.fai",
         log:
-            f"logs/genome-faidx_{config['resources']['ref']['assembly']}.log",
+            f"logs/genome-faidx_{assembly}.log",
         params:
             extra="",  # optional params string
         cache: True
@@ -44,10 +44,10 @@ else:
         output:
             multiext(f"{assembly_path}{assembly}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")
         log:
-            f"logs/get-genome_{config['resources']['ref']['assembly']}.log",
+            f"logs/get-genome_{assembly}.log",
         params:
             provider="UCSC",
-            assembly=f"{config['resources']['ref']['assembly']}",
+            assembly=f"{assembly}",
         cache: True
         conda:
             "../envs/genomepy.yaml"
@@ -78,7 +78,7 @@ rule bwa_index:
     output:
         idx=multiext((f"{assembly_path}{assembly}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
-        f"logs/bwa_index_{config['resources']['ref']['assembly']}.log",
+        f"logs/bwa_index_{assembly}.log",
     params:
         algorithm="bwtsw",
     resources:

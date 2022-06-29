@@ -4,9 +4,9 @@ if genecode_assembly:
 
     rule faToTwoBit_fa:
         input:
-            f"{config['resources']}{config['ref']['assembly']}.fa",
+            f"{assembly_path}{assembly}.fa",
         output:
-            temp(f"{config['resources']}{config['ref']['assembly']}.2bit"),
+            temp(f"{assembly_path}{assembly}.2bit"),
         log:
             "logs/browser/fa_to_2bit.log"
         params:
@@ -16,9 +16,9 @@ if genecode_assembly:
 
     rule twoBitInfo:
         input:
-            f"{config['resources']}{config['ref']['assembly']}.2bit"
+            f"{assembly_path}{assembly}.2bit"
         output:
-            temp(f"{config['resources']}{config['ref']['assembly']}.chrom.sizes.tmp")
+            temp(f"{assembly_path}{assembly}.chrom.sizes.tmp")
         log:
             "logs/browser/chrom.sizes.log"
         params:
@@ -28,9 +28,9 @@ if genecode_assembly:
 
     rule twoBitInfo_sort:
         input:
-            f"{config['resources']}{config['ref']['assembly']}.chrom.sizes.tmp"
+            f"{assembly_path}{assembly}.chrom.sizes.tmp"
         output:
-            f"{config['resources']}{config['ref']['assembly']}.chrom.sizes"
+            f"{assembly_path}{assembly}.chrom.sizes"
         cache: True
         shell:
             "sort -k2rn {input} > {output}"
@@ -137,7 +137,7 @@ rule BamCoverage_str2:
 # rule bedGraphToBigWig_str1:
 #     input:
 #         bedGraph=get_bg_str1,
-#         chromsizes=f"{config['resources']}{config['ref']['assembly']}.chrom.sizes",
+#         chromsizes=f"{assembly_path}{assembly}.chrom.sizes",
 #     output:
 #         path_merged_cond("results/browser/?.str1.bw"),
 #     log:
@@ -150,7 +150,7 @@ rule BamCoverage_str2:
 # rule bedGraphToBigWig_str2:
 #     input:
 #         bedGraph=path_merged_cond("results/bw_str/?/Signal.Unique.str2.out.bg.sorted"),
-#         chromsizes=f"{config['resources']}{config['ref']['assembly']}.chrom.sizes",
+#         chromsizes=f"{assembly_path}{assembly}.chrom.sizes",
 #     output:
 #         path_merged_cond("results/browser/?.str2.bw"),
 #     log:

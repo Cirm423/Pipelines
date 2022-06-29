@@ -39,4 +39,4 @@ rule all:
     input:
         get_final_output(),
         "results/qc/multiqc_report.html",
-        f"{config['resources']}{config['ref']['assembly']}.annotation.bed",
+        f"{assembly_path}{assembly}.annotation.bed",
