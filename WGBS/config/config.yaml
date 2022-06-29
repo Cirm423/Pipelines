@@ -38,6 +38,7 @@ params:
       # --ambiguous --un : add ambiguous or unmapped reads output
       # --non_directional : for non directional libraries
       # Further info https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#appendix-ii-bismark
+      # The parameter --multicore 4 is hard set for this step
       extra: "--gzip"
     extract:
       #Params for methylation extraction. Used for both PE and SE. There are some default parameters already set:

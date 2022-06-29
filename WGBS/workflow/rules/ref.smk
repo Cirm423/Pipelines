@@ -86,7 +86,8 @@ rule bwa_index_meth:
     conda:
         "../envs/bwa_meth.yaml"
     shell:
-        "bwameth.py index {input}"
+        "bwameth.py index {input} 2>{log}"
+        f"mv {assembly_path}{assembly}.fa.bwameth* {assembly_path}bwameth_index/"
 
 rule bismark_genome_preparation_fa:
     input:
