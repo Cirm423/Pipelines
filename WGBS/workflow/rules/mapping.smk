@@ -99,7 +99,7 @@ rule bismark_map_pe:
     log:
         "logs/bismark/map/{sample}.log"
     params:
-        extra=config["params"]["bismark"]["map"]["extra"],
+        extra=f" --multicore 4 {config['params']['bismark']['map']['extra']}",
         basename='{sample}'
     threads: 24
     wrapper:
@@ -118,7 +118,7 @@ rule bismark_map_se:
         "logs/bismark/map/{sample}.log",
     params:
         # optional params string
-        extra=config["params"]["bismark"]["map"]["extra"],
+        extra=f" --multicore 4 {config['params']['bismark']['map']['extra']}",
         basename='{sample}'
     threads: 24
     wrapper:
