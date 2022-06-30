@@ -76,7 +76,7 @@ rule bwa_index_meth:
     input:
         f"{assembly_path}{assembly}.fa",
     output:
-        idx=multiext((f"{assembly_path}bwameth_index/{assembly}.fa.bwameth"), ".c2t", ".c2t.amb", ".c2t.ann", ".c2t.bwt", ".c2t.pac", ".c2t.sa"),
+        idx=multiext((f"{assembly_path}{assembly}.fa.bwameth"), ".c2t", ".c2t.amb", ".c2t.ann", ".c2t.bwt", ".c2t.pac", ".c2t.sa"),
     log:
         f"logs/bwa_meth_index_{assembly}.log",
     resources:
@@ -86,8 +86,7 @@ rule bwa_index_meth:
     conda:
         "../envs/bwa_meth.yaml"
     shell:
-        "bwameth.py index {input} 2>{log} && "
-        f"mv {assembly_path}{assembly}.fa.bwameth* {assembly_path}bwameth_index/ 2>{{log}}"
+        "bwameth.py index {input} 2>{log}"
 
 rule bismark_genome_preparation_fa:
     input:

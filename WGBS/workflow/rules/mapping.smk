@@ -37,14 +37,14 @@ rule bwa_meth:
     output:
         temp("results/mapped/{sample}.sam")
     params:
-        f"{assembly_path}{assembly}.c2t.fa"
+        f"{assembly_path}{assembly}.fa"
     log:
         "logs/bwa/bwa_meth/{sample}.log"
-    threads: 8
+    threads: 24
     conda:
         "../envs/bwa_meth.yaml"
     shell:
-        "bwameth.py --threads {threads} --reference {params} {input.reads} > {output}"
+        "bwameth.py --threads {threads} --reference {params} {input.reads} > {output} 2>{log}"
 
 rule sam_to_bam:
     input:
