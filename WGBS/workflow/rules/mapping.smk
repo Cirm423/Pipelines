@@ -46,28 +46,15 @@ rule bwa_meth:
     shell:
         "bwameth.py --threads {threads} --reference {params} {input.reads} > {output} 2>{log}"
 
-rule sam_to_bam:
-    input:
-        "results/mapped/{sample}.sam",
-    output:
-        bam="results/mapped/{sample}.bam",
-    log:
-        "logs/bwa/{sample}_sam_to_bam.log",
-    params:
-        extra="-bS",  # optional params string
-    threads: 2
-    wrapper:
-        "v1.7.0/bio/samtools/view"
-
 rule samtools_sort_mapped:
     input:
-        "results/mapped/{sample}.bam"
+        "results/mapped/{sample}.sam"
     output:
-        "results/mapped/{sample}.sorted.bam"
+        "results/mapped/{sample}.bam"
     params:
         extra=""
     log:
-        "logs/bamtools_filtered/{sample}.sorted.log"
+        "logs/mapped/{sample}_sam_to_sbam.log"
     threads:
         8
     wrapper:
@@ -75,7 +62,7 @@ rule samtools_sort_mapped:
 
 rule mark_merged_duplicates:
     input:
-        "results/mapped/{sample}.sorted.bam"
+        "results/mapped/{sample}.bam"
     output:
         bam=temp("results/picard_dedup/{sample}.bam"),
         metrics="results/picard_dedup/{sample}.metrics.txt"
