@@ -116,7 +116,7 @@ rule deduplicate_bismark:
         get_bismark_bam
     output:
         bam="results/bismark_mapped/{sample}.deduplicated.bam",
-        report="results/bismark/reports/{sample}.deduplication_report.txt",
+        report="results/bismark_mapped/{sample}.deduplication_report.txt",
     log:
         "logs/bismark/{sample}.deduplicated.log",
     params:
