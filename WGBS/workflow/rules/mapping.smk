@@ -70,7 +70,7 @@ rule mark_merged_duplicates:
         "logs/picard/picard_dedup/{sample}.log"
     params:
         "REMOVE_DUPLICATES=false ASSUME_SORTED=true PROGRAM_RECORD_ID='null' VALIDATION_STRINGENCY=LENIENT",
-    threads: 8
+    threads: 24
     wrapper:
         "v0.87.0/bio/picard/markduplicates"
 
@@ -122,5 +122,6 @@ rule deduplicate_bismark:
         "logs/bismark/{sample}.deduplicated.log",
     params:
         extra= lambda wc: "-s" if config["single_end"] else "-p"  # optional params string
+    threads: 24
     wrapper:
         "v1.7.0/bio/bismark/deduplicate_bismark"
