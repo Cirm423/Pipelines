@@ -52,7 +52,7 @@ rule qualimap:
     threads: 8
     conda:
         "../envs/qualimap.yaml"
-    script:
+    shell:
         "qualimap bamqc {params.gcref} -bam {input} -outdir {output} --collect-overlap-pairs -nt {threads}"
 
 rule multiqc:
