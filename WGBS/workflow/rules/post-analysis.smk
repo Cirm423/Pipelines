@@ -9,6 +9,7 @@ rule preseq_lc_extrap:
         "logs/preseq/{sample}.log"
     resources:
         attempt = lambda wildcards, attempt: attempt
+    threads: 8
     conda:
         "../envs/preseq.yaml"
     script:
