@@ -60,8 +60,8 @@ params:
     min_depth: 0
     # Ignores the aligner flags for low quality reads, duplicates, etc. Recommended to leave at False.
     ignore_flags: False
-    # Makes the output compatible with MethylKit
-    methyl_kit: False
+    # Makes the output compatible with MethylKit. This option has to be true for differential methylation analysis to work in bwameth mode
+    methyl_kit: True
     # Extra parameters for Methyldackel extrat and mbias plot functions. Further explanation on the parameters can be found here https://github.com/dpryan79/MethylDackel
     extra_extract: ""
     extra_mbias: ""
