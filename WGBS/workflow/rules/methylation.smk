@@ -8,9 +8,7 @@ rule methyldackel:
         bg = "results/methyldackel/{sample}_CpG.bedGraph",
         txt = "results/methyldackel/{sample}_methyldackel.txt",
         svg_OT = report("results/methyldackel/{sample}_meth_bias_OT.svg", category="Methylation"),
-        svg_OB = report("results/methyldackel/{sample}_meth_bias_OB.svg", category="Methylation"),
-        chg = "results/methyldackel/{sample}_CHG.bedGraph" if config["params"]["methyldackel"]["comprehensive"] else "",
-        chh = "results/methyldackel/{sample}_CHH.bedGraph" if config["params"]["methyldackel"]["comprehensive"] else ""
+        svg_OB = report("results/methyldackel/{sample}_meth_bias_OB.svg", category="Methylation")
     params:
         prefix = "results/methyldackel/{sample}",
         prefix_mbias = "results/methyldackel/{sample}_meth_bias",
@@ -30,14 +28,14 @@ rule methyldackel:
         "MethylDackel mbias -@ {threads} {params.comprehensive} {params.ignore_flags} {params.extra_mbias} {input.fa} {input.bam} {params.prefix_mbias} --txt > {output.txt} 2>>{log}"
 
 rule bismark_methylation_extractor_pe:
-    input: "results/bismark_mapped/{sample}.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}_pe.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-pe.M-bias_R1.png",
         # Only for PE BAMS:
         mbias_r2="results/qc/bismark/{sample}-pe.M-bias_R2.png",
 
         mbias_report="results/bismark/meth/{sample}-pe.M-bias.txt",
-        splitting_report="results/bismark/meth/{sample}-pe_splitting_report.txt",
+        splitting_report="results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
         methylome_CpG_cov="results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
@@ -69,14 +67,14 @@ rule bismark_methylation_extractor_pe:
         "../scripts/bismark_meth.py"
 
 rule bismark_methylation_extractor_se:
-    input: "results/bismark_mapped/{sample}.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}_se.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-se.M-bias_R1.png",
         # Only for PE BAMS:
         # mbias_r2="qc/meth/{sample}.M-bias_R2.png",
 
         mbias_report="results/bismark/meth/{sample}-se.M-bias.txt",
-        splitting_report="results/bismark/meth/{sample}-se_splitting_report.txt",
+        splitting_report="results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
         methylome_CpG_cov="results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",

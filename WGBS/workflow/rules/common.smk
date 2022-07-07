@@ -168,19 +168,34 @@ def get_read_group(wildcards):
         unit=wildcards.unit,
         platform=units.loc[(wildcards.sample, wildcards.unit), "platform"])
 
-def get_bismark_bam(wildcards):
+def get_bismark_bams(wildcards):
     if config["single_end"]:
-        return f"results/bismark_mapped/{wildcards.sample}_se.bam"
+        return expand("results/bismark_mapped/{sample}_se.bam", sample = samples.index)
     else:
-        return f"results/bismark_mapped/{wildcards.sample}_pe.bam"
+        return expand("results/bismark_mapped/{sample}_pe.bam", sample = samples.index)
 
 #Change this when bismark is added
 def get_dedup_bam(wildcards):
     if config["params"]["mode"] == "bwameth":
         return "results/picard_dedup/{sample}.bam"
     else:
-        return "results/bismark_mapped/{sample}.deduplicated.bam"
-        
+        if config["single_end"]:
+            return "results/bismark_mapped/{sample}_se.deduplicated.bam"
+        else:
+            return "results/bismark_mapped/{sample}_pe.deduplicated.bam"
+
+def get_sample_splitting_reports(wildcards):
+    if config["single_end"]:
+        return "results/bismark/meth/{sample}.deduplicated_splitting_report.txt"
+    else:
+        return "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt"
+
+def get_sample_splitting_reports_ln(wildcards):
+    if config["single_end"]:
+        return expand("results/bismark_mapped/{sample}.deduplicated_splitting_report.txt", sample = samples.index)
+    else:
+        return expand("results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt", sample = samples.index)
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -247,14 +262,24 @@ def get_multiqc_input(wildcards):
                 )
             )
         else:
+            multiqc_input.extend(
+                expand(
+                    [
+                        "qc/bismark/bismark2summary.html",
+                        "qc/bismark/bismark2summary.txt"
+                    ],
+                    sample = sample
+                )
+            )
             if config["single_end"]:
                 multiqc_input.extend(
                     expand(
                         [                            
-                            "results/bismark/reports/{sample}_SE_report.txt",
+                            "results/bismark_mapped/{sample}_SE_report.txt",
                             "results/bismark_mapped/{sample}.deduplication_report.txt",
-                            "results/bismark/meth/{sample}-se_splitting_report.txt",
-                            "results/bismark/meth/{sample}-se.M-bias.txt"
+                            "results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
+                            "results/bismark/meth/{sample}-se.M-bias.txt",
+                            "results/qc/bismark/{sample}_se.bismark2report.html",
                         ],
                         sample=sample
                     )
@@ -263,10 +288,11 @@ def get_multiqc_input(wildcards):
                 multiqc_input.extend(
                     expand(
                         [
-                            "results/bismark/reports/{sample}_PE_report.txt",
-                            "results/bismark_mapped/{sample}.deduplication_report.txt",
-                            "results/bismark/meth/{sample}-pe_splitting_report.txt",
-                            "results/bismark/meth/{sample}-pe.M-bias.txt"
+                            "results/bismark_mapped/{sample}_PE_report.txt",
+                            "results/bismark_mapped/{sample}_pe.deduplication_report.txt",
+                            "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
+                            "results/bismark/meth/{sample}-pe.M-bias.txt",
+                            "results/qc/bismark/{sample}_pe.bismark2report.html",
                         ],
                         sample=sample
                     )
@@ -335,17 +361,7 @@ def all_input(wildcards):
                     ],
                     sample = sample
                 )
-            )
-            if config["params"]["methyldackel"]["comprehensive"]:
-                wanted_input.extend(
-                    expand(
-                        [
-                            "results/methyldackel/{sample}_CHG.bedGraph",
-                            "results/methyldackel/{sample}_CHH.bedGraph"
-                        ],
-                        sample = sample
-                    )
-                )   
+            ) 
         else:
             if config["single_end"]:
                 wanted_input.extend(
@@ -353,7 +369,7 @@ def all_input(wildcards):
                         [
                             "results/qc/bismark/{sample}-se.M-bias_R1.png",
                             "results/bismark/meth/{sample}-se.M-bias.txt",
-                            "results/bismark/meth/{sample}-se_splitting_report.txt",
+                            "results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
                             "results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",
                             "results/bismark/meth_cpg/{sample}-se.bedGraph.gz"
                         ],
@@ -367,7 +383,7 @@ def all_input(wildcards):
                             "results/qc/bismark/{sample}-pe.M-bias_R1.png",
                             "results/qc/bismark/{sample}-pe.M-bias_R2.png",
                             "results/bismark/meth/{sample}-pe.M-bias.txt",
-                            "results/bismark/meth/{sample}-pe_splitting_report.txt",
+                            "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
                             "results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
                             "results/bismark/meth_cpg/{sample}-pe.bedGraph.gz"
                         ],
