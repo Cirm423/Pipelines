@@ -50,7 +50,7 @@ rule samtools_sort_mapped:
     input:
         "results/mapped/{sample}.sam"
     output:
-        "results/mapped/{sample}.bam"
+        temp("results/mapped/{sample}.bam")
     params:
         extra=""
     log:
@@ -64,7 +64,7 @@ rule mark_merged_duplicates:
     input:
         "results/mapped/{sample}.bam"
     output:
-        bam=temp("results/picard_dedup/{sample}.bam"),
+        bam="results/picard_dedup/{sample}.bam",
         metrics="results/picard_dedup/{sample}.metrics.txt"
     log:
         "logs/picard/picard_dedup/{sample}.log"
