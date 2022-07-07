@@ -325,15 +325,27 @@ def all_input(wildcards):
 
     # Methylation, depending on bismark or bwameth
     for sample in samples.index:
+        if config["params"]["lc_extrap"]["activate"]:
+            wanted_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
         if config["params"]["mode"] == "bwameth":
             wanted_input.extend(
                 expand(
                     [
-                        "results/methyldackel/{sample}_CpG.bedgraph"
+                        "results/methyldackel/{sample}_CpG.bedGraph"
                     ],
                     sample = sample
                 )
             )
+            if config["params"]["methyldackel"]["comprehensive"]:
+                wanted_input.extend(
+                    expand(
+                        [
+                            "results/methyldackel/{sample}_CHG.bedGraph",
+                            "results/methyldackel/{sample}_CHH.bedGraph"
+                        ],
+                        sample = sample
+                    )
+                )   
         else:
             if config["single_end"]:
                 wanted_input.extend(

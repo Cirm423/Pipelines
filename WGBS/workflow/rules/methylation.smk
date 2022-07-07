@@ -5,28 +5,32 @@ rule methyldackel:
         fa = f"{assembly_path}{assembly}.fa",
         fai = f"{assembly_path}{assembly}.fa.fai",
     output:
-        bg = "results/methyldackel/{sample}_CpG.bedgraph",
+        bg = "results/methyldackel/{sample}_CpG.bedGraph",
         txt = "results/methyldackel/{sample}_methyldackel.txt",
-        svg = report("results/methyldackel/{sample}_meth_bias.svg", category="Methylation")
+        svg_OT = report("results/methyldackel/{sample}_meth_bias_OT.svg", category="Methylation"),
+        svg_OB = report("results/methyldackel/{sample}_meth_bias_OB.svg", category="Methylation"),
+        chg = "results/methyldackel/{sample}_CHG.bedGraph" if config["params"]["methyldackel"]["comprehensive"] else "",
+        chh = "results/methyldackel/{sample}_CHH.bedGraph" if config["params"]["methyldackel"]["comprehensive"] else ""
     params:
-        prefix = lambda wc: "results/methyldackel/{wc.sample}",
-        prefix_mbias = lambda wc: "results/methyldackel/{wc.sample}_meth_bias",
+        prefix = "results/methyldackel/{sample}",
+        prefix_mbias = "results/methyldackel/{sample}_meth_bias",
         comprehensive = "--CHG --CHH" if config["params"]["methyldackel"]["comprehensive"] else "",
         min_depth = config["params"]["methyldackel"]["min_depth"] if config["params"]["methyldackel"]["min_depth"] > 0 else "",
         ignore_flags = "--ignoreFlags" if config["params"]["methyldackel"]["ignore_flags"] else "",
         methyl_kit = "--methylKit" if config["params"]["methyldackel"]["methyl_kit"] else "",
         extra_extract = config["params"]["methyldackel"]["extra_extract"],
         extra_mbias = config["params"]["methyldackel"]["extra_mbias"],
+    log:
+        "logs/methyldackel/{sample}_methylation.log"
     conda:
         "../envs/methyldackel.yaml"
     threads: 24
     shell:
-        "MethyDackel extract -@ {threads} {params.comprehensive} {params.ignore_flags} {params.methyl_kit} {params.min_depth} {input.fa} {input.bam} {params.extra_extract} -o {params.prefix}"
-        "MethyDackel mbias -@ {threads} {params.comprehensive} {params.ignore_flags} {params.extra_mbias} {input.fa} {input.bam} {params.prefix_mbias} --txt > {output.txt}"
+        "MethylDackel extract -@ {threads} {params.comprehensive} {params.ignore_flags} {params.methyl_kit} {params.min_depth} {input.fa} {input.bam} {params.extra_extract} -o {params.prefix} 2>{log} && "
+        "MethylDackel mbias -@ {threads} {params.comprehensive} {params.ignore_flags} {params.extra_mbias} {input.fa} {input.bam} {params.prefix_mbias} --txt > {output.txt} 2>>{log}"
 
 rule bismark_methylation_extractor_pe:
-    input: 
-        "results/bismark_mapped/{sample}.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-pe.M-bias_R1.png",
         # Only for PE BAMS:
@@ -53,19 +57,17 @@ rule bismark_methylation_extractor_pe:
         # ignore_3prime_r2=2,
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes
-        extra=f"""--paired-end --no-overlap --gzip --multicore 8 --bedGraph --counts 
-        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''}
-        --cutoff {config['params']['bismark']['extract']['cutoff']} 
-        {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''}
-        {config['params']['bismark']['extract']['extra']}
-        """
+        extra=f"""--paired-end --no_overlap --gzip --multicore 8 --bedGraph --counts \\
+        {'--comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \\
+        --cutoff {config['params']['bismark']['extract']['cutoff']} \\
+        {'--cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
+        {config['params']['bismark']['extract']['extra']}"""
     threads: 24
     wrapper:
         "v1.7.0/bio/bismark/bismark_methylation_extractor"
 
 rule bismark_methylation_extractor_se:
-    input: 
-        "results/bismark_mapped/{sample}.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}.deduplicated.bam"
     output:
         mbias_r1="results/qc/bismark/{sample}-se.M-bias_R1.png",
         # Only for PE BAMS:
@@ -89,10 +91,10 @@ rule bismark_methylation_extractor_se:
     params:
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes
-        extra=f"""--single-end --gzip --multicore 8 --bedGraph --counts
-        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''}
-        --cutoff {config['params']['bismark']['extract']['cutoff']} 
-        {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''}
+        extra=f"""--single-end --gzip --multicore 8 --bedGraph --counts \
+        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \
+        --cutoff {config['params']['bismark']['extract']['cutoff']} \
+        {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \
         {config['params']['bismark']['extract']['extra']}
         """
     threads: 24
