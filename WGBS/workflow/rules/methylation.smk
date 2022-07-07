@@ -63,8 +63,10 @@ rule bismark_methylation_extractor_pe:
         {'--cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
         {config['params']['bismark']['extract']['extra']}"""
     threads: 24
-    wrapper:
-        "v1.7.0/bio/bismark/bismark_methylation_extractor"
+    conda:
+        "../envs/bismark_meth.yaml"
+    script:
+        "../scripts/bismark_meth.py"
 
 rule bismark_methylation_extractor_se:
     input: "results/bismark_mapped/{sample}.deduplicated.bam"
@@ -98,5 +100,7 @@ rule bismark_methylation_extractor_se:
         {config['params']['bismark']['extract']['extra']}
         """
     threads: 24
-    wrapper:
-        "v1.7.0/bio/bismark/bismark_methylation_extractor"
+    conda:
+        "../envs/bismark_meth.yaml"
+    script:
+        "../scripts/bismark_meth.py"
