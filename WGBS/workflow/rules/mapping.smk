@@ -83,7 +83,7 @@ rule bismark_map_pe:
         #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
     output:
         bam=temp("results/bismark_mapped/{sample}_pe.bam"),
-        report="results/bismark/reports/{sample}_PE_report.txt",
+        report="results/bismark_mapped/{sample}_PE_report.txt",
     log:
         "logs/bismark/map/{sample}.log"
     params:
@@ -101,7 +101,7 @@ rule bismark_map_se:
         #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
     output:
         bam=temp("results/bismark_mapped/{sample}_se.bam"),
-        report="results/bismark/reports/{sample}_SE_report.txt",
+        report="results/bismark_mapped/{sample}_SE_report.txt",
     log:
         "logs/bismark/map/{sample}.log",
     params:
@@ -112,16 +112,30 @@ rule bismark_map_se:
     wrapper:
         "v1.7.0/bio/bismark/bismark"
 
-rule deduplicate_bismark:
+rule deduplicate_bismark_pe:
     input: 
-        get_bismark_bam
+        "results/bismark_mapped/{sample}_pe.bam"
     output:
-        bam="results/bismark_mapped/{sample}.deduplicated.bam",
+        bam="results/bismark_mapped/{sample}_pe.deduplicated.bam",
+        report="results/bismark_mapped/{sample}_pe.deduplication_report.txt",
+    log:
+        "logs/bismark/{sample}.deduplicated.log",
+    params:
+        extra= "-p"  # optional params string
+    threads: 24
+    wrapper:
+        "v1.7.0/bio/bismark/deduplicate_bismark"
+
+rule deduplicate_bismark_se:
+    input: 
+        "results/bismark_mapped/{sample}_se.bam"
+    output:
+        bam="results/bismark_mapped/{sample}_se.deduplicated.bam",
         report="results/bismark_mapped/{sample}.deduplication_report.txt",
     log:
         "logs/bismark/{sample}.deduplicated.log",
     params:
-        extra= lambda wc: "-s" if config["single_end"] else "-p"  # optional params string
+        extra= "-s"  # optional params string
     threads: 24
     wrapper:
         "v1.7.0/bio/bismark/deduplicate_bismark"
