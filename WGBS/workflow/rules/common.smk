@@ -357,9 +357,11 @@ def all_input(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/methyldackel/{sample}_CpG.bedGraph"
+                        "results/methyldackel/{sample}_{meth}{suffix}"
                     ],
-                    sample = sample
+                    sample = sample,
+                    meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"],
+                    suffix = ".methylKit" if config["params"]["methyldackel"]["methyl_kit"] else ".bedGraph"
                 )
             ) 
         else:

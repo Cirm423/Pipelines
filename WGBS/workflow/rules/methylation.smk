@@ -5,7 +5,10 @@ rule methyldackel:
         fa = f"{assembly_path}{assembly}.fa",
         fai = f"{assembly_path}{assembly}.fa.fai",
     output:
-        bg = "results/methyldackel/{sample}_CpG.bedGraph",
+        expand("results/methyldackel/{{sample}}_{meth}{suffix}",
+            meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"],
+            suffix = ".methylKit" if config["params"]["methyldackel"]["methyl_kit"] else ".bedGraph"
+        ),
         txt = "results/methyldackel/{sample}_methyldackel.txt",
         svg_OT = report("results/methyldackel/{sample}_meth_bias_OT.svg", category="Methylation"),
         svg_OB = report("results/methyldackel/{sample}_meth_bias_OB.svg", category="Methylation")

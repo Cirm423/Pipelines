@@ -18,7 +18,7 @@ params:
   trimming:
     activate: True
   #Chose between bismark or bwameth to use for mapping. bwameth will use methyldackel to extract methylation metrics.
-  mode: "bismark"
+  mode: "bwameth"
   # Params to use for bismark. Only used when the mode is set to bismark.
   bismark:
     #Params for mapping
@@ -55,7 +55,7 @@ params:
   # Params to use for methildackel. Only used when the mode is set to bwameth.
   methyldackel:
     # Adds CHG and CHH methylation in addition to CpG. Will produce very large files.
-    comprehensive: False
+    comprehensive: True
     # Sets the minimum coverage for methylation calls.
     min_depth: 0
     # Ignores the aligner flags for low quality reads, duplicates, etc. Recommended to leave at False.
