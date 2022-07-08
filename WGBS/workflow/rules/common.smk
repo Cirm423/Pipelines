@@ -196,6 +196,23 @@ def get_sample_splitting_reports_ln(wildcards):
     else:
         return expand("results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt", sample = samples.index)
 
+def get_methylkit_input(wildcards):
+    if config["params"]["mode"] == "bwameth":
+        return expand(
+            [
+                "results/methyldackel/{sample}_CpG.methylKit",
+                sample = samples.index
+            ]
+        )
+    else:
+        return expand(
+            [
+                "results/bismark/meth_cpg/{sample}-{end}.bismark.cov.gz",
+                sample = samples.index,
+                end = "se" if config["single_end"] else "pe"
+            ]
+        )
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:

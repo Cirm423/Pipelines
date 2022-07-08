@@ -11,6 +11,9 @@ samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sam
 
 files <- snakemake@input[["meth"]]
 
+#Save RData for manual use
+save.image(file=snakemake@output[["RDS"]])
+
 #Adapting to the different files between bismark and methydackel
 if (snakemake@params[["mode"]] == "bismark") {
     names(files) <- sapply(strsplit(basename(files), split="-pe|-se"), "[[", 1)
@@ -94,11 +97,21 @@ if (length(colnames(samples)) > 1) {
 
 ###Find a way to save these things into files
 
-# Report methylation
+# Report methylation and save them
+myDiff25p.hyper=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hyper")
+write.table(myDiff25p.hyper, file=snakemake@output[["hyper"]], sep = "\t")
+
+myDiff25p.hypo=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hypo")
+write.table(myDiff25p.hypo, file=snakemake@output[["hypo"]], sep = "\t")
+
 myDiff25p=getMethylDiff(myDiff,difference=25,qvalue=0.01)
-diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
+write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t")
+
+chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
+write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t")
 
 #Annotation of differentially methylated stuff
 gene.obj=readTranscriptFeatures(snakemake@input[["annot"]])
 
-annotateWithGeneParts(as(myDiff25p,"GRanges"),gene.obj)
+anno = annotateWithGeneParts(as(myDiff25p,"GRanges"),gene.obj)
+write.table(anno, file=snakemake@output[["annotation"]], sep = "\t")
