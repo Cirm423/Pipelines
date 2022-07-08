@@ -18,7 +18,7 @@ if (snakemake@params[["mode"]] == "bismark") {
     files <- files[order(match(names(files), row.names(samples)))]
 } else {
     #Change the split pattern for the correct methyldackel one.
-    names(files) <- sapply(strsplit(basename(files), "_CpG", fixed = TRUE), "[[", 1)
+    names(files) <- sapply(strsplit(basename(files), "_CpG.methylKit", fixed = TRUE), "[[", 1)
     #Making sure the files are in the same order as the samples + treatment vector
     files <- files[order(match(names(files), row.names(samples)))]
 }
