@@ -20,6 +20,7 @@ include: "rules/stats.smk"
 include: "rules/utils.smk"
 include: "rules/methylation.smk"
 include: "rules/post-analysis.smk"
+include: "rules/diffmeth.smk"
 
 rule all:
     input: all_input

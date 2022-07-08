@@ -18,7 +18,7 @@ params:
   trimming:
     activate: True
   #Chose between bismark or bwameth to use for mapping. bwameth will use methyldackel to extract methylation metrics.
-  mode: "bwameth"
+  mode: "bismark"
   # Params to use for bismark. Only used when the mode is set to bismark.
   bismark:
     #Params for mapping
@@ -61,10 +61,18 @@ params:
     # Ignores the aligner flags for low quality reads, duplicates, etc. Recommended to leave at False.
     ignore_flags: False
     # Makes the output compatible with MethylKit. This option has to be true for differential methylation analysis to work in bwameth mode
-    methyl_kit: True
+    methyl_kit: False
     # Extra parameters for Methyldackel extrat and mbias plot functions. Further explanation on the parameters can be found here https://github.com/dpryan79/MethylDackel
     extra_extract: ""
     extra_mbias: ""
+  #Perform differential methylation analysis
+  diff_meth:
+    activate: True
+    #Minimum coverage for a base to be considered for the analysis. Default: 10
+    min_cov: 10
+    #By default methylkit merge samples function produces bases/regions covered in all samples. To relax this setting, put a number indicating tha the
+    #region/base should be in at least x samples. Otherwise leave empty (full empty, no "" or '') for default all.
+    min_group:
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True

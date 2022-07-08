@@ -200,17 +200,17 @@ def get_methylkit_input(wildcards):
     if config["params"]["mode"] == "bwameth":
         return expand(
             [
-                "results/methyldackel/{sample}_CpG.methylKit",
-                sample = samples.index
-            ]
+                "results/methyldackel/{sample}_CpG.methylKit"
+            ],
+            sample = samples.index
         )
     else:
         return expand(
             [
                 "results/bismark/meth_cpg/{sample}-{end}.bismark.cov.gz",
-                sample = samples.index,
-                end = "se" if config["single_end"] else "pe"
-            ]
+            ],
+            sample = samples.index,
+            end = "se" if config["single_end"] else "pe"
         )
 
 def get_multiqc_input(wildcards):
@@ -408,7 +408,26 @@ def all_input(wildcards):
                         ],
                         sample=sample
                     )
-                )                
+                )
+    #Differential methylation analysis
+    if config["params"]["diff_meth"]["activate"]:
+        #only when bismark or bwameth with methylkit param
+        if config["params"]["mode"] == "bismark" or (config["params"]["mode"] == "bwameth" and config["params"]["methyldackel"]["methyl_kit"]):
+            wanted_input.extend([
+                "results/diff_meth/methykit.RData",
+                "results/diff_meth/plots/CpG_methylation_percent.pdf",
+                "results/diff_meth/plots/CpG_coverage.pdf",
+                "results/diff_meth/plots/Sample_correlation.pdf",
+                "results/diff_meth/plots/Sample_clustering.pdf",
+                "results/diff_meth/plots/PCA_screen.pdf",
+                "results/diff_meth/plots/PCA.pdf",
+                "results/diff_meth/CpG_hypermethylated_25p.tsv",
+                "results/diff_meth/CpG_hypomethylated_25p.tsv",
+                "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
+                "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
+                "results/diff_meth/CpG_methylated_annotation_25p.tsv"
+            ])
+            
     return wanted_input
 
 

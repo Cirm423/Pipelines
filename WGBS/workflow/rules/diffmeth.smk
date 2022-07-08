@@ -22,8 +22,8 @@ rule methylkit:
         treatment = [1 if x == "treatment" else 0 for x in samples["group"]],
         samples = config["samples"],
         #Changes the file input to methylkit
-        mincov = config["params"]["methylkit"]["mincov"],
-        min_group = config["params"]["methylkit"]["min_group"]
+        mincov = config["params"]["diff_meth"]["min_cov"],
+        min_group = config["params"]["diff_meth"]["min_group"]
     threads: 24
     conda:
         "../envs/methylkit.yaml"
