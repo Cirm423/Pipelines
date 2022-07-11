@@ -86,8 +86,8 @@ if (length(colnames(samples)) > 1) {
                                     covariates=covariates,
                                     overdispersion="MN",mc.cores=snakemake@threads[[1]])
 } else {
-    sim.methylBase<-dataSim(replicates=6,sites=1000,
-                            treatment=nakemake@params[["treatment"]],
+    sim.methylBase<-dataSim(replicates=length(row.names(samples)),sites=1000,
+                            treatment=snakemake@params[["treatment"]],
                             sample.ids=row.names(samples)
                             )
 
