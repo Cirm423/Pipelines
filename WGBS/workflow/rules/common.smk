@@ -282,8 +282,8 @@ def get_multiqc_input(wildcards):
             multiqc_input.extend(
                 expand(
                     [
-                        "qc/bismark/bismark2summary.html",
-                        "qc/bismark/bismark2summary.txt"
+                        "results/qc/bismark/bismark2summary.html",
+                        "results/qc/bismark/bismark2summary.txt"
                     ],
                     sample = sample
                 )

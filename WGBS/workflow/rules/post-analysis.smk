@@ -81,8 +81,8 @@ rule bismark2summary:
         # will be missing.
         dependencies=get_sample_splitting_reports_ln,
     output:
-        html="qc/bismark/bismark2summary.html",
-        txt="qc/bismark/bismark2summary.txt"
+        html="results/qc/bismark/bismark2summary.html",
+        txt="results/qc/bismark/bismark2summary.txt"
     log:
         "logs/qc/bismark/bismark2summary.log"
     wrapper:
