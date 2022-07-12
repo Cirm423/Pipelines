@@ -1,6 +1,6 @@
 rule preseq_lc_extrap:
     input:
-        "results/picard_dedup/{sample}.sorted.bam"
+        "results/picard_dedup/{sample}.bam"
     output:
         "results/preseq/{sample}.lc_extrap"
     params:
