@@ -52,6 +52,14 @@ properties:
     required:
       - activate
 
+  rseqc:
+    type: object
+    properties:
+      activate:
+        type: boolean
+    required:
+      - activate
+
   pca:
     type: object
     properties:
