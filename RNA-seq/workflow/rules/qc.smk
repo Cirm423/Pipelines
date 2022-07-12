@@ -64,7 +64,7 @@ rule rseqc_stat:
     log:
         path_merged_cond("logs/rseqc/rseqc_stat/?.log"),
     conda:
-        "../envs/rseqc.yaml"
+        "../envs/rseqc2.yaml"
     shell:
         "bam_stat.py -i {input.bam} > {output} 2> {log}"
 
@@ -80,7 +80,7 @@ rule rseqc_infer:
     log:
         path_merged_cond("logs/rseqc/rseqc_infer/?.log"),
     conda:
-        "../envs/rseqc.yaml"
+        "../envs/rseqc2.yaml"
     shell:
         "infer_experiment.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
 
@@ -98,7 +98,7 @@ rule rseqc_innerdis:
     params:
         prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
     conda:
-        "../envs/rseqc.yaml"
+        "../envs/rseqc3.yaml"
     shell:
         "inner_distance.py -r {input.bed} -i {input.bam} -o {params.prefix} > {log} 2>&1"
 
@@ -114,7 +114,7 @@ rule rseqc_readdis:
     log:
         path_merged_cond("logs/rseqc/rseqc_readdis/?.log"),
     conda:
-        "../envs/rseqc.yaml"
+        "../envs/rseqc3.yaml"
     shell:
         "read_distribution.py -r {input.bed} -i {input.bam} > {output} 2> {log}"
 
@@ -148,7 +148,7 @@ rule rseqc_readgc:
     params:
         prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
     conda:
-        "../envs/rseqc.yaml"
+        "../envs/rseqc4.yaml"
     threads: 24
     shell:
         "read_GC.py -i {input.bam} -o {params.prefix} > {log} 2>&1"
@@ -185,42 +185,6 @@ rule multiqc:
     input:
         lambda wc: get_star_output_all_units(wc, fi="bam", orig =True),
         get_multiqc_input,
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.junctionanno.junction.bed"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.junctionsat.junctionSaturation_plot.pdf"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.infer_experiment.txt"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.stats.txt"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.inner_distance_freq.inner_distance.txt"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.readdistribution.txt"),
-            unit=units.itertuples(),
-        ))),
-        # list(set(expand(
-        #     path_merged_cond_mqc("results/qc/rseqc/?.readdup.DupRate_plot.pdf"),
-        #     unit=units.itertuples(),
-        # ))),
-        list(set(expand(
-            path_merged_cond_mqc("results/qc/rseqc/?.readgc.GC_plot.pdf"),
-            unit=units.itertuples(),
-        ))),
-        list(set(expand(
-            path_merged_cond_mqc("logs/rseqc/rseqc_junction_annotation/?.log"),
-            unit=units.itertuples(),
-        ))),
     output:
         "results/qc/multiqc_report.html",
     log:

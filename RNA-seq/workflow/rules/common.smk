@@ -273,6 +273,47 @@ def get_multiqc_input(wildcards):
                     reads = reads
                 )
             )
+        if is_activated("rseqc"):
+            rseqc_list = [
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.junctionanno.junction.bed"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.junctionsat.junctionSaturation_plot.pdf"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.infer_experiment.txt"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.stats.txt"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.inner_distance_freq.inner_distance.txt"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.readdistribution.txt"),
+                    unit=units.itertuples(),
+                ))),
+                # list(set(expand(
+                #     path_merged_cond_mqc("results/qc/rseqc/?.readdup.DupRate_plot.pdf"),
+                #     unit=units.itertuples(),
+                # ))),
+                list(set(expand(
+                    path_merged_cond_mqc("results/qc/rseqc/?.readgc.GC_plot.pdf"),
+                    unit=units.itertuples(),
+                ))),
+                list(set(expand(
+                    path_merged_cond_mqc("logs/rseqc/rseqc_junction_annotation/?.log"),
+                    unit=units.itertuples(),
+                )))
+            ]
+            for qc_plot in rseqc_list:
+                multiqc_input.extend(qc_plot)
     return multiqc_input
 
 # Original from RNA-seq

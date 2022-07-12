@@ -34,6 +34,10 @@ trimming:
 mergeReads:
   activate: True
 
+#Activate rseqc plots
+rseqc:
+  activate: False
+
 #Make a pca plot. It can only be used when diffexp is also activated.
 pca:
   activate: True
