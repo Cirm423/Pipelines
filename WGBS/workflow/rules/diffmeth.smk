@@ -24,6 +24,8 @@ rule methylkit:
         #Changes the file input to methylkit
         mincov = config["params"]["diff_meth"]["min_cov"],
         min_group = config["params"]["diff_meth"]["min_group"]
+    log:
+        "logs/methylkit.log"
     threads: 24
     conda:
         "../envs/methylkit.yaml"
