@@ -1,6 +1,6 @@
 rule preseq_lc_extrap:
     input:
-        get_dedup_bam
+        get_bams
     output:
         "results/preseq/{sample}.lc_extrap"
     params:

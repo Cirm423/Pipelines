@@ -174,15 +174,14 @@ def get_bismark_bams(wildcards):
     else:
         return expand("results/bismark_mapped/{sample}_pe.bam", sample = samples.index)
 
-#Change this when bismark is added
-def get_dedup_bam(wildcards):
+def get_bams(wildcards):
     if config["params"]["mode"] == "bwameth":
         return "results/picard_dedup/{sample}.bam"
     else:
         if config["single_end"]:
-            return "results/bismark_mapped/{sample}_se.deduplicated.bam"
+            return "results/bismark_mapped/{sample}_se.bam"
         else:
-            return "results/bismark_mapped/{sample}_pe.deduplicated.bam"
+            return "results/bismark_mapped/{sample}_pe.bam"
 
 def get_sample_splitting_reports(wildcards):
     if config["single_end"]:
