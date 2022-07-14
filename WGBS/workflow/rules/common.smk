@@ -183,6 +183,15 @@ def get_bams(wildcards):
         else:
             return "results/bismark_mapped/{sample}_pe.bam"
 
+def get_dedup_bam(wildcards):
+    if config["params"]["mode"] == "bwameth":
+        return "results/picard_dedup/{sample}.bam"
+    else:
+        if config["single_end"]:
+            return "results/bismark_mapped/{sample}_se.deduplicated.bam"
+        else:
+            return "results/bismark_mapped/{sample}_pe.deduplicated.bam"
+
 def get_sample_splitting_reports(wildcards):
     if config["single_end"]:
         return "results/bismark/meth/{sample}.deduplicated_splitting_report.txt"
