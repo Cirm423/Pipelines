@@ -12,7 +12,7 @@ samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sam
 files <- snakemake@input[["meth"]]
 
 #Save RData for manual use
-save.image(file=snakemake@output[["RDS"]])
+save.image(file=snakemake@output[["RData"]])
 
 #Adapting to the different files between bismark and methydackel
 if (snakemake@params[["mode"]] == "bismark") {
