@@ -147,6 +147,19 @@ rule twoBitInfo_sort_tobedtools:
     shell:
         "sort -k1,1 -k2,2n {input} > {output}"
 
+#Make the bed12 necessary for genomation
+rule gtf2bed12:
+    input:
+        f"{assembly_path}{assembly}.annotation.gtf",
+    output:
+        f"{assembly_path}{assembly}.annotation.bed12",
+    log:
+        "logs/gtf2bed12.log",
+    cache: True
+    conda:
+        "../envs/ucscutils.yaml"
+    shell:
+        "gtfToGenePred {input} stdout | genePredToBed stdin {output}"
 
 # SRA-download
 rule sra_get_fastq_pe:

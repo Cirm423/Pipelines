@@ -19,40 +19,66 @@ if (snakemake@params[["mode"]] == "bismark") {
     names(files) <- sapply(strsplit(basename(files), split="-pe|-se"), "[[", 1)
     #Making sure the files are in the same order as the samples + treatment vector
     files <- files[order(match(names(files), row.names(samples)))]
+    pipeline <- "bismarkCoverage"
 } else {
     #Change the split pattern for the correct methyldackel one.
     names(files) <- sapply(strsplit(basename(files), "_CpG.methylKit", fixed = TRUE), "[[", 1)
     #Making sure the files are in the same order as the samples + treatment vector
     files <- files[order(match(names(files), row.names(samples)))]
+    pipeline <- "amp"
 }
 
-#Read the files into a db
-methDB=methRead(files,
-           sample.id=as.list(row.names(samples)),
-           assembly=snakemake@params[["assembly"]],
-           treatment=snakemake@params[["treatment"]],
-           context="CpG",
-           mincov = snakemake@params[["mincov"]],
-           dbtype = "tabix",
-           dbdir = "results/methylDB"
-           )
+#Convert files to list as needed for the functions
 
-#Print and save CpG methylation % plot
-pdf(file=snakemake@output[["CpG_methylation"]])
-getMethylationStats(methDB,plot=TRUE,both.strands=FALSE)
-dev.off()
+files.list <- as.list(files)
 
-#Print and save CpG coverage plot
-pdf(file=snakemake@output[["CpG_coverage"]])
-getCoverageStats(methDB,plot=TRUE,both.strands=FALSE)
-dev.off()
+#Read the files into a db, depending on covariates or not
+if (length(colnames(samples)) > 1) {
+    covariates = samples[,-1]
+    methDB=methRead(files.list,
+            sample.id=as.list(row.names(samples)),
+            assembly=snakemake@params[["assembly"]],
+            treatment=snakemake@params[["treatment"]],
+            context="CpG",
+            mincov = snakemake@params[["mincov"]],
+            pipeline = pipeline,
+            covariates = covariates
+            )
+} else {
+    methDB=methRead(files.list,
+            sample.id=as.list(row.names(samples)),
+            assembly=snakemake@params[["assembly"]],
+            treatment=snakemake@params[["treatment"]],
+            context="CpG",
+            mincov = snakemake@params[["mincov"]],
+            pipeline = pipeline
+            )
+}
+
+#The following 2 plots are for single samples, so iterate over them
+dir.create(snakemake@output[["CpG_methylation"]], recursive = TRUE)
+dir.create(snakemake@output[["CpG_coverage"]], recursive = TRUE)
+
+for (sample_index in length(samples)) {
+    sample_name <- row.names(samples)[sample_index]
+    #Print and save CpG methylation % plot
+    out_file_meth <- paste(snakemake@output[["CpG_methylation"]],"/",sample_name,".pdf",sep="")
+    pdf(file=out_file_meth)
+    getMethylationStats(methDB[[sample_index]],plot=TRUE,both.strands=FALSE)
+    dev.off()
+    #Print and save CpG coverage plot
+    out_file_cov <- paste(snakemake@output[["CpG_coverage"]],"/",sample_name,".pdf",sep="")
+    pdf(file=out_file_cov)
+    getMethylationStats(methDB[[sample_index]],plot=TRUE,both.strands=FALSE)
+    dev.off()
+}
 
 #Filter samples based on read coverage (might be useful to change this to an option)
-filtered.methDB=filterByCoverage(methDB,lo.count=10,lo.perc=NULL,
-                                      hi.count=NULL,hi.perc=99.9)
+# filtered.methDB=filterByCoverage(methDB,lo.count=snakemake@params[["mincov"]],lo.perc=NULL,
+#                                       hi.count=NULL,hi.perc=99.9)
 
 #Merge samples for further downstream analysis (destrand is only useful in CpG, which is the only case for now)
-meth=unite(methDB, destrand=TRUE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
+meth=unite(methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
 
 #Print and save correlation plot
 pdf(file=snakemake@output[["correlation"]])
@@ -74,44 +100,35 @@ pdf(file=snakemake@output[["PCA"]])
 PCASamples(meth)
 dev.off()
 
-#Checking if there are covariates in the samples table, if then do covariate analysis and actual differential analysis with overdispersion
+#Differential analysis with overdispersion, depending on the presence of covariates
 if (length(colnames(samples)) > 1) {
-    covariates <- samples[,-1]
-    sim.methylBase<-dataSim(replicates=length(row.names(samples)),sites=1000,
-                            treatment=snakemake@params[["treatment"]],
-                            covariates=covariates,
-                            sample.ids=row.names(samples)
-                            )
-    myDiff<-calculateDiffMeth(sim.methylBase,
+    myDiff<-calculateDiffMeth(meth,
                                     covariates=covariates,
                                     overdispersion="MN",mc.cores=snakemake@threads[[1]])
 } else {
-    sim.methylBase<-dataSim(replicates=length(row.names(samples)),sites=1000,
-                            treatment=snakemake@params[["treatment"]],
-                            sample.ids=row.names(samples)
-                            )
-
-    myDiff<-calculateDiffMeth(sim.methylBase,
+    myDiff<-calculateDiffMeth(meth,
                                     overdispersion="MN",mc.cores=snakemake@threads[[1]])
 }
 
-###Find a way to save these things into files
-
 # Report methylation and save them
 myDiff25p.hyper=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hyper")
-write.table(myDiff25p.hyper, file=snakemake@output[["hyper"]], sep = "\t")
+write.table(myDiff25p.hyper, file=snakemake@output[["hyper"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 myDiff25p.hypo=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hypo")
-write.table(myDiff25p.hypo, file=snakemake@output[["hypo"]], sep = "\t")
+write.table(myDiff25p.hypo, file=snakemake@output[["hypo"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 myDiff25p=getMethylDiff(myDiff,difference=25,qvalue=0.01)
-write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t")
+write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
-write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t")
+write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 #Annotation of differentially methylated stuff
-gene.obj=readTranscriptFeatures(snakemake@input[["annot"]])
+gene.obj=readTranscriptFeatures(snakemake@input[["annot"]],remove.unusual=FALSE)
 
 anno = annotateWithGeneParts(as(myDiff25p,"GRanges"),gene.obj)
-write.table(anno, file=snakemake@output[["annotation"]], sep = "\t")
+
+#Create the annotation dataframe
+anno.df = cbind(getAssociationWithTSS(anno),getMembers(anno))
+
+write.table(anno.df, file=snakemake@output[["annotation"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
