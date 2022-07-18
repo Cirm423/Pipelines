@@ -108,6 +108,28 @@ rule bowtie2_build:
     wrapper:
         "v1.5.0/bio/bowtie2/build"
 
+rule bowtie2_build_spike:
+    input:
+        ref=f"{spike_path}{spike_assembly}.fa",
+    output:
+        multiext(
+            f"{spike_path}{spike_assembly}",
+            ".1.bt2",
+            ".2.bt2",
+            ".3.bt2",
+            ".4.bt2",
+            ".rev.1.bt2",
+            ".rev.2.bt2",
+        ),
+    log:
+        f"logs/bowtie2_build/build_{spike_assembly}.log",
+    params:
+        extra="",  # optional parameters
+    threads: 8
+    cache: True
+    wrapper:
+        "v1.5.0/bio/bowtie2/build"
+
 if genecode_assembly:
 
     rule faToTwoBit_fa:
