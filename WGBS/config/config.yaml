@@ -73,6 +73,14 @@ params:
     #By default methylkit merge samples function produces bases/regions covered in all samples. To relax this setting, put a number indicating tha the
     #region/base should be in at least x samples. Otherwise leave empty (full empty, no "" or '') for default all.
     min_group:
+    #If the tile window parameter is higher than 1, methylkit will be run for tiling windows methylation instead of per base methylation
+    tile_window: 1
+    #Step size for the tiling windows analysis
+    step_size: 1000
+    #Minimum coverage used to call methylation for tiling windows. 
+    #Methylkit recommends setting a lower min_cov (parameter above) for methylation reading, and then setting a higher min_cov when calling methylation
+    #for the tiling windows. The default recommended parameters are min_cov = 3 and tile_cov = 10
+    tile_cov: 10
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True

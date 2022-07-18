@@ -78,7 +78,12 @@ for (sample_index in length(samples)) {
 #                                       hi.count=NULL,hi.perc=99.9)
 
 #Merge samples for further downstream analysis (destrand is only useful in CpG, which is the only case for now)
-meth=unite(methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
+if (snakemake@params[["window_s"]] > 1) {
+    tiles = tileMethylCounts(methDB,win.size=snakemake@params[["window_s"]],step.size=snakemake@params[["step_s"]],cov.bases = snakemake@params[["tile_cov"]])
+    meth = unite(tiles, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
+} else {
+    meth=unite(methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
+}
 
 #Print and save correlation plot
 pdf(file=snakemake@output[["correlation"]])
@@ -129,6 +134,6 @@ gene.obj=readTranscriptFeatures(snakemake@input[["annot"]],remove.unusual=FALSE)
 anno = annotateWithGeneParts(as(myDiff25p,"GRanges"),gene.obj)
 
 #Create the annotation dataframe
-anno.df = cbind(getAssociationWithTSS(anno),getMembers(anno))
+anno.df = merge(getAssociationWithTSS(anno),getMembers(anno),by.x=c("target.row"), by.y=0)
 
 write.table(anno.df, file=snakemake@output[["annotation"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)

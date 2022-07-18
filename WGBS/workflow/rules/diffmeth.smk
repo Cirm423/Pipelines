@@ -21,7 +21,10 @@ rule methylkit:
         treatment = [1 if x == "treatment" else 0 for x in samples["group"]],
         samples = config["samples"],
         mincov = config["params"]["diff_meth"]["min_cov"],
-        min_group = config["params"]["diff_meth"]["min_group"]
+        min_group = config["params"]["diff_meth"]["min_group"],
+        window_s = config["params"]["diff_meth"]["tile_window"],
+        step_s = config["params"]["diff_meth"]["step_size"],
+        tile_cov = config["params"]["diff_meth"]["tile_cov"]
     log:
         "logs/methylkit.log"
     threads: 24
