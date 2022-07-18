@@ -100,7 +100,7 @@ rule bowtie2_build:
             ".rev.2.bt2",
         ),
     log:
-        "logs/bowtie2_build/build_{assembly}.log",
+        f"logs/bowtie2_build/build_{assembly}.log",
     params:
         extra="",  # optional parameters
     threads: 8
