@@ -59,17 +59,17 @@ if (length(colnames(samples)) > 1) {
 dir.create(snakemake@output[["CpG_methylation"]], recursive = TRUE)
 dir.create(snakemake@output[["CpG_coverage"]], recursive = TRUE)
 
-for (sample_index in length(samples)) {
+for (sample_index in 1:dim(samples)[1]) {
     sample_name <- row.names(samples)[sample_index]
     #Print and save CpG methylation % plot
-    out_file_meth <- paste(snakemake@output[["CpG_methylation"]],"/",sample_name,".pdf",sep="")
+    out_file_meth <- paste(snakemake@output[["CpG_methylation"]],"/",sample_name,"-methylation.pdf",sep="")
     pdf(file=out_file_meth)
     getMethylationStats(methDB[[sample_index]],plot=TRUE,both.strands=FALSE)
     dev.off()
     #Print and save CpG coverage plot
-    out_file_cov <- paste(snakemake@output[["CpG_coverage"]],"/",sample_name,".pdf",sep="")
+    out_file_cov <- paste(snakemake@output[["CpG_coverage"]],"/",sample_name,"-coverage.pdf",sep="")
     pdf(file=out_file_cov)
-    getMethylationStats(methDB[[sample_index]],plot=TRUE,both.strands=FALSE)
+    getCoverageStats(methDB[[sample_index]],plot=TRUE,both.strands=FALSE)
     dev.off()
 }
 

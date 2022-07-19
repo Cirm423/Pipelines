@@ -4,8 +4,8 @@ rule methylkit:
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
         RData = "results/diff_meth/methylkit.RData",
-        CpG_methylation = report(directory("results/diff_meth/plots/CpG_methylation_percent"), patterns=["{name}.pdf"], category="Differential Methylation"),
-        CpG_coverage = report(directory("results/diff_meth/plots/CpG_coverage"), patterns=["{name}.pdf"], category="Differential Methylation"),
+        CpG_methylation = report(directory("results/diff_meth/plots/CpG_methylation_percent"), patterns=["{name}-methylation.pdf"], category="Differential Methylation"),
+        CpG_coverage = report(directory("results/diff_meth/plots/CpG_coverage"), patterns=["{name}-coverage.pdf"], category="Differential Methylation"),
         correlation = report("results/diff_meth/plots/Sample_correlation.pdf", category="Differential Methylation"),
         cluster = report("results/diff_meth/plots/Sample_clustering.pdf", category="Differential Methylation"),
         screen = report("results/diff_meth/plots/PCA_screen.pdf", category="Differential Methylation"),
