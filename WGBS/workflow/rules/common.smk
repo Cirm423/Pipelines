@@ -422,7 +422,7 @@ def all_input(wildcards):
         #only when bismark or bwameth with methylkit param
         if config["params"]["mode"] == "bismark" or (config["params"]["mode"] == "bwameth" and config["params"]["methyldackel"]["methyl_kit"]):
             wanted_input.extend([
-                "results/diff_meth/methykit.RData",
+                "results/diff_meth/methylkit.RData",
                 "results/diff_meth/plots/Sample_correlation.pdf",
                 "results/diff_meth/plots/Sample_clustering.pdf",
                 "results/diff_meth/plots/PCA_screen.pdf",
