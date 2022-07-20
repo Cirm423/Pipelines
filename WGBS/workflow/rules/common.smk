@@ -30,6 +30,11 @@ assembly_path = config['resources']['path'] + config['resources']['ref']['assemb
 
 assert config["params"]["mode"] == "bwameth" or config["params"]["mode"] == "bismark", "The pipeline mode has to be either 'bwameth' or 'bismark'"
 
+# Check treatment is in the groups when diff_meth is activated
+
+if config["params"]["diff_meth"]["activate"]:
+    assert "treatment" in samples["group"], "treatment needs to be a group when performing differential methylation analysis"
+
 ##### wildcard constraints #####
 
 wildcard_constraints:
