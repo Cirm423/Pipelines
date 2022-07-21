@@ -56,41 +56,42 @@ rule collect_multiple_metrics:
     script:
         "../scripts/picard_metrics.py"
 
-rule genomecov:
-    input:
-        "results/filtered/{sample}.sorted.bam",
-        flag_stats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat",
-            step= "bamtools_filtered" if config["single_end"]
-            else "orph_rm_pe"),
-        stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
-            step= "bamtools_filtered" if config["single_end"]
-            else "orph_rm_pe"),
-    output:
-        "results/bed_graph/{sample}.bedgraph"
-    log:
-        "logs/bed_graph/{sample}.log"
-    params:
-        lambda w, input:
-            "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 1000000/$1}}') {pe_fragment} {extend}".format(
-            flagstats_file=input.flag_stats,
-            pe_fragment="" if config["single_end"] else "-pc",
-            # Estimated fragment size used to extend single-end reads
-            extend=
-                "-fs $(grep ^SN {stats} | "
-                "cut -f 2- | "
-                "grep -m1 'average length:' | "
-                "awk '{{print $NF}}')".format(
-                stats=input.stats)
-            if config["single_end"] else ""
-        )
-    wrapper:
-        "v1.3.1/bio/bedtools/genomecov"
+#Old rule for ChIP-seq, here using the SEACR bedgraphs instead
+# rule genomecov:
+#     input:
+#         "results/filtered/{sample}.sorted.bam",
+#         flag_stats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat",
+#             step= "bamtools_filtered" if config["single_end"]
+#             else "orph_rm_pe"),
+#         stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
+#             step= "bamtools_filtered" if config["single_end"]
+#             else "orph_rm_pe"),
+#     output:
+#         "results/bed_graph/{sample}.bedgraph"
+#     log:
+#         "logs/bed_graph/{sample}.log"
+#     params:
+#         lambda w, input:
+#             "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 1000000/$1}}') {pe_fragment} {extend}".format(
+#             flagstats_file=input.flag_stats,
+#             pe_fragment="" if config["single_end"] else "-pc",
+#             # Estimated fragment size used to extend single-end reads
+#             extend=
+#                 "-fs $(grep ^SN {stats} | "
+#                 "cut -f 2- | "
+#                 "grep -m1 'average length:' | "
+#                 "awk '{{print $NF}}')".format(
+#                 stats=input.stats)
+#             if config["single_end"] else ""
+#         )
+#     wrapper:
+#         "v1.3.1/bio/bedtools/genomecov"
 
 rule sort_genomecov:
     input:
-        "results/bed_graph/{sample}.bedgraph"
+        "results/bed_graph/{sample}_normalized.bedgraph"
     output:
-        "results/bed_graph/{sample}.sorted.bedgraph"
+        "results/bed_graph/{sample}_normalized.sorted.bedgraph"
     log:
         "logs/sort_genomecov/{sample}.log"
     threads: 8
@@ -101,7 +102,7 @@ rule sort_genomecov:
 
 rule bedGraphToBigWig:
     input:
-        bedGraph="results/bed_graph/{sample}.sorted.bedgraph",
+        bedGraph="results/bed_graph/{sample}_normalized.sorted.bedgraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/{sample}.bigWig"
