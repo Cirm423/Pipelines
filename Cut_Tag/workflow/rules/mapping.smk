@@ -100,7 +100,6 @@ rule mark_merged_duplicates:
         "logs/picard/picard_dedup/{sample}.log"
     params:
         "REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT",
-    threads:
-        2
+    threads: 4
     wrapper:
         "v0.87.0/bio/picard/markduplicates"
