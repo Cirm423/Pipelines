@@ -35,26 +35,6 @@ if genecode_assembly:
         shell:
             "sort -k2rn {input} > {output}"
 
-rule star_str_bw:
-    input:
-        bam = get_star_bam,
-    output:
-        temp(path_merged_cond("results/bw_str/?/Signal.Unique.str1.out.bg")),
-        temp(path_merged_cond("results/bw_str/?/Signal.Unique.str2.out.bg")),
-        temp(path_merged_cond("results/bw_str/?/Signal.UniqueMultiple.str1.out.bg")),
-        temp(path_merged_cond("results/bw_str/?/Signal.UniqueMultiple.str2.out.bg")),
-    log:
-        path_merged_cond("logs/browser/star_str/?.log"),
-    params:
-    # strandedness
-        strand="Stranded",
-        path=lambda wc, output: os.path.dirname(output[0]) + "/",
-    threads: 8
-    conda:
-        "../envs/star.yaml"
-    shell:
-        "STAR --runMode inputAlignmentsFromBAM --inputBAMfile {input.bam} --outWigType bedGraph --outWigStrand {params.strand} --outFileNamePrefix {params.path} --outWigReferencesPrefix chr"
-
 rule BamCoverage_str1:
     input:
         get_star_bam,
@@ -63,7 +43,7 @@ rule BamCoverage_str1:
         path_merged_cond("results/browser/?.str1.bw"),
     params:
         norm = config["params"]["bamcoverage"],
-        stranded = "" if get_strandedness(units)[0] == 0.5 else "--samFlagExclude 16"
+        stranded = "--exactScaling" if get_strandedness(units)[0] == 0.5 else "--filterRNAstrand forward --exactScaling"
     log: 
         path_merged_cond("logs/browser/?.BamCoverage.log")
     conda:
@@ -80,7 +60,7 @@ rule BamCoverage_str2:
         path_merged_cond("results/browser/?.str2.bw"),
     params:
         norm = config["params"]["bamcoverage"],
-        stranded = "--samFlagInclude 16"
+        stranded = "--filterRNAstrand reverse --exactScaling"
     log: 
         path_merged_cond("logs/browser/?.BamCoverage.log")
     conda:
@@ -92,6 +72,27 @@ rule BamCoverage_str2:
 
 
 ### Old bigwig file code, in case it's useful
+
+# rule star_str_bw:
+#     input:
+#         bam = get_star_bam,
+#     output:
+#         temp(path_merged_cond("results/bw_str/?/Signal.Unique.str1.out.bg")),
+#         temp(path_merged_cond("results/bw_str/?/Signal.Unique.str2.out.bg")),
+#         temp(path_merged_cond("results/bw_str/?/Signal.UniqueMultiple.str1.out.bg")),
+#         temp(path_merged_cond("results/bw_str/?/Signal.UniqueMultiple.str2.out.bg")),
+#     log:
+#         path_merged_cond("logs/browser/star_str/?.log"),
+#     params:
+#     # strandedness
+#         strand="Stranded",
+#         path=lambda wc, output: os.path.dirname(output[0]) + "/",
+#     threads: 8
+#     conda:
+#         "../envs/star.yaml"
+#     shell:
+#         "STAR --runMode inputAlignmentsFromBAM --inputBAMfile {input.bam} --outWigType bedGraph --outWigStrand {params.strand} --outFileNamePrefix {params.path} --outWigReferencesPrefix chr"
+
 # rule star_uns_bw:
 #     input:
 #         bam = get_star_bam,
