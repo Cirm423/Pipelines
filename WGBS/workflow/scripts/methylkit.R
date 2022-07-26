@@ -92,7 +92,7 @@ dev.off()
 
 #Print and save clustering plot
 pdf(file=snakemake@output[["cluster"]])
-clusterSamples(meth, dist="correlation", method="ward", plot=TRUE)
+clusterSamples(meth, dist="correlation", method="ward.D2", plot=TRUE)
 dev.off()
 
 #Print and save PCA screen plot
