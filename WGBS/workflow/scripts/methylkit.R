@@ -79,7 +79,7 @@ for (sample_index in 1:dim(samples)[1]) {
 
 #Merge samples for further downstream analysis (destrand is only useful in CpG, which is the only case for now)
 if (snakemake@params[["window_s"]] > 1) {
-    tiles = tileMethylCounts(methDB,win.size=snakemake@params[["window_s"]],step.size=snakemake@params[["step_s"]],cov.bases = snakemake@params[["tile_cov"]])
+    tiles = tileMethylCounts(methDB,win.size=snakemake@params[["window_s"]],step.size=snakemake@params[["step_s"]],cov.bases = snakemake@params[["tile_cov"]],mc.cores=snakemake@threads[[1]])
     meth = unite(tiles, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
 } else {
     meth=unite(methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
