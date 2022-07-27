@@ -9,6 +9,14 @@
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
 - [Too long, don't want to read](#too-long-dont-want-to-read)
+- [QC plots explanation](#qc-plots-explanation)
+  - [Fragment Size](#fragment-size)
+  - [Promoter/Transcript body (PT) score](#promotertranscript-body-pt-score)
+  - [Nucleosome Free Regions (NFR) score](#nucleosome-free-regions-nfr-score)
+  - [Transcription Start Site (TSS) enrichment score](#transcription-start-site-tss-enrichment-score)
+  - [Coverage curve for nucleosome positions](#coverage-curve-for-nucleosome-positions)
+  - [Footprint plot](#footprint-plot)
+  - [V-plot](#v-plot)
 
 # Starting
 
@@ -51,14 +59,14 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 > | J1_Va_Rep1  | J1 | batch1 |  |
 > | J1_Va_Rep2	| J1 | batch1 |  |
 > | J1_Va_Rep3	| J1 | batch1 |  |
-> | DnmtDKO_Va_Rep1	| DnmtDKO | batch2 | J1_Va_Rep1 |
-> | DnmtDKO_Va_Rep2	| DnmtDKO | batch2 | J1_Va_Rep2 |
-> | DnmtDKO_Va_Rep3	| DnmtDKO | batch2 | J1_Va_Rep3 |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep1 |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep2 |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep3 |
+> | DnmtTKO_Co_Rep1	| DnmtTKO | batch2 | |
+> | DnmtTKO_Co_Rep2	| DnmtTKO | batch2 | |
+> | DnmtTKO_Co_Rep3	| DnmtTKO | batch2 | |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep1 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep2 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups *DnmtDKO* and *DnmtTKO* will be done with controls from the *J1* group, while the peak calling for the *J1* group will be done without controls
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the group *DnmtTKO* will be done with controls from its group, while the peak calling for the *J1* group will be done without controls.
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
@@ -71,9 +79,9 @@ The next file that needs to be modified is *units.tsv*, where you indicate the l
 > | J1_Va_Rep1  | 1 | | | J1_1.lane1.R1.fastq.gz | J1_1.lane1.R2.fastq.gz | | ILLUMINA |
 > | J1_Va_Rep2  | 1 | | | J1_2.lane1.R1.fastq.gz | J1_2.lane1.R2.fastq.gz | | ILLUMINA |
 > | J1_Va_Rep3	| 1 | | | J1_3.lane1.R1.fastq.gz | J1_3.lane1.R2.fastq.gz| | ILLUMINA |
-> | DnmtDKO_Va_Rep1	| 1 | | |  |  | SRR10194959 | ILLUMINA |
-> | DnmtDKO_Va_Rep2	| 1 | | |  |  | SRR10194960 | ILLUMINA |
-> | DnmtDKO_Va_Rep3	| 1 | | |  |  | SRR10194961 | ILLUMINA |
+> | DnmtTKO_Co_Rep1	| 1 | | |  |  | SRR10194959 | ILLUMINA |
+> | DnmtTKO_Co_Rep2	| 1 | | |  |  | SRR10194960 | ILLUMINA |
+> | DnmtTKO_Co_Rep3	| 1 | | |  |  | SRR10194961 | ILLUMINA |
 > | DnmtTKO_Va_Rep1	| 1 | | |  |  | SRR10194962 | ILLUMINA |
 > | DnmtTKO_Va_Rep2	| 1 | | |  |  | SRR10194963 | ILLUMINA |
 > | DnmtTKO_Va_Rep3	| 1 | | |  |  | SRR10194964 | ILLUMINA |
@@ -156,3 +164,55 @@ The basic steps to run the pipe are:
 - Put your units and file paths/sra codes in units.tsv
 - Change config.yaml to single or paired end, set assembly and any specific step option you need.
 - Use `sbatch` to send run_snk.sh to the cluster.
+
+# QC plots explanation
+This section provides more context on how to interpret the ATAC-seq specific QC plots produced by ATACseqQC R package.
+
+## Fragment Size
+
+![image](Images/fragment.png)
+
+Due to the nature of ATAC-seq, cleaving the DNA between nucleosomes, we expect the fragment length to be on the small side, so the fragment size plot should be skewed to the left side.
+
+## Promoter/Transcript body (PT) score
+
+![image](Images/PT.png)
+
+This plot shows the proportion of Promoter vs Transcripts on our samples. In ATAC-seq we expect there to be an enrichment of promoters in our sequences, so this plot should be skewed to the top (positive values indicate enrichment of promoters)
+
+## Nucleosome Free Regions (NFR) score
+
+![image](Images/nfr.png)
+
+We also expect an enrichment of nucleosome free regions near TSSs, so this plot should show higher coverage of NFRs (plot skewed towards left and up)
+
+## Transcription Start Site (TSS) enrichment score
+
+![image](Images/TSS.png)
+
+Is the ratio of reads present in the TSS and reads present in the regions surrounding the TSS. The maximum value that this plot shows in the TSS (0 in the x axis) should be at least of 5 for the experiment to be successful.
+
+## Coverage curve for nucleosome positions
+
+![image](Images/coverage.png)
+
+This plot measures the signal of nuclesome free fragments (black line) vs nucleosome bound fragments (red dotted line). We expect more signal of nuclesome free fragments in the TSS and more signal of nuclesome bound fragments in the flanks of a TSS.
+
+## Footprint plot
+
+![image](Images/Footprint.png)
+
+Infers factor occupancy genome-wide.
+
+## V-plot
+
+![image](Images/vplot.png)
+
+Visualizes fragment midpoint vs length for transcription factors.
+
+![image](Images/Vplot_diagram.jpg)
+
+This figure provides a good visual explanation of what a V plot is showing. White dots in the fragments represent the midpoint. Figure obtained from [this paper](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2012-13-10-250)
+
+
+A more in depth explanation of these plots can be found [here](https://bioconductor.org/packages/devel/bioc/vignettes/ATACseqQC/inst/doc/ATACseqQC.html)

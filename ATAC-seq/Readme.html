@@ -96,6 +96,17 @@
 <li><a href="#running-snakemake">Running Snakemake</a></li>
 <li><a href="#output">Output</a></li>
 <li><a href="#too-long-dont-want-to-read">Too long, don't want to read</a></li>
+<li><a href="#qc-plots-explanation">QC plots explanation</a>
+<ul>
+<li><a href="#fragment-size">Fragment Size</a></li>
+<li><a href="#promotertranscript-body-pt-score">Promoter/Transcript body (PT) score</a></li>
+<li><a href="#nucleosome-free-regions-nfr-score">Nucleosome Free Regions (NFR) score</a></li>
+<li><a href="#transcription-start-site-tss-enrichment-score">Transcription Start Site (TSS) enrichment score</a></li>
+<li><a href="#coverage-curve-for-nucleosome-positions">Coverage curve for nucleosome positions</a></li>
+<li><a href="#footprint-plot">Footprint plot</a></li>
+<li><a href="#v-plot">V-plot</a></li>
+</ul>
+</li>
 </ul>
 <h1 id="starting">Starting</h1>
 <p>This readme provides instructions on how to run the snakemake ATAC-seq pipeline on a cluster.</p>
@@ -153,45 +164,45 @@ biocrfhpc2:<br>
 <td></td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep1</td>
-<td>DnmtDKO</td>
+<td>DnmtTKO_Co_Rep1</td>
+<td>DnmtTKO</td>
 <td>batch2</td>
-<td>J1_Va_Rep1</td>
+<td></td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep2</td>
-<td>DnmtDKO</td>
+<td>DnmtTKO_Co_Rep2</td>
+<td>DnmtTKO</td>
 <td>batch2</td>
-<td>J1_Va_Rep2</td>
+<td></td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep3</td>
-<td>DnmtDKO</td>
+<td>DnmtTKO_Co_Rep3</td>
+<td>DnmtTKO</td>
 <td>batch2</td>
-<td>J1_Va_Rep3</td>
+<td></td>
 </tr>
 <tr>
 <td>DnmtTKO_Va_Rep1</td>
 <td>DnmtTKO</td>
 <td>batch3</td>
-<td>J1_Va_Rep1</td>
+<td>DnmtTKO_Co_Rep1</td>
 </tr>
 <tr>
 <td>DnmtTKO_Va_Rep1</td>
 <td>DnmtTKO</td>
 <td>batch3</td>
-<td>J1_Va_Rep2</td>
+<td>DnmtTKO_Co_Rep2</td>
 </tr>
 <tr>
 <td>DnmtTKO_Va_Rep1</td>
 <td>DnmtTKO</td>
 <td>batch3</td>
-<td>J1_Va_Rep3</td>
+<td>DnmtTKO_Co_Rep3</td>
 </tr>
 </tbody>
 </table>
 </blockquote>
-<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.</strong> In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups <em>DnmtDKO</em> and <em>DnmtTKO</em> will be done with controls from the <em>J1</em> group, while the peak calling for the <em>J1</em> group will be done without controls</p>
+<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.</strong> In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the group <em>DnmtTKO</em> will be done with controls from its group, while the peak calling for the <em>J1</em> group will be done without controls.</p>
 <p><strong>It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
 <p>By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.</p>
 <p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
@@ -241,7 +252,7 @@ biocrfhpc2:<br>
 <td>ILLUMINA</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep1</td>
+<td>DnmtTKO_Co_Rep1</td>
 <td>1</td>
 <td></td>
 <td></td>
@@ -251,7 +262,7 @@ biocrfhpc2:<br>
 <td>ILLUMINA</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep2</td>
+<td>DnmtTKO_Co_Rep2</td>
 <td>1</td>
 <td></td>
 <td></td>
@@ -261,7 +272,7 @@ biocrfhpc2:<br>
 <td>ILLUMINA</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep3</td>
+<td>DnmtTKO_Co_Rep3</td>
 <td>1</td>
 <td></td>
 <td></td>
@@ -400,6 +411,32 @@ biocrfhpc2:<br>
 <li>Change config.yaml to single or paired end, set assembly and any specific step option you need.</li>
 <li>Use <code>sbatch</code> to send run_snk.sh to the cluster.</li>
 </ul>
+<h1 id="qc-plots-explanation">QC plots explanation</h1>
+<p>This section provides more context on how to interpret the ATAC-seq specific QC plots produced by ATACseqQC R package.</p>
+<h2 id="fragment-size">Fragment Size</h2>
+<p><img src="file:Images/fragment.png" alt="image"></p>
+<p>Due to the nature of ATAC-seq, cleaving the DNA between nucleosomes, we expect the fragment length to be on the small side, so the fragment size plot should be skewed to the left side.</p>
+<h2 id="promotertranscript-body-pt-score">Promoter/Transcript body (PT) score</h2>
+<p><img src="file:Images/PT.png" alt="image"></p>
+<p>This plot shows the proportion of Promoter vs Transcripts on our samples. In ATAC-seq we expect there to be an enrichment of promoters in our sequences, so this plot should be skewed to the top (positive values indicate enrichment of promoters)</p>
+<h2 id="nucleosome-free-regions-nfr-score">Nucleosome Free Regions (NFR) score</h2>
+<p><img src="Images/nfr.png" alt="image"></p>
+<p>We also expect an enrichment of nucleosome free regions near TSSs, so this plot should show higher coverage of NFRs (plot skewed towards left and up)</p>
+<h2 id="transcription-start-site-tss-enrichment-score">Transcription Start Site (TSS) enrichment score</h2>
+<p><img src="Images/TSS.png" alt="image"></p>
+<p>Is the ratio of reads present in the TSS and reads present in the regions surrounding the TSS. The maximum value that this plot shows in the TSS (0 in the x axis) should be at least of 5 for the experiment to be successful.</p>
+<h2 id="coverage-curve-for-nucleosome-positions">Coverage curve for nucleosome positions</h2>
+<p><img src="Images/coverage.png" alt="image"></p>
+<p>This plot measures the signal of nuclesome free fragments (black line) vs nucleosome bound fragments (red dotted line). We expect more signal of nuclesome free fragments in the TSS and more signal of nuclesome bound fragments in the flanks of a TSS.</p>
+<h2 id="footprint-plot">Footprint plot</h2>
+<p><img src="Images/Footprint.png" alt="image"></p>
+<p>Infers factor occupancy genome-wide.</p>
+<h2 id="v-plot">V-plot</h2>
+<p><img src="Images/vplot.png" alt="image"></p>
+<p>Visualizes fragment midpoint vs length for transcription factors.</p>
+<p><img src="Images/Vplot_diagram.jpg" alt="image"></p>
+<p>This figure provides a good visual explanation of what a V plot is showing. White dots in the fragments represent the midpoint. Figure obtained from <a href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2012-13-10-250">this paper</a></p>
+<p>A more in depth explanation of these plots can be found <a href="https://bioconductor.org/packages/devel/bioc/vignettes/ATACseqQC/inst/doc/ATACseqQC.html">here</a></p>
 
         
         
