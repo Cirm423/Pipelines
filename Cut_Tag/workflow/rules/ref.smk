@@ -54,6 +54,15 @@ else:
         script:
             "../scripts/genomepy.py"
 
+    rule rename_sizes:
+        input:
+            f"{assembly_path}{assembly}.fa.sizes"
+        output:
+            f"{assembly_path}{assembly}.chrom.sizes"
+        cache: True
+        shell:
+            "mv {input} {output}"
+
 rule get_spike_in_genome:
     output:
         multiext(f"{spike_path}{spike_assembly}", ".fa", ".fa.fai", ".fa.sizes",".annotation.gtf",".annotation.bed")

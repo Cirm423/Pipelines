@@ -54,6 +54,14 @@ else:
         script:
             "../scripts/genomepy.py"
 
+    rule rename_sizes:
+        input:
+            f"{assembly_path}{assembly}.fa.sizes"
+        output:
+            f"{assembly_path}{assembly}.chrom.sizes"
+        cache: True
+        shell:
+            "mv {input} {output}"
 
     # rule move_annotation_ucsc:
     #     input:
