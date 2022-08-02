@@ -86,36 +86,34 @@
 <li><a href="#configuring-snakemake">Configuring Snakemake</a>
 <ul>
 <li><a href="#input-dataset">Input dataset</a></li>
-<li><a href="#assembly">Assembly</a>
+<li><a href="#assembly">Assembly</a></li>
+<li><a href="#mode">Mode</a>
 <ul>
-<li><a href="#spike-in-assembly">Spike-in assembly</a></li>
+<li><a href="#bismark">Bismark</a></li>
+<li><a href="#bwa-meth">Bwa-meth</a></li>
+<li><a href="#which-mode-to-choose">Which mode to choose</a></li>
+</ul>
+</li>
+<li><a href="#differential-methylation-analysis">Differential Methylation Analysis</a>
+<ul>
+<li><a href="#co-variates-analysis">Co-variates analysis</a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#running-snakemake">Running Snakemake</a></li>
-<li><a href="#output">Output</a>
-<ul>
-<li><a href="#plot-explanations">Plot explanations</a>
-<ul>
-<li><a href="#phantompeaks">Phantompeaks</a></li>
-<li><a href="#deeptools">Deeptools</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#too-long-dont-want-to-read">Too long, don't want to read</a></li>
+<li><a href="#output">Output</a></li>
 </ul>
 <h1 id="starting">Starting</h1>
-<p>This readme provides instructions on how to run the snakemake Cut&amp;Tag pipeline on a cluster.</p>
+<p>This readme provides instructions on how to run the snakemake WGBS pipeline on a cluster.</p>
 <p>To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:</p>
 <blockquote>
 <p>hpc2:<br>
-/home/share/dcyleung/snakemake/Cut_Tag/<br>
+/home/share/dcyleung/snakemake/WGBS/<br>
 biocrfhpc1:<br>
-/home4/share/dcyleung/snakemake/Cut_Tag/<br>
+/home4/share/dcyleung/snakemake/WGBS/<br>
 biocrfhpc2:<br>
-/data1/share/dcyleung/Pipeline/snakemake/Cut_Tag/</p>
+/data1/share/dcyleung/Pipeline/snakemake/WGBS/</p>
 </blockquote>
 <p>and place it in your own folder, preferentially in its own folder since snakemake will create many new files.</p>
 <p>You will see 2 folders, one named workflow (which includes the code and scripts, please <em><strong>do not</strong></em> modify anything in this folder) and a config folder; and the run_snk.sh script that will be used to send the pipeline to slurm.</p>
@@ -124,10 +122,8 @@ biocrfhpc2:<br>
 <li>config.yaml</li>
 <li>samples.tsv</li>
 <li>units.tsv</li>
-<li>pe_bamtools_filtering_rules.json</li>
-<li>se_bamtools_filtering_rules.json</li>
 </ul>
-<p>Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Particularly, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.</p>
+<p>Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.</p>
 <h1 id="configuring-snakemake">Configuring Snakemake</h1>
 <h2 id="input-dataset">Input dataset</h2>
 <p>The previously mentioned <em>samples.tsv</em> has to be modified according to your own samples. It is recommended to modify the tsv files in Excel or similar programs since a misplaced tabulation will cause snakemake to improperly reading the config file and probably stop it from working. If you use Excel, please <strong>make sure you save the file as a csv or tsv file</strong> and not as an Excel file, otherwise the pipeline cannot read the file.</p>
@@ -136,82 +132,32 @@ biocrfhpc2:<br>
 <table>
 <thead>
 <tr>
-<th>sample_name</th>
+<th>sample</th>
 <th>group</th>
-<th>batch_effect</th>
-<th>control</th>
-<th>antibody</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>J1_Va_Rep1</td>
-<td>J1</td>
-<td>batch1</td>
-<td></td>
-<td>IgG</td>
+<td>A1</td>
+<td>treatment</td>
 </tr>
 <tr>
-<td>J1_Va_Rep2</td>
-<td>J1</td>
-<td>batch1</td>
-<td></td>
-<td>IgG</td>
+<td>B1</td>
+<td>untreated</td>
 </tr>
 <tr>
-<td>J1_Va_Rep3</td>
-<td>J1</td>
-<td>batch1</td>
-<td></td>
-<td>IgG</td>
+<td>A2</td>
+<td>treatment</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep1</td>
-<td>DnmtDKO</td>
-<td>batch2</td>
-<td>J1_Va_Rep1</td>
-<td>H3K27me3</td>
-</tr>
-<tr>
-<td>DnmtDKO_Va_Rep2</td>
-<td>DnmtDKO</td>
-<td>batch2</td>
-<td>J1_Va_Rep2</td>
-<td>H3K27me3</td>
-</tr>
-<tr>
-<td>DnmtDKO_Va_Rep3</td>
-<td>DnmtDKO</td>
-<td>batch2</td>
-<td>J1_Va_Rep3</td>
-<td>H3K27me3</td>
-</tr>
-<tr>
-<td>DnmtTKO_Va_Rep1</td>
-<td>DnmtTKO</td>
-<td>batch3</td>
-<td>J1_Va_Rep1</td>
-<td>H3K27me3</td>
-</tr>
-<tr>
-<td>DnmtTKO_Va_Rep1</td>
-<td>DnmtTKO</td>
-<td>batch3</td>
-<td>J1_Va_Rep2</td>
-<td>H3K27me3</td>
-</tr>
-<tr>
-<td>DnmtTKO_Va_Rep1</td>
-<td>DnmtTKO</td>
-<td>batch3</td>
-<td>J1_Va_Rep3</td>
-<td>H3K27me3</td>
+<td>B2</td>
+<td>untreated</td>
 </tr>
 </tbody>
 </table>
 </blockquote>
-<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control will be considered as controls in the pipeline.</strong> Additionally, control samples need to have the antibody as <code>IgG</code> (not case sensitive), so that the pipeline can identify and remove these samples from consensus analysis.</p>
-<p><strong>It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
+<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Methylkit).</p>
+<p><strong>It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
 <p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
 <blockquote>
 <table>
@@ -219,104 +165,67 @@ biocrfhpc2:<br>
 <tr>
 <th>sample_name</th>
 <th>unit</th>
-<th>fragment_len_mean</th>
-<th>fragment_len_sd</th>
 <th>fq1</th>
 <th>fq2</th>
 <th>sra</th>
-<th>platform</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>J1_Va_Rep1</td>
-<td>1</td>
+<td>A1</td>
+<td>lane1</td>
+<td>A1.lane1.R1.fastq.gz</td>
+<td>A1.lane1.R2.fastq.gz</td>
 <td></td>
-<td></td>
-<td>J1_1.lane1.R1.fastq.gz</td>
-<td>J1_1.lane1.R2.fastq.gz</td>
-<td></td>
-<td>ILLUMINA</td>
 </tr>
 <tr>
-<td>J1_Va_Rep2</td>
-<td>1</td>
+<td>A1</td>
+<td>lane2</td>
+<td>A1.lane2.R1.fastq.gz</td>
+<td>A1.lane2.R2.fastq.gz</td>
 <td></td>
-<td></td>
-<td>J1_2.lane1.R1.fastq.gz</td>
-<td>J1_2.lane1.R2.fastq.gz</td>
-<td></td>
-<td>ILLUMINA</td>
 </tr>
 <tr>
-<td>J1_Va_Rep3</td>
-<td>1</td>
+<td>B1</td>
+<td>lane1</td>
+<td>B1.lane1.R1...</td>
+<td>B1.lane1.R2...</td>
 <td></td>
-<td></td>
-<td>J1_3.lane1.R1.fastq.gz</td>
-<td>J1_3.lane1.R2.fastq.gz</td>
-<td></td>
-<td>ILLUMINA</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep1</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194959</td>
-<td>ILLUMINA</td>
+<td>B1</td>
+<td>lane2</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep2</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194960</td>
-<td>ILLUMINA</td>
+<td>A2</td>
+<td>lane1</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr>
-<td>DnmtDKO_Va_Rep3</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194961</td>
-<td>ILLUMINA</td>
+<td>A2</td>
+<td>lane2</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr>
-<td>DnmtTKO_Va_Rep1</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194962</td>
-<td>ILLUMINA</td>
+<td>B2</td>
+<td>lane1</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 <tr>
-<td>DnmtTKO_Va_Rep2</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194963</td>
-<td>ILLUMINA</td>
-</tr>
-<tr>
-<td>DnmtTKO_Va_Rep3</td>
-<td>1</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td>SRR10194964</td>
-<td>ILLUMINA</td>
+<td>B2</td>
+<td>lane2</td>
+<td>...</td>
+<td>...</td>
+<td>...</td>
 </tr>
 </tbody>
 </table>
@@ -329,9 +238,8 @@ biocrfhpc2:<br>
 <blockquote>
 <p>samples/sample_1/sample_1_R1.fastq.gz</p>
 </blockquote>
-<p>This latter approach is the preferred one.</p>
-<p><strong>If only the column fq1 is filled, snakemake will try to run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. This setting should be set accordingly even for fq only runs as some steps make use of it. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
-<p>The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.</p>
+<p>This last approach is the preferred one.</p>
+<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
 <p>Lastly, the <em>config.yaml</em> file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs.</p>
 <p>However, some options require further explanation that can be seen bellow.</p>
 <h2 id="assembly">Assembly</h2>
@@ -367,9 +275,68 @@ biocrfhpc2:<br>
 </blockquote>
 <p>If you indicate any assembly name that does not appear in the table, the pipeline will try to download an UCSC reference genome. For example, if you want to use the reference mouse genome from UCSC, you can indicate mm39 instead of GCRm39 in the assembly field.</p>
 <p>For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.</p>
-<h3 id="spike-in-assembly">Spike-in assembly</h3>
-<p>In order to normalize the samples in Cut&amp;Tag it is needed to map the samples against an <em>E. coli</em> genome, as the experimental process introduces <em>E. coli</em> DNA fragments into the samples at a constant pace. Therefore, these fragments can be used to normalize and then compare different samples.</p>
-<p>The recommended genome assembly for the <em>E. coli</em> genome is <code>ASM584v2</code>, but you can change this assembly to any other of your preference in <code>config.yaml</code>, with the <code>spike_assembly</code> setting.</p>
+<h2 id="mode">Mode</h2>
+<p>This pipeline can be run with 2 alternative mappers and methylation callers, and the mode parameter lets you choose which version you want to use. The options are:</p>
+<h3 id="bismark">Bismark</h3>
+<p><a href="https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html">Bismark</a> is the golden standard for methylation analysis, and will manage everything from mapping to calling methylation to QC. It provides high accuracy with a decent speed.</p>
+<h3 id="bwa-meth">Bwa-meth</h3>
+<p><a href="https://github.com/brentp/bwa-meth">Bwa-meth</a> is a newer methylation mapper that provides similar accuracy to bismark but it is much quicker. It uses <a href="https://github.com/dpryan79/MethylDackel">MethylDackel</a> as it's methylation caller and methylation QC tool.</p>
+<h3 id="which-mode-to-choose">Which mode to choose</h3>
+<p>If you need to get results as soon as possible, bwa-meth will finish several times faster than bismark. Usually, a bwa-meth run takes 1 to 2 days, while a bismark run can take 4+ days (depending on your sample depth). Both provide similar accuracy so your results should be similar between the two.
+If you want a more standardized method for publication, then you can choose to use the bismark mode instead.
+Both modes allow you to use methylkit to detect Diferentially Methylated Regions (DRMs).</p>
+<h2 id="differential-methylation-analysis">Differential Methylation Analysis</h2>
+<p>This pipeline can use <a href="https://www.bioconductor.org/packages/release/bioc/vignettes/methylKit/inst/doc/methylKit.html">MethylKit</a> to find DRMs. As stated before, output from both Bismark and Bwa-meth can be used with MethylKit.</p>
+<p><strong>If you intend to use bwa-meth with Methylkit, the parameter <code>methyl_kit</code> in methyldackel options in <code>config.yaml</code> must be set to True.</strong></p>
+<p>Otherwise Methylkit will not run as methyldackel output format will not be able to be read by MethylKit. Bismark does not need any special parameter to be used by MethylKit.</p>
+<p>At the moment only CpGs DRMs will be analyzed with MethylKit.</p>
+<h3 id="co-variates-analysis">Co-variates analysis</h3>
+<p>Methylkit allows to account for co-variate effects to DRMs. If you want to include them in your analysis, you can simply add more columns to <code>samples.tsv</code>, which will set Methylkit to run with co-variates and use the new columns as co-variates. For example:</p>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>sample</th>
+<th>group</th>
+<th>smoker</th>
+<th>Diabetic</th>
+<th>Age</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td>treatment</td>
+<td>No</td>
+<td>No</td>
+<td>32</td>
+</tr>
+<tr>
+<td>B1</td>
+<td>untreated</td>
+<td>No</td>
+<td>No</td>
+<td>49</td>
+</tr>
+<tr>
+<td>A2</td>
+<td>treatment</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>untreated</td>
+<td>Yes</td>
+<td>No</td>
+<td>37</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>This table will add the co-variates named &quot;smoker&quot;, &quot;Diabetic&quot;, and &quot;Age&quot; to the co-variates list in Methylkit, with the values present in their respective column, and run Methylkit taking in account these variables.</p>
+<p>Note: This part has not been thoroughly tested so expect some errors, possibly when using numeric variables.</p>
 <h1 id="running-snakemake">Running Snakemake</h1>
 <p>To run the pipeline simply send the run_snk.sh script to slurm by doing:</p>
 <pre><code>sbatch run_snk.sh
@@ -378,33 +345,13 @@ biocrfhpc2:<br>
 <p>Inside <em>run_snk.sh</em> you can modify the partition to which snakemake will send the jobs by changing the line <code>#SBATCH -p q1</code> and the option <code>-p q1</code> in the <code>snakemake</code> line if its present (in hpc2 and biocrfhpc1). snakemake will run on a default profile settings in every cluster, if you want to use the another partition, comment (using #) the snakemake line with the profile and uncomment the longer snakemake line (by removing #). Then set your partition by changing or adding <code>-p &lt;partition&gt;</code> after the <code>sbatch</code> command present in the line (within the single quotes).</p>
 <p>Additionally, snakemake is configured to run up to 5 simultaneous jobs by default, but if you're using the pipeline in a cluster with number of jobs restrictions you may want to reduce it to 2 or 1 jobs by changing the <code>-j</code> parameter in the <code>snakemake</code> line. Snakemake will take at least 2 job spots, one for the pipeline manager and another for the actual jobs, when <code>-j</code> is set to 1. In hpc2, <code>-j</code> is set to 1 by default since its the cluster with the most restrictions. Therefore if you use the pipeline in the biocrfhpc clusters it will be faster.</p>
 <h1 id="output">Output</h1>
-<p>Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like bwa, fastqc, etc; with sample folders within them. For example:</p>
-<pre><code>results/bwa/sample1/bwa_output_files
+<p>Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline, so you will se folders like bismark, methylkit, etc; with sample folders within them. For example:</p>
+<pre><code>results/bismark_mapped/sample1.mapped.bam
 </code></pre>
-<p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. The file <code>report.html</code> will also be found in the root directory of the pipeline, in which you can find the rest of the QC and stats that are not included in multiqc.</p>
-<p>The peaks and related info will be in a folder called SEACR (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.</p>
+<p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which includes most of the QC in the pipeline. You can download these files and view in a browser. The report.html created in the root directory of the pipeline can also contain some QC plots depending on the mode set for the run.</p>
+<p>You should pay special attention to the Mbias plots, as they can indicate methylation bias that can influence your results. The issues pointed out by the Mbias plots can usually by solved by trimming or ignoring the first and last few BP of the fragments.</p>
+<p>In the diffmeth results folder you can find <code>methDB.RDS</code> object which contains a methylkit object called methDB with all your files and experimental design already included. You can load it in R in case you want to further explore the data with Methylkit. At the time the methDB object has been stored in the pipeline, no filtering or tiles have been created so you try your own settings. The pipeline will also produce some plots like the pca so you can initially asses your data.</p>
 <p>Additionally logs for each step will be stored in the logs folder.</p>
-<h2 id="plot-explanations">Plot explanations</h2>
-<p>Most figures and scores have explanations within their files on how to interpret them, here are some graphs for additional help.</p>
-<h3 id="phantompeaks">Phantompeaks</h3>
-<p>To get strand cross-correlation scores, as good quality ChIP-seq should produce clusters of enriched DNA sequence tags around sites of interest.</p>
-<p>The important scores are nsc and rsc, both explained in output files. The higher, the better. Very good if both are &gt; 1. These scores are present in the 3rd and 2nd from the last columns in <em>sample</em>.phantompeak.spp.out respectively, as well as in their individual files. The last column is a quality score based on rsc, which ranges between -2 and 2, lower score meaning worse quality.</p>
-<h3 id="deeptools">Deeptools</h3>
-<p>For measuring cumulative enrichment, determines how well a ChIP-seq sample can be distinguished from its control sample (meaning that we can separate ChIP signal from the noise).</p>
-<ul>
-<li>Fingerprint plot</li>
-</ul>
-<p><img src="file:////home/cirm/Desktop/Hong_Kong/Pipelines/Cut_Tag/Images/fingerprint.png" alt="image">
-From Deeptools manual</p>
-<h1 id="too-long-dont-want-to-read">Too long, don't want to read</h1>
-<p>The basic steps to run the pipe are:</p>
-<ul>
-<li>Make a copy of the pipeline.</li>
-<li>Put your samples and groups in samples.tsv.</li>
-<li>Put your units and file paths/sra codes in units.tsv</li>
-<li>Change config.yaml to single or paired end, set assembly and any specific step option you need.</li>
-<li>Use <code>sbatch</code> to send run_snk.sh to the cluster.</li>
-</ul>
 
         
         

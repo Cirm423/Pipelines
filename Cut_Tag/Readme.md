@@ -5,6 +5,7 @@
 - [Configuring Snakemake](#configuring-snakemake)
   - [Input dataset](#input-dataset)
   - [Assembly](#assembly)
+    - [Spike-in assembly](#spike-in-assembly)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
   - [Plot explanations](#plot-explanations)
@@ -60,11 +61,9 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep2 | H3K27me3 |
 > | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | J1_Va_Rep3 | H3K27me3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the groups *DnmtDKO* and *DnmtTKO* will be done with controls from the *J1* group, while the peak calling for the *J1* group will be done without controls
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline.** Additionally, control samples need to have the antibody as `IgG` (not case sensitive), so that the pipeline can identify and remove these samples from consensus analysis.
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
-
-By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
@@ -117,6 +116,12 @@ If you indicate any assembly name that does not appear in the table, the pipelin
 
 For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.
 
+### Spike-in assembly
+
+In order to normalize the samples in Cut&Tag it is needed to map the samples against an *E. coli* genome, as the experimental process introduces *E. coli* DNA fragments into the samples at a constant pace. Therefore, these fragments can be used to normalize and then compare different samples.
+
+The recommended genome assembly for the *E. coli* genome is `ASM584v2`, but you can change this assembly to any other of your preference in `config.yaml`, with the `spike_assembly` setting.
+
 # Running Snakemake
 
 To run the pipeline simply send the run_snk.sh script to slurm by doing:
@@ -137,7 +142,7 @@ Snakemake will store all the output files in a directory called results. The out
 
 In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. The file `report.html` will also be found in the root directory of the pipeline, in which you can find the rest of the QC and stats that are not included in multiqc.
 
-The peaks and related info will be in a folder called genrich (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.
+The peaks and related info will be in a folder called SEACR (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.
 
 Additionally logs for each step will be stored in the logs folder. 
 
