@@ -28,7 +28,7 @@ sftp allows you to connect remotely and open a session in the synology server, w
 
 to transfer a bw file to the synology from the cluster, replacing the text within \<> with your file name. Remember that you can also use wildcards (*), so if you want to transfer all `.bw` files in the cluster directory to the synology you can use:
 
-    put *.bw
+    put *.bw .
 
 Once you are done transferring or modifying files on the synology, you can use
 
