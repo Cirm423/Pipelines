@@ -11,9 +11,6 @@ samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sam
 
 files <- snakemake@input[["meth"]]
 
-#Save RData for manual use
-save.image(file=snakemake@output[["RData"]])
-
 #Adapting to the different files between bismark and methydackel
 if (snakemake@params[["mode"]] == "bismark") {
     names(files) <- sapply(strsplit(basename(files), split="-pe|-se"), "[[", 1)
@@ -73,9 +70,14 @@ for (sample_index in 1:dim(samples)[1]) {
     dev.off()
 }
 
-#Filter samples based on read coverage (might be useful to change this to an option)
+
+#Save RDS for manual use
+saveRDS(methDB, file=snakemake@output[["RDS"]])
+
+# #Filter samples based on read coverage (might be useful to change this to an option)
 # filtered.methDB=filterByCoverage(methDB,lo.count=snakemake@params[["mincov"]],lo.perc=NULL,
 #                                       hi.count=NULL,hi.perc=99.9)
+
 
 #Merge samples for further downstream analysis (destrand is only useful in CpG, which is the only case for now)
 if (snakemake@params[["window_s"]] > 1) {
