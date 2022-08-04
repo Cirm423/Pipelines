@@ -200,7 +200,7 @@ def get_is_bigwig(wc):
     big_wigs = []
     for sample in samples.index:
         if not is_control(sample):
-            big_wigs.extend(expand(["results/big_wig/{sample}_{control}-subtracted.bigWig"], sample = sample, control = samples.loc[sample]["control"]))
+            big_wigs.extend(expand(["results/big_wig/{sample}-{control}_subtracted.bigWig"], sample = sample, control = samples.loc[sample]["control"]))
     return big_wigs
 
 def get_multiqc_input(wildcards):
