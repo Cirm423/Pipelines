@@ -101,5 +101,6 @@ params:
   #CPM = Counts Per Million mapped reads, same as CPM in RNA-seq; 
   #BPM = Bins Per Million mapped reads, same as TPM in RNA-seq; 
   #RPGC = reads per genomic content (1x normalization)
-  #Leave empty ("") for no normalization
-  bamcoverage: "--normalizeUsing RPKM"
+  #Remove for no normalization
+  #You can also change the bin size (bp), default is already set (50)
+  bamcoverage: "--binSize 50 --normalizeUsing BPM"
