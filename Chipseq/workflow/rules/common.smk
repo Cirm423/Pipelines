@@ -196,6 +196,13 @@ def get_read_group(wildcards):
         unit=wildcards.unit,
         platform=units.loc[(wildcards.sample, wildcards.unit), "platform"])
 
+def get_is_bigwig(wc):
+    big_wigs = []
+    for sample in samples.index:
+        if not is_control(sample):
+            big_wigs.extend(expand(["results/big_wig/{sample}_{control}-subtracted.bigWig"], sample = sample, control = samples.loc[sample]["control"]))
+    return big_wigs
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -377,7 +384,6 @@ def all_input(wildcards):
         wanted_input.extend(
             expand (
                 [
-                    "results/IGV/big_wig/merged_library.bigWig.igv.txt",
                     "results/phantompeakqualtools/{sample}.phantompeak.pdf"
                 ],
                 sample = sample
@@ -475,7 +481,8 @@ def all_input(wildcards):
                         "results/macs2_callpeak/{sample}-{control}.{peak}_control_lambda.bdg",
                         "results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",
                         "results/IGV/macs2_callpeak-{peak}/merged_library.{sample}-{control}.{peak}_peaks.igv.txt",
-                        "results/macs2_callpeak/plots/plot_{peak}_peaks_count.pdf"
+                        "results/macs2_callpeak/plots/plot_{peak}_peaks_count.pdf",
+                        "results/big_wig/{sample}-{control}_subtracted.bigWig",
                     ],
                     sample = sample,
                     control = samples.loc[sample]["control"],
