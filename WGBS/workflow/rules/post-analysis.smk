@@ -87,3 +87,98 @@ rule bismark2summary:
         "logs/qc/bismark/bismark2summary.log"
     wrapper:
         "v1.7.0/bio/bismark/bismark2summary"
+
+#Modified methyldackel rule to get the bedgraph formatted in case of methylkit run
+if config["params"]["methyldackel"]["methyl_kit"]:
+    rule methyldackel_get_bg:
+        input:
+            bam = "results/picard_dedup/{sample}.bam",
+            bai = "results/picard_dedup/{sample}.bam.bai",
+            fa = f"{assembly_path}{assembly}.fa",
+            fai = f"{assembly_path}{assembly}.fa.fai",
+        output:
+            "results/methyldackel/{sample}_CpG.bedGraph",
+        params:
+            prefix = "results/methyldackel/{sample}",
+            comprehensive = "",
+            min_depth = config["params"]["methyldackel"]["min_depth"] if config["params"]["methyldackel"]["min_depth"] > 0 else "",
+            ignore_flags = "--ignoreFlags" if config["params"]["methyldackel"]["ignore_flags"] else "",
+            methyl_kit = "",
+            extra_extract = config["params"]["methyldackel"]["extra_extract"],
+        log:
+            "logs/methyldackel/{sample}_get_bg.log"
+        conda:
+            "../envs/methyldackel.yaml"
+        threads: 24
+        shell:
+            "MethylDackel extract -@ {threads} {params.comprehensive} {params.ignore_flags} {params.methyl_kit} {params.min_depth} {input.fa} {input.bam} {params.extra_extract} -o {params.prefix} 2>{log}"
+
+rule sort_bedgraph_bismark:
+    input:
+        get_bedgraphs_bismark
+    output:
+        "results/bed_graph/{sample}_bismark.sorted.bedgraph"
+    log:
+        "logs/sort_bedgraph/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "gunzip -c {input} | tail -n +2 | bedSort stdin {output} 2> {log}"
+
+rule sort_bedgraph_bwameth:
+    input:
+        "results/methyldackel/{sample}_CpG.bedGraph"
+    output:
+        "results/bed_graph/{sample}_bwameth.sorted.bedgraph"
+    log:
+        "logs/sort_bedgraph/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedSort {input} {output} 2> {log}"
+
+rule Chrom_sizes_bed:
+    input:
+        f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        temp(f"results/big_wig/{assembly}.chrom.sizes.bed")
+    conda:
+        "../envs/bedops.yaml"
+    shell:
+        """awk -vOFS="\t" '($1!~/_/){{ print $1, "0", $2 }}' {input} | sort-bed - > {output}"""
+
+rule bedGraphtobed:
+    input:
+        expand("results/bed_graph/{{sample}}_{mode}.sorted.bedgraph", mode="bwameth" if config["params"]["mode"] == "bwameth" else "bismark"),
+    output:
+        temp("results/big_wig/{sample}.signal.bed")
+    shell:
+        """awk -vOFS="\t" '{{ print $1, $2, $3, ".", $4 }}' {input} > {output}"""
+
+rule make_bin_bed:
+    input:
+        sample = "results/big_wig/{sample}.signal.bed",
+        ref = f"results/big_wig/{assembly}.chrom.sizes.bed"
+    output:
+        temp("results/big_wig/{sample}.binned.bedGraph")
+    params:
+        bin_size = config["params"]["bin_size"]
+    conda:
+        "../envs/bedops.yaml"
+    shell:
+        "bedops --chop {params.bin_size} {input.ref} | bedmap --echo --max --prec 3 - {input.sample} | cut -f1-3,5 > {output}"
+
+rule bedGraphToBigWig:
+    input:
+        bedGraph="results/big_wig/{sample}.binned.bedGraph",
+        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        "results/big_wig/{sample}.bigWig"
+    log:
+        "logs/big_wig/{sample}.log"
+    params:
+        ""
+    wrapper:
+        "v1.3.1/bio/ucsc/bedGraphToBigWig"
