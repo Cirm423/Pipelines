@@ -14,7 +14,8 @@ rule methylkit:
         hypo = "results/diff_meth/CpG_hypomethylated_25p.tsv",
         all_diff = "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
         chr_diff = "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
-        annotation = "results/diff_meth/CpG_methylated_annotation_25p.tsv"
+        annotation = "results/diff_meth/CpG_methylated_annotation_25p.tsv",
+        bed = temp("results/big_wig/CpG_all_methylated_diff.bedGraph")
     params:
         mode = config["params"]["mode"],
         assembly = assembly,
