@@ -93,8 +93,8 @@ rule methylkit_bedgraphs:
         meth = get_methylkit_input,
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
-        db = temp(directory("results/big_wig/methylDB")),
-        bed = temp(expand("results/big_wig/{sample}_meth-perc.bedGraph",sample = samples.index))
+        db = temp(directory("results/bed_graph/methylDB")),
+        bed = temp(expand("results/bed_graph/{sample}_meth-perc.bedGraph",sample = samples.index))
     params:
         mode = config["params"]["mode"],
         assembly = assembly,
@@ -115,9 +115,9 @@ rule methylkit_bedgraphs:
 
 rule sort_bed_perc:
     input:
-        "results/big_wig/{sample}_meth-perc.bedGraph",
+        "results/bed_graph/{sample}_meth-perc.bedGraph",
     output:
-        temp("results/big_wig/{sample}_meth-perc.sorted.bedGraph")
+        temp("results/bed_graph/{sample}_meth-perc.sorted.bedGraph")
     log:
         "logs/sort_perc/{sample}.log"
     threads: 8
@@ -128,10 +128,10 @@ rule sort_bed_perc:
 
 rule clip_bed_perc:
     input:
-        bed="results/big_wig/{sample}_meth-perc.sorted.bedGraph",
+        bed="results/bed_graph/{sample}_meth-perc.sorted.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
-        temp("results/big_wig/{sample}_meth-perc.clipped.sorted.bedGraph")
+        "results/bed_graph/{sample}_meth-perc.clipped.sorted.bedGraph"
     log:
         "logs/clip_perc/{sample}.log"
     threads: 8
@@ -142,9 +142,9 @@ rule clip_bed_perc:
 
 rule sort_bed_diffmeth:
     input:
-        "results/big_wig/CpG_all_methylated_diff.bedGraph",
+        "results/bed_graph/CpG_all_methylated_diff.bedGraph",
     output:
-        temp("results/big_wig/CpG_all_methylated_diff.sorted.bedGraph")
+        temp("results/bed_graph/CpG_all_methylated_diff.sorted.bedGraph")
     log:
         "logs/sort_diffmeth.log"
     threads: 8
@@ -155,10 +155,10 @@ rule sort_bed_diffmeth:
 
 rule clip_bed_diffmeth:
     input:
-        bed="results/big_wig/CpG_all_methylated_diff.bedGraph",
+        bed="results/bed_graph/CpG_all_methylated_diff.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
-        temp("results/big_wig/CpG_all_methylated_diff.clipped.sorted.bedGraph")
+        "results/bed_graph/CpG_all_methylated_diff.clipped.sorted.bedGraph"
     log:
         "logs/clip_diffmeth.log"
     threads: 8
@@ -169,7 +169,7 @@ rule clip_bed_diffmeth:
 
 rule bedGraphToBigWig_perc:
     input:
-        bedGraph="results/big_wig/{sample}_meth-perc.clipped.sorted.bedGraph",
+        bedGraph="results/bed_graph/{sample}_meth-perc.clipped.sorted.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/{sample}_meth-perc.bigWig"
@@ -182,7 +182,7 @@ rule bedGraphToBigWig_perc:
 
 rule bedGraphToBigWig_diffmeth:
     input:
-        bedGraph="results/big_wig/CpG_all_methylated_diff.clipped.sorted.bedGraph",
+        bedGraph="results/bed_graph/CpG_all_methylated_diff.clipped.sorted.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/CpG_all_methylated_diff.bigWig"

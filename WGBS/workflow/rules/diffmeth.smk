@@ -3,7 +3,7 @@ rule methylkit:
         meth = get_methylkit_input,
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
-        db = temp(directory("results/diff_meth/methylDB")),
+        db = temp(directory("tmp/methylDB")),
         RDS = "results/diff_meth/methDB.RDS",
         CpG_methylation = report(directory("results/diff_meth/plots/CpG_methylation_percent"), patterns=["{name}-methylation.pdf"], category="Differential Methylation"),
         CpG_coverage = report(directory("results/diff_meth/plots/CpG_coverage"), patterns=["{name}-coverage.pdf"], category="Differential Methylation"),
@@ -16,7 +16,7 @@ rule methylkit:
         all_diff = "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
         chr_diff = "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
         annotation = "results/diff_meth/CpG_methylated_annotation_25p.tsv",
-        bed = temp("results/big_wig/CpG_all_methylated_diff.bedGraph")
+        bed = temp("results/bed_graph/CpG_all_methylated_diff.bedGraph")
     params:
         mode = config["params"]["mode"],
         assembly = assembly,
