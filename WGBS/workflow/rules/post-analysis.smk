@@ -93,7 +93,7 @@ rule methylkit_bedgraphs:
         meth = get_methylkit_input,
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
-        db = temp(directory("results/big_wig/methylDB"))
+        db = temp(directory("results/big_wig/methylDB")),
         bed = temp(expand("results/big_wig/{sample}_meth-perc.bedGraph",sample = samples.index))
     params:
         mode = config["params"]["mode"],
@@ -106,16 +106,70 @@ rule methylkit_bedgraphs:
         step_s = config["params"]["diff_meth"]["step_size"],
         tile_cov = config["params"]["diff_meth"]["tile_cov"]
     log:
-        "logs/methylkit.log"
+        "logs/methylkit_bg.log"
     threads: 24
     conda:
         "../envs/methylkit.yaml"
     script:
         "../scripts/methylkit_bg.R"
 
+rule sort_bed_perc:
+    input:
+        "results/big_wig/{sample}_meth-perc.bedGraph",
+    output:
+        temp("results/big_wig/{sample}_meth-perc.sorted.bedGraph")
+    log:
+        "logs/sort_perc/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedSort {input} {output} 2> {log}"
+
+rule clip_bed_perc:
+    input:
+        bed="results/big_wig/{sample}_meth-perc.sorted.bedGraph",
+        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        temp("results/big_wig/{sample}_meth-perc.clipped.sorted.bedGraph")
+    log:
+        "logs/clip_perc/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedClip -truncate {input.bed} {input.chromsizes} {output} 2> {log}"
+
+rule sort_bed_diffmeth:
+    input:
+        "results/big_wig/CpG_all_methylated_diff.bedGraph",
+    output:
+        temp("results/big_wig/CpG_all_methylated_diff.sorted.bedGraph")
+    log:
+        "logs/sort_diffmeth.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedSort {input.bed} {output} 2> {log}"
+
+rule clip_bed_diffmeth:
+    input:
+        bed="results/big_wig/CpG_all_methylated_diff.bedGraph",
+        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        temp("results/big_wig/CpG_all_methylated_diff.clipped.sorted.bedGraph")
+    log:
+        "logs/clip_diffmeth.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedClip -truncate {input.bed} {input.chromsizes} {output} 2> {log}"
+
 rule bedGraphToBigWig_perc:
     input:
-        bedGraph="results/big_wig/{sample}_meth-perc.bedGraph",
+        bedGraph="results/big_wig/{sample}_meth-perc.clipped.sorted.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/{sample}_meth-perc.bigWig"
@@ -128,7 +182,7 @@ rule bedGraphToBigWig_perc:
 
 rule bedGraphToBigWig_diffmeth:
     input:
-        bedGraph="results/big_wig/CpG_all_methylated_diff.bedGraph",
+        bedGraph="results/big_wig/CpG_all_methylated_diff.clipped.sorted.bedGraph",
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
         "results/big_wig/CpG_all_methylated_diff.bigWig"
