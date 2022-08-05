@@ -135,6 +135,9 @@ chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
 write.table(getData(chrDiff25p), file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 # Create bedgraph of all diff, don't save directly to file to avoid the track line for bigWig conversion
+#Disable scientific notation in bedgraph output.
+options(scipen=999)
+
 bg = bedgraph(myDiff, col.name = "meth.diff", unmeth = FALSE)
 write.table(bg, file=snakemake@output[["bed"]], sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
 

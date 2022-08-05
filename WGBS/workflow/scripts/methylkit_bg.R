@@ -5,6 +5,8 @@ sink(log, type="message")
 library(methylKit)
 library(genomation)
 
+
+
 pdf(NULL) #This supposedly stops Rplots.pdf from being created
 
 samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sample", check.names=FALSE)
@@ -59,6 +61,9 @@ if (length(colnames(samples)) > 1) {
 #Filter samples based on read coverage (might be useful to change this to an option)
 filtered.methDB=filterByCoverage(methDB,lo.count=snakemake@params[["mincov"]],lo.perc=NULL,
                                       hi.count=NULL,hi.perc=99.9)
+
+#Disable scientific notation in bedgraph output.
+options(scipen=999)
 
 #Generate bedgraphs depending on tile analysis or sCpG
 if (snakemake@params[["window_s"]] > 1) {
