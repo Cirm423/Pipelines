@@ -61,7 +61,8 @@ params:
     # Ignores the aligner flags for low quality reads, duplicates, etc. Recommended to leave at False.
     ignore_flags: False
     # Makes the output compatible with MethylKit. This option has to be true for differential methylation analysis to work in bwameth mode
-    methyl_kit: False
+    #Note: in bwameth mode bigWigs won't be produced unless methyl_kit option is set to True
+    methyl_kit: True
     # Extra parameters for Methyldackel extrat and mbias plot functions. Further explanation on the parameters can be found here https://github.com/dpryan79/MethylDackel
     extra_extract: ""
     extra_mbias: ""
@@ -107,5 +108,3 @@ params:
   #   * `--minimum-overlap 7`: the cutadapt default minimum overlap of `5` did trimming on the level
   #     of expected adapter matches by chance
   cutadapt-others: "-e 0.005 --overlap 7"
-  #bin size to use to make the bigWig files.
-  bin_size: 200

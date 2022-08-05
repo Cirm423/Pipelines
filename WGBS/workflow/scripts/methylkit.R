@@ -130,8 +130,9 @@ write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t",col.names
 chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
 write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
-# Create bedgraph of all diff
-bedgraph(myDiff, file.name = snakemake@output[["bed"]], col.name = "meth.diff", unmeth = FALSE)
+# Create bedgraph of all diff, don't save directly to file to avoid the track line for bigWig conversion
+bg = bedgraph(myDiff, col.name = "meth.diff", unmeth = FALSE)
+write.table(bg, file=snakemake@output[["bed"]], sep="\t", row.names=FALSE, col.names=FALSE, quote=FALSE)
 
 #Annotation of differentially methylated stuff
 gene.obj=readTranscriptFeatures(snakemake@input[["annot"]],remove.unusual=FALSE)

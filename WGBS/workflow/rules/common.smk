@@ -226,20 +226,6 @@ def get_methylkit_input(wildcards):
             end = "se" if config["single_end"] else "pe"
         )
 
-def get_bedgraphs_bismark(wc):
-    return expand(
-        [
-            "results/bismark/meth_cpg/{{sample}}-{end}.bedGraph.gz",
-        ],
-        end = "se" if config["single_end"] else "pe"
-    )
-
-def get_bedgraphs(wc):
-    if config["params"]["mode"] == "bwameth":
-        return "results/bed_graph/{sample}_bwameth.sorted.bedgraph"
-    else:
-        return "results/bed_graph/{sample}_bismark.sorted.bedgraph",
-
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -395,7 +381,8 @@ def all_input(wildcards):
 
     # Methylation, depending on bismark or bwameth
     for sample in samples.index:
-        wanted_input.extend(expand("results/big_wig/{sample}.bigWig",sample=sample))
+        if config["params"]["mode"] == "bismark" or (config["params"]["mode"] == "bwameth" and config["params"]["methyldackel"]["methyl_kit"]):
+            wanted_input.extend(expand("results/big_wig/{sample}_meth-perc.bigWig",sample=sample))
         if config["params"]["lc_extrap"]["activate"]:
             wanted_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
         if config["params"]["mode"] == "bwameth":
@@ -451,7 +438,8 @@ def all_input(wildcards):
                 "results/diff_meth/CpG_hypomethylated_25p.tsv",
                 "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
                 "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
-                "results/diff_meth/CpG_methylated_annotation_25p.tsv"
+                "results/diff_meth/CpG_methylated_annotation_25p.tsv",
+                "results/big_wig/CpG_all_methylated_diff.bigWig"
             ])
             
     return wanted_input
