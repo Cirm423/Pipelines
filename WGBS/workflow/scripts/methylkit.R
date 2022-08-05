@@ -74,17 +74,17 @@ for (sample_index in 1:dim(samples)[1]) {
 #Save RDS for manual use
 saveRDS(methDB, file=snakemake@output[["RDS"]])
 
-# #Filter samples based on read coverage (might be useful to change this to an option)
-# filtered.methDB=filterByCoverage(methDB,lo.count=snakemake@params[["mincov"]],lo.perc=NULL,
-#                                       hi.count=NULL,hi.perc=99.9)
+#Filter samples based on read coverage (might be useful to change this to an option)
+filtered.methDB=filterByCoverage(methDB,lo.count=snakemake@params[["mincov"]],lo.perc=NULL,
+                                      hi.count=NULL,hi.perc=99.9)
 
 
 #Merge samples for further downstream analysis (destrand is only useful in CpG, which is the only case for now)
 if (snakemake@params[["window_s"]] > 1) {
-    tiles = tileMethylCounts(methDB,win.size=snakemake@params[["window_s"]],step.size=snakemake@params[["step_s"]],cov.bases = snakemake@params[["tile_cov"]],mc.cores=snakemake@threads[[1]])
+    tiles = tileMethylCounts(filtered.methDB,win.size=snakemake@params[["window_s"]],step.size=snakemake@params[["step_s"]],cov.bases = snakemake@params[["tile_cov"]],mc.cores=snakemake@threads[[1]])
     meth = unite(tiles, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
 } else {
-    meth=unite(methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
+    meth=unite(filtered.methDB, destrand=FALSE, min.per.group=snakemake@params[["min_group"]], mc.cores=snakemake@threads[[1]])
 }
 
 #Print and save correlation plot
@@ -129,6 +129,9 @@ write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t",col.names
 
 chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
 write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
+
+# Create bedgraph of all diff
+bedgraph(myDiff, file.name = snakemake@output[["bed"]], col.name = "meth.diff", unmeth = FALSE)
 
 #Annotation of differentially methylated stuff
 gene.obj=readTranscriptFeatures(snakemake@input[["annot"]],remove.unusual=FALSE)
