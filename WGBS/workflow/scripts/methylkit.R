@@ -39,7 +39,9 @@ if (length(colnames(samples)) > 1) {
             context="CpG",
             mincov = snakemake@params[["mincov"]],
             pipeline = pipeline,
-            covariates = covariates
+            covariates = covariates,
+            dbtype = "tabix",
+            dbdir = snakemake@output[["db"]]
             )
 } else {
     methDB=methRead(files.list,
@@ -48,7 +50,9 @@ if (length(colnames(samples)) > 1) {
             treatment=snakemake@params[["treatment"]],
             context="CpG",
             mincov = snakemake@params[["mincov"]],
-            pipeline = pipeline
+            pipeline = pipeline,
+            dbtype = "tabix",
+            dbdir = snakemake@output[["db"]]
             )
 }
 
@@ -119,16 +123,16 @@ if (length(colnames(samples)) > 1) {
 
 # Report methylation and save them
 myDiff25p.hyper=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hyper")
-write.table(myDiff25p.hyper, file=snakemake@output[["hyper"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
+write.table(getData(myDiff25p.hyper), file=snakemake@output[["hyper"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 myDiff25p.hypo=getMethylDiff(myDiff,difference=25,qvalue=0.01,type="hypo")
-write.table(myDiff25p.hypo, file=snakemake@output[["hypo"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
+write.table(getData(myDiff25p.hypo), file=snakemake@output[["hypo"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 myDiff25p=getMethylDiff(myDiff,difference=25,qvalue=0.01)
-write.table(myDiff25p, file=snakemake@output[["all_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
+write.table(getData(myDiff25p), file=snakemake@output[["all_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 chrDiff25p=diffMethPerChr(myDiff,plot=FALSE,qvalue.cutoff=0.01, meth.cutoff=25)
-write.table(chrDiff25p, file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
+write.table(getData(chrDiff25p), file=snakemake@output[["chr_diff"]], sep = "\t",col.names = TRUE, row.names = FALSE, quote = FALSE)
 
 # Create bedgraph of all diff, don't save directly to file to avoid the track line for bigWig conversion
 bg = bedgraph(myDiff, col.name = "meth.diff", unmeth = FALSE)

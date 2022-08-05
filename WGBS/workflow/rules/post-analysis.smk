@@ -93,6 +93,7 @@ rule methylkit_bedgraphs:
         meth = get_methylkit_input,
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
+        db = temp(directory("results/big_wig/methylDB"))
         bed = temp(expand("results/big_wig/{sample}_meth-perc.bedGraph",sample = samples.index))
     params:
         mode = config["params"]["mode"],

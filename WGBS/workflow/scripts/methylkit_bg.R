@@ -39,7 +39,9 @@ if (length(colnames(samples)) > 1) {
             context="CpG",
             mincov = snakemake@params[["mincov"]],
             pipeline = pipeline,
-            covariates = covariates
+            covariates = covariates,
+            dbtype = "tabix",
+            dbdir = snakemake@output[["db"]]
             )
 } else {
     methDB=methRead(files.list,
@@ -48,7 +50,9 @@ if (length(colnames(samples)) > 1) {
             treatment=snakemake@params[["treatment"]],
             context="CpG",
             mincov = snakemake@params[["mincov"]],
-            pipeline = pipeline
+            pipeline = pipeline,
+            dbtype = "tabix",
+            dbdir = snakemake@output[["db"]]
             )
 }
 

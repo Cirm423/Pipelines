@@ -3,6 +3,7 @@ rule methylkit:
         meth = get_methylkit_input,
         annot = f"{assembly_path}{assembly}.annotation.bed12"
     output:
+        db = temp(directory("results/diff_meth/methylDB")),
         RDS = "results/diff_meth/methDB.RDS",
         CpG_methylation = report(directory("results/diff_meth/plots/CpG_methylation_percent"), patterns=["{name}-methylation.pdf"], category="Differential Methylation"),
         CpG_coverage = report(directory("results/diff_meth/plots/CpG_coverage"), patterns=["{name}-coverage.pdf"], category="Differential Methylation"),
