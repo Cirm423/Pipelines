@@ -4,8 +4,7 @@ rule plot_fingerprint:
         bam_idx=["results/bamtools_filtered/{sample}.sorted.bam.bai", "results/bamtools_filtered/{control}.sorted.bam.bai"],
         jsd_sample="results/bamtools_filtered/{control}.sorted.bam",
         stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
-            step="bamtools_filtered" if config["single_end"]
-            else "orph_rm_pe")
+            step="bamtools_filtered")
     output:  #ToDo: add description to report caption
         # https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/deeptools/plotfingerprint.html.
         fingerprint=report("results/deeptools/{sample}-{control}.plot_fingerprint.pdf", caption="../report/plot_fingerprint_deeptools.rst", category="QC"),
@@ -121,8 +120,7 @@ rule bedtools_intersect:
 rule frip_score:
     input:
         intersect="results/bedtools_intersect/{sample}-{control}.intersected.bed",
-        flagstats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat", step= "bamtools_filtered" if config["single_end"]
-        else "orph_rm_pe")
+        flagstats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat", step= "bamtools_filtered")
     output:
         "results/bedtools_intersect/{sample}-{control}.peaks_frip.tsv"
     log:
