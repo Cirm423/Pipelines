@@ -47,55 +47,11 @@ rule samtools_sort:
     wrapper:
         "v1.3.1/bio/samtools/sort"
 
-#TODO for later: customize and substitute rm_orphan_pe_bam.py with some existing tool
-rule orphan_remove:
-    input:
-        "results/bamtools_filtered/{sample}.sorted.bam"
-    output:
-        bam=temp("results/orph_rm_pe/{sample}.bam"),
-        qc="results/orph_rm_pe/{sample}_bampe_rm_orphan.log"
-    params:
-        "--only_fr_pairs"
-    log:
-        "logs/orph_rm_pe/{sample}.log"
-    conda:
-        "../envs/pysam.yaml"
-    shell:
-        " workflow/scripts/rm_orphan_pe_bam.py {input} {output.bam} {params} 2> {log}"
-
-rule samtools_sort_pe:
-    input:
-         "results/orph_rm_pe/{sample}.bam"
-    output:
-        "results/orph_rm_pe/{sample}.sorted.bam"
-    params:
-        extra=""
-    log:
-        "logs/orph_rm_pe/{sample}.sorted.log"
-    threads:  # Samtools takes additional threads through its option -@
-        8
-    wrapper:
-        "v1.3.1/bio/samtools/sort"
-
-rule merge_se_pe:
-    input:
-        get_se_pe_branches_input
-    output:
-        "results/filtered/{sample}.sorted.bam"
-    params:
-        ""
-    log:
-        "logs/filtered/{sample}.sorted.log"
-    conda:
-        "../envs/coreutils.yaml"
-    shell:
-        "ln -sr {input} {output}"
-
 rule bamtobed:
     input:
-        "results/filtered/{sample}.sorted.bam",
+        "results/bamtools_filtered/{sample}.sorted.bam",
     output:
-        temp("results/filtered/{sample}.bed"),
+        temp("results/bamtools_filtered/{sample}.bed"),
     log:
         "logs/bamtobed/{sample}.log",
     conda:
@@ -105,9 +61,9 @@ rule bamtobed:
 
 rule clean_bed:
     input:
-        "results/filtered/{sample}.bed",
+        "results/bamtools_filtered/{sample}.bed",
     output:
-        temp("results/filtered/{sample}_clean.bed"),
+        temp("results/bamtools_filtered/{sample}_clean.bed"),
     log:
         "logs/bamtobed/{sample}.clean.log"
     shell:
@@ -115,9 +71,9 @@ rule clean_bed:
 
 rule fragment_bed:
     input:
-        "results/filtered/{sample}_clean.bed",
+        "results/bamtools_filtered/{sample}_clean.bed",
     output:
-        temp("results/filtered/{sample}_fragments.bed"),
+        temp("results/bamtools_filtered/{sample}_fragments.bed"),
     log:
         "logs/bamtobed/{sample}.fragment.log"
     shell:
@@ -125,7 +81,7 @@ rule fragment_bed:
 
 rule genomecov_bed:
     input:
-        bed="results/filtered/{sample}_fragments.bed",
+        bed="results/bamtools_filtered/{sample}_fragments.bed",
         ref=f"{assembly_path}{assembly}.chrom.sizes",
         flag_stats="results/mapped/{sample}_spike-in.bam.flagstat",
     output:

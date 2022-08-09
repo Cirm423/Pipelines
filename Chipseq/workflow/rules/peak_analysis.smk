@@ -1,8 +1,8 @@
 rule plot_fingerprint:
     input:
-        bam_files=["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
-        bam_idx=["results/filtered/{sample}.sorted.bam.bai", "results/filtered/{control}.sorted.bam.bai"],
-        jsd_sample="results/filtered/{control}.sorted.bam",
+        bam_files=["results/bamtools_filtered/{sample}.sorted.bam", "results/bamtools_filtered/{control}.sorted.bam"],
+        bam_idx=["results/bamtools_filtered/{sample}.sorted.bam.bai", "results/bamtools_filtered/{control}.sorted.bam.bai"],
+        jsd_sample="results/bamtools_filtered/{control}.sorted.bam",
         stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
             step="bamtools_filtered" if config["single_end"]
             else "orph_rm_pe")
@@ -38,8 +38,8 @@ rule plot_fingerprint:
 
 rule macs2_callpeak_broad:
     input:
-        treatment="results/filtered/{sample}.sorted.bam",
-        control="results/filtered/{control}.sorted.bam",
+        treatment="results/bamtools_filtered/{sample}.sorted.bam",
+        control="results/bamtools_filtered/{control}.sorted.bam",
         gsizepath=f"{assembly_path}{assembly}.gsize.txt"
     output:
         # all output-files must share the same basename and only differ by it's extension
@@ -68,8 +68,8 @@ rule macs2_callpeak_broad:
 
 rule macs2_callpeak_narrow:
     input:
-        treatment="results/filtered/{sample}.sorted.bam",
-        control="results/filtered/{control}.sorted.bam",
+        treatment="results/bamtools_filtered/{sample}.sorted.bam",
+        control="results/bamtools_filtered/{control}.sorted.bam",
         gsizepath=f"{assembly_path}{assembly}.gsize.txt"
     output:
         # all output-files must share the same basename and only differ by it's extension
@@ -124,7 +124,7 @@ rule sm_report_peaks_count_plot:
 
 rule bedtools_intersect:
     input:
-        left="results/filtered/{sample}.sorted.bam",
+        left="results/bamtools_filtered/{sample}.sorted.bam",
         right="results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak"
     output:
         "results/bedtools_intersect/{sample}-{control}.{peak}.intersected.bed"

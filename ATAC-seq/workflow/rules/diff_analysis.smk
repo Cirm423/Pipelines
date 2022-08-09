@@ -130,7 +130,7 @@ rule merge_bool_and_annotatepeaks:
 
 rule feature_counts:
     input:
-        sam=expand("results/filtered/{sample}.sorted.bam",
+        sam=expand("results/bamtools_filtered/{sample}.sorted.bam",
             sample = samples.index),
         annotation="results/genrich_merged_expand/consensus_narrow-peaks.boolean.saf"
     output:
@@ -150,7 +150,7 @@ rule feature_counts:
 rule featurecounts_modified_colnames:
     input:
         featurecounts="results/feature_counts/consensus_narrow-peaks.featureCounts",
-        bam=expand("results/filtered/{sample}.sorted.bam", sample=samples.index),
+        bam=expand("results/bamtools_filtered/{sample}.sorted.bam", sample=samples.index),
         samples_file=config["samples"]
     output:
         "results/feature_counts/consensus_narrow-peaks_modified.featureCounts"

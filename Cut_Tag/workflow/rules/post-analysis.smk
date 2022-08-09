@@ -16,7 +16,7 @@ rule preseq_lc_extrap:
 
 rule collect_multiple_metrics:
     input:
-         bam="results/filtered/{sample}.sorted.bam",
+         bam="results/bamtools_filtered/{sample}.sorted.bam",
          ref=f"{assembly_path}{assembly}.fa"
     output: #ToDo: add descriptions to report captions
         # Through the output file extensions the different tools for the metrics can be selected
@@ -59,7 +59,7 @@ rule collect_multiple_metrics:
 #Old rule for ChIP-seq, here using the SEACR bedgraphs instead
 # rule genomecov:
 #     input:
-#         "results/filtered/{sample}.sorted.bam",
+#         "results/bamtools_filtered/{sample}.sorted.bam",
 #         flag_stats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat",
 #             step= "bamtools_filtered" if config["single_end"]
 #             else "orph_rm_pe"),
@@ -199,7 +199,7 @@ rule plot_heatmap:
 
 rule phantompeakqualtools:
     input:
-        "results/filtered/{sample}.sorted.bam"
+        "results/bamtools_filtered/{sample}.sorted.bam"
     output:  #ToDo: add description to report caption
         res_phantom="results/phantompeakqualtools/{sample}.phantompeak.spp.out",
         r_data="results/phantompeakqualtools/{sample}.phantompeak.Rdata",

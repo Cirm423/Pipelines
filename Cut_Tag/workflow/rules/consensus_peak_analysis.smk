@@ -157,7 +157,7 @@ rule merge_bool_and_annotatepeaks:
 
 rule feature_counts:
     input:
-        sam=lambda wc: expand(["results/filtered/{sample}.sorted.bam", "results/filtered/{control}.sorted.bam"],
+        sam=lambda wc: expand(["results/bamtools_filtered/{sample}.sorted.bam", "results/bamtools_filtered/{control}.sorted.bam"],
             sample=get_samples_of_antibody(wc.antibody),
             control=get_controls_of_antibody(wc.antibody)),
         annotation="results/seacr_merged/{antibody}.consensus_peaks.boolean.saf"
@@ -178,7 +178,7 @@ rule feature_counts:
 rule featurecounts_modified_colnames:
     input:
         featurecounts="results/feature_counts/{antibody}.consensus_peaks.featureCounts",
-        bam=expand("results/filtered/{sample}.sorted.bam", sample=samples.index),
+        bam=expand("results/bamtools_filtered/{sample}.sorted.bam", sample=samples.index),
         samples_file=config["samples"]
     output:
         "results/feature_counts/{antibody}.consensus_peaks_modified.featureCounts"

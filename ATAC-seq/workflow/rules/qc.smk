@@ -53,8 +53,8 @@ rule ATACseqQC_init:
 
 rule ATACseqQC:
     input:
-        "results/filtered/{sample}.sorted.bam",
-        "results/filtered/{sample}.sorted.bam.bai",
+        "results/bamtools_filtered/{sample}.sorted.bam",
+        "results/bamtools_filtered/{sample}.sorted.bam.bai",
         "results/qc/ATACseqQC/download.done"
     output:
         temp(directory("results/qc/ATACseqQC/{sample}/temp")),

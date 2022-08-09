@@ -1,7 +1,7 @@
 #Genrich requires the bam files to be sorted by queryname instead of coordinate like all the stats and qc stuff, make temp files for that.
 rule genrich_sort:
     input:
-        get_se_pe_branches_input
+        "results/bamtools_filtered/{sample}.sorted.bam"
     output:
         temp("results/genrich/{sample}.sorted.bam")
     params:
@@ -72,7 +72,7 @@ rule sm_report_peaks_count_plot:
 
 rule bedtools_intersect:
     input:
-        left="results/filtered/{sample}.sorted.bam",
+        left="results/bamtools_filtered/{sample}.sorted.bam",
         right= lambda wc: expand("results/genrich/{group}.narrowPeak", group = samples[samples.index == wc.sample]['group'])
     output:
         "results/bedtools_intersect/{sample}.intersected.bed"

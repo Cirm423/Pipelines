@@ -82,12 +82,6 @@ def is_sra_se(sample, unit):
 def is_sra_pe(sample, unit):
     return has_only_sra_accession(sample, unit) and not config["single_end"]
 
-def get_se_pe_branches_input(wildcards):
-    if config["single_end"]:
-        return "results/bamtools_filtered/{sample}.sorted.bam".format(sample=wildcards.sample)
-    else:
-        return "results/orph_rm_pe/{sample}.sorted.bam".format(sample=wildcards.sample)
-
 def get_individual_fastq(wildcards):
     """Get individual raw FASTQ files from unit sheet, based on a read (end) wildcard"""
     if ( wildcards.read == "0" or wildcards.read == "1" ):
