@@ -132,6 +132,7 @@ dmypy.json
 
 .snakemake
 ngs-test-data
+.vscode
 
 results
 results/*
