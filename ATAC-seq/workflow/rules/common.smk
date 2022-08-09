@@ -329,18 +329,6 @@ def get_multiqc_input(wildcards):
             )
         )
 
-        if not config["single_end"]:
-            multiqc_input.extend(
-                expand (
-                    [
-                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.idxstats",
-                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.flagstat",
-                        "results/orph_rm_pe/{sample}.sorted.orph_rm_pe.stats.txt"
-                    ],
-                    sample = sample
-                )
-            )
-
         if config["params"]["lc_extrap"]["activate"]:
                 multiqc_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
         if config["params"]["picard_metrics"]["activate"]:

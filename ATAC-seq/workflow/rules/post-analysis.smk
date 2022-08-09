@@ -60,11 +60,9 @@ rule genomecov:
     input:
         "results/bamtools_filtered/{sample}.sorted.bam",
         flag_stats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat",
-            step= "bamtools_filtered" if config["single_end"]
-            else "orph_rm_pe"),
+            step= "bamtools_filtered"),
         stats=expand("results/{step}/{{sample}}.sorted.{step}.stats.txt",
-            step= "bamtools_filtered" if config["single_end"]
-            else "orph_rm_pe"),
+            step= "bamtools_filtered"),
     output:
         "results/bed_graph/{sample}.bedgraph"
     log:

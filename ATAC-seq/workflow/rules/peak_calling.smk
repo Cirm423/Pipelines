@@ -86,8 +86,7 @@ rule bedtools_intersect:
 rule frip_score:
     input:
         intersect="results/bedtools_intersect/{sample}.intersected.bed",
-        flagstats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat", step= "bamtools_filtered" if config["single_end"]
-        else "orph_rm_pe")
+        flagstats=expand("results/{step}/{{sample}}.sorted.{step}.flagstat", step= "bamtools_filtered")
     output:
         "results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv"
     log:
