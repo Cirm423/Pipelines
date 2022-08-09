@@ -165,14 +165,8 @@ rule compute_matrix:
         "logs/deeptools/compute_matrix.log"
     threads: 24
     params:
-        command="scale-regions",
-        extra="--numberOfProcessors 24 " #Match this to threads above
-              "--regionBodyLength 1000 "
-              "--beforeRegionStartLength 3000 "
-              "--afterRegionStartLength 3000 "
-              "--missingDataAsZero " # added to prevent black output in the heatmap (plot_heatmap rule) https://github.com/deeptools/deepTools/issues/793
-              "--skipZeros "
-              "--smartLabels "       
+        command="reference-point",
+        extra= lambda wildcards, threads: f"--numberOfProcessors {threads} -b 2000 -a 2000 --smartLabels"
     conda: 
         "../envs/deeptools.yaml"
     script:
