@@ -39,6 +39,7 @@ import os
 import errno
 import argparse
 import sys  # AVI: added to create log files
+import re
 
 sys.stderr = open(snakemake.log[0], "w")  # AVI
 
@@ -126,8 +127,8 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, minRepli
             
             ## GROUP SAMPLES BY REMOVING TRAILING *_R*
             groupDict = {}
-            for sID in ['_'.join(x.split('_')[:-2]) for x in names]:
-                gID = '_'.join(sID.split('_')[:-1])
+            for sID in [re.split(".narrow_peak|.broad_peak",x)[0] for x in names]:
+                gID = re.split("_R.",sID)[0]
                 if gID not in groupDict:
                     groupDict[gID] = []
                 if sID not in groupDict[gID]:
@@ -146,7 +147,7 @@ def macs2_merged_expand(MergedIntervalTxtFile, SampleNameList, OutFile, minRepli
             startDict = {};
             endDict = {};
             for idx in range(len(names)):
-                sample = '_'.join(names[idx].split('_')[:-2])
+                sample = re.split(".narrow_peak|.broad_peak",names[idx])[0]
                 if sample in passRepThreshList:
                     if sample not in tsDict:
                         tsDict[sample] = []
