@@ -42,7 +42,7 @@ rule macs2_merged_expand:
         bool_txt="results/seacr_merged/{antibody}.consensus_peaks.boolean.txt",
         bool_intersect="results/seacr_merged/{antibody}.consensus_peaks.boolean.intersect.txt"
     params:
-        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab(wildcards.antibody),
+        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab_nop(wildcards.antibody),
         min_reps_consensus=config["params"]["min-reps-consensus"]
     log:
         "logs/seacr_merged/{antibody}.consensus_peaks.boolean.log"

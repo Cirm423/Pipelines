@@ -162,6 +162,14 @@ def get_sample_control_peak_combinations_list_ab(antibody):
             sam_contr.extend(expand(["{sample}-{control}"], sample = sample, control = samples.loc[sample]["control"]))
     return sam_contr
 
+def get_sample_control_peak_combinations_list_ab_nop(antibody):
+    sam_contr = []
+    for sample in samples.index:
+        if not is_control(sample) and samples.loc[sample]["antibody"]==antibody:
+            sam_contr.extend(expand(["{sample}-{control}"], sample = sample, control = samples.loc[sample]["control"]))
+    return sam_contr
+
+
 def get_macs2_peaks_ab(wildcards):
     return expand(
         "results/seacr_callpeak/{sam_contr_peak}.{mode}.bed",

@@ -31,7 +31,7 @@ rule macs2_merged_expand:
         bool_txt="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.txt",
         bool_intersect="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.intersect.txt"
     params:
-        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab(wildcards.antibody),
+        sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab_nop(wildcards.antibody),
         narrow_param="--is_narrow_peak" if config["params"]["peak-analysis"] == "narrow" else "",
         min_reps_consensus=config["params"]["min-reps-consensus"]
     log:
