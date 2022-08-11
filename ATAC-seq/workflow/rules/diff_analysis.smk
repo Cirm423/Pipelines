@@ -30,7 +30,7 @@ rule genrich_merged_expand:
     params:
         sample_control_peak=expand("{group}.narrow", group = groups),
         narrow_param="--is_narrow_peak",
-        min_reps_consensus=config["params"]["min-reps-consensus"]
+        min_reps_consensus=1
     log:
         "logs/genrich_merged_expand/consensus_narrow-peaks.boolean.log"
     script:

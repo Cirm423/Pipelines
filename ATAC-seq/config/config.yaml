@@ -34,7 +34,6 @@ params:
   picard_metrics:
     # Produces alignment metrics
     activate: True
-  min-reps-consensus: 1
   deseq2:
     # optional to run vst transform instead of rlog
     vst: False
