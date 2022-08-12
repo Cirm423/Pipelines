@@ -49,27 +49,33 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control | antibody |
 > ------------|---------|--------------|---------|----------|
-> | A1  | treated | batch1 | B1 | H3K9me3 |
-> | B1	| untreated | batch1 |  | H3K9me3 |
-> | A2	| treated | batch2 | B2 | RPB1 |
-> | B2	| untreated | batch2 |  | RPB1 |
+> | A_R1  | treated | batch1 | B1 | H3K9me3 |
+> | B_R1	| untreated | batch1 |  | H3K9me3 |
+> | A_R2	| treated | batch2 | B2 | RPB1 |
+> | B_R2	| untreated | batch2 |  | RPB1 |
 
 You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that **samples without control will be considered as controls in the pipeline.** The rest of the fields should be specified for every sample, including controls.
 
 **It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
+**Naming for consensus analysys:** If you want to run consensus peak analysis you need to name your samples in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:
+
+`<sample>_R<replicate>`
+
+where `<sample>` is the the shared name between the biological replicates and `<replicate>` is the specific replicate identifier (usually a number, but can be anything). If you look in the table above, the samples are `A` and `B`, each having two replicates `1` and `2`.
+
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
 > | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
 > --------------|--------|-------------------|-----------------|-----|----|------|----------|
-> | A1  | lane1 | | | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | ILLUMINA |
-> | A1  | lane2 | | | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | ILLUMINA |
-> | B1	| lane1 | | | B1.lane1.R1... | B1.lane1.R2...| | ILLUMINA |
-> | B1	| lane2 | | | ... | ... | | ... |
-> | A2	| lane1 | | | ... | ... | | ... |
-> | A2	| lane2 | | | ... | ... | | ... |
-> | B2	| lane1 | | | ... | ... | | ... |
-> | B2	| lane2 | | | ... | ... | | ... |
+> | A_R1  | lane1 | | | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | ILLUMINA |
+> | A_R1  | lane2 | | | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | ILLUMINA |
+> | B_R1	| lane1 | | | B1.lane1.R1... | B1.lane1.R2...| | ILLUMINA |
+> | B_R1	| lane2 | | | ... | ... | | ... |
+> | A_R2	| lane1 | | | ... | ... | | ... |
+> | A_R2	| lane2 | | | ... | ... | | ... |
+> | B_R2	| lane1 | | | ... | ... | | ... |
+> | B_R2	| lane2 | | | ... | ... | | ... |
 
 You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 

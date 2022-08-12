@@ -212,6 +212,9 @@ biocrfhpc2:<br>
 </blockquote>
 <p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that <strong>samples without control will be considered as controls in the pipeline.</strong> Additionally, control samples need to have the antibody as <code>IgG</code> (not case sensitive), so that the pipeline can identify and remove these samples from consensus analysis.</p>
 <p><strong>It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
+<p><strong>Naming for consensus analysys:</strong> If you want to run consensus peak analysis you need to name your samples in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:</p>
+<p><code>&lt;sample&gt;_R&lt;replicate&gt;</code></p>
+<p>where <code>&lt;sample&gt;</code> is the the shared name between the biological replicates and <code>&lt;replicate&gt;</code> is the specific replicate identifier (usually a number, but can be anything). If you look in the table above, the samples are <code>J1_Va</code>, <code>DnmtDKO_Va</code> and <code>DnmtTKO_Va</code>, each having three replicates <code>ep1</code>, <code>ep2</code> and <code>ep3</code>.</p>
 <p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
 <blockquote>
 <table>

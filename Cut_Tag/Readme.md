@@ -65,6 +65,12 @@ You need to modify this file to include any samples you want to analyze in the p
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
+**Naming for consensus analysys:** If you want to run consensus peak analysis you need to name your samples in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:
+
+`<sample>_R<replicate>`
+
+where `<sample>` is the the shared name between the biological replicates and `<replicate>` is the specific replicate identifier (usually a number, but can be anything). If you look in the table above, the samples are `J1_Va`, `DnmtDKO_Va` and `DnmtTKO_Va`, each having three replicates `ep1`, `ep2` and `ep3`.
+
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
 > | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
