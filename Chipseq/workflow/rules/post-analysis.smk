@@ -166,7 +166,7 @@ rule compute_matrix:
     threads: 24
     params:
         command="reference-point",
-        extra= lambda wildcards, threads: f"--numberOfProcessors {threads} -b 2000 -a 2000 --smartLabels"
+        extra= lambda wildcards, threads: f"--numberOfProcessors {threads} -b 2000 -a 2000 --smartLabels --missingDataAsZero --skipZeros"
     conda: 
         "../envs/deeptools.yaml"
     script:
