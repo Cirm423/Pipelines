@@ -69,7 +69,7 @@ rule mark_merged_duplicates:
     log:
         "logs/picard/picard_dedup/{sample}.log"
     params:
-        "REMOVE_DUPLICATES=false ASSUME_SORTED=true PROGRAM_RECORD_ID='null' VALIDATION_STRINGENCY=LENIENT",
+        "REMOVE_DUPLICATES=true ASSUME_SORTED=true PROGRAM_RECORD_ID='null' VALIDATION_STRINGENCY=LENIENT",
     threads: 24
     wrapper:
         "v0.87.0/bio/picard/markduplicates"

@@ -1,0 +1,7 @@
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - methpipe ==5.0.1
+  - bedtools ==2.30.0

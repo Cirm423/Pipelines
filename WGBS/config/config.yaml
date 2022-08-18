@@ -18,7 +18,7 @@ params:
   trimming:
     activate: True
   #Chose between bismark or bwameth to use for mapping. bwameth will use methyldackel to extract methylation metrics.
-  mode: "bismark"
+  mode: "bwameth"
   # Params to use for bismark. Only used when the mode is set to bismark.
   bismark:
     #Params for mapping
@@ -82,6 +82,9 @@ params:
     #Methylkit recommends setting a lower min_cov (parameter above) for methylation reading, and then setting a higher min_cov when calling methylation
     #for the tiling windows. The default recommended parameters are min_cov = 3 and tile_cov = 10
     tile_cov: 10
+  #Perform the PMD call using methpipe. Works for both modes, but really slow.
+  PMDs:
+    activate: True
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True

@@ -220,6 +220,17 @@ def get_methylkit_input(wildcards):
             end = "se" if config["single_end"] else "pe"
         )
 
+def get_deduplicated_bams(wildcards):
+    if config["params"]["mode"] == "bwameth":
+        return "results/picard_dedup/{sample}.bam"
+    else:
+        return expand(
+            [
+                "results/bismark_mapped/{{sample}}_{end}.bam",
+            ],
+            end = "se" if config["single_end"] else "pe"
+        )
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -418,6 +429,18 @@ def all_input(wildcards):
                         sample=sample
                     )
                 )
+        
+        #PMDs
+        if config["params"]["PMDs"]["activate"]:
+            wanted_input.extend(
+                expand(
+                    [
+                        "results/methpipe/PMDs/{sample}.pmd"
+                    ],
+                    sample = sample
+                )
+            )
+            
     #Differential methylation analysis
     if config["params"]["diff_meth"]["activate"]:
         #only when bismark or bwameth with methylkit param
