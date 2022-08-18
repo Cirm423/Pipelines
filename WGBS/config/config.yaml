@@ -84,7 +84,7 @@ params:
     tile_cov: 10
   #Perform the PMD call using methpipe. Works for both modes, but really slow.
   PMDs:
-    activate: True
+    activate: False
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True
