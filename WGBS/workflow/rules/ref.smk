@@ -87,8 +87,6 @@ rule bwa_index_meth:
         idx=multiext((f"{assembly_path}{assembly}.fa.bwameth"), ".c2t", ".c2t.amb", ".c2t.ann", ".c2t.bwt", ".c2t.pac", ".c2t.sa"),
     log:
         f"logs/bwa_meth_index_{assembly}.log",
-    resources:
-        mem_mb=369000,
     threads: 24
     cache: True
     conda:

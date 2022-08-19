@@ -89,8 +89,7 @@ rule bwa_index:
         f"logs/bwa_index_{assembly}.log",
     params:
         algorithm="bwtsw",
-    resources:
-        mem_mb=369000,
+    threads: 12
     cache: True
     wrapper:
         "v1.3.1/bio/bwa/index"

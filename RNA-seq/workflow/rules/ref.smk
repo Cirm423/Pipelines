@@ -72,8 +72,7 @@ rule bwa_index:
         multiext((f"{assembly_path}{assembly}.fa"), ".amb", ".ann", ".bwt", ".pac", ".sa"),
     log:
         f"logs/bwa_index_{assembly}.log",
-    resources:
-        mem_mb=369000,
+    threads: 12
     cache: True
     wrapper:
         "0.77.0/bio/bwa/index"
