@@ -100,7 +100,7 @@ rule rsem_ref:
         reference_genome=f"{assembly_path}{assembly}.fa",
     output:
         # one of the index files created and used by RSEM (required)
-        multiext(f"{assembly_path}rsem_reference_{assembly}",".seq",".grp",".ti")
+        multiext(f"{assembly_path}rsem_reference/{assembly}",".seq",".grp",".ti")
         # RSEM produces a number of other files which may optionally be specified as output (later 2 above); these may be provided so that snakemake is aware of them, but the wrapper doesn't do anything with this information other than to verify that the file path prefixes match that of output.seq.
     threads: 4
     params:
@@ -108,7 +108,7 @@ rule rsem_ref:
         #extra="--gtf annotations.gtf",
         # if building the index against a reference transcript set
         extra=f"--gtf {assembly_path}{assembly}.annotation.gtf",
-        out_ref = f"{assembly_path}rsem_reference_{assembly}",
+        out_ref = f"{assembly_path}rsem_reference/{assembly}",
     log:
         f"logs/rsem/prepare-reference_{assembly}.log",
     conda:
