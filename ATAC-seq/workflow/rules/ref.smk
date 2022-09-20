@@ -11,6 +11,7 @@ if genecode_assembly:
         run:
             shell(f"wget -O {output[0]}.gz {genecode[assembly]['assembly']} && gzip -d {output[0]}.gz")
             shell(f"wget -O {output[1]}.gz {genecode[assembly]['gtf']} && gzip -d {output[1]}.gz")
+            shell(f"chmod -R g+w {assembly_path}")
     
     rule genome_faidx:
         input:

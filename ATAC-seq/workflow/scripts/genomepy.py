@@ -31,3 +31,9 @@ shell(
     -p {provider} {annotation} -g {genome_dir} >> {log} 2>&1
     """
 )
+
+for root, dirs, files in os.walk(genome_dir):
+    for d in dirs:
+        os.chmod(os.path.join(root, d), 0o774)
+    for f in files:
+        os.chmod(os.path.join(root, f), 0o774)
