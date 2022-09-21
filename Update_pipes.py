@@ -49,7 +49,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-if args.pipes == "all":
+if "all" in args.pipes:
     args.pipes = pipelines
 
 for pipe in args.pipes:
