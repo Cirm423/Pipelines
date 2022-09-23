@@ -70,9 +70,13 @@ for i in list(range(len(summary_peak_df_list))):
     for j in list(range(categories)):
         summary_sample = df_i.at[j,'sorted_samples'].split(',')
         cat_list.append(summary_sample)
-
     # Plot
     peak_counts = upsetplot.from_memberships(cat_list, data = df_i['count'])
-    upsetplot.plot(peak_counts)
-    plt.show()
-    plt.savefig(os.path.join(args.outpath, file_name))
+    try:
+        upsetplot.plot(peak_counts, show_counts=True, sort_by="cardinality")
+        plt.show()
+        plt.savefig(os.path.join(args.outpath, file_name))
+    except:
+        upsetplot.plot(peak_counts, show_counts=True, sort_by="cardinality", min_subset_size=max(df_i["count"])/100)
+        plt.show()
+        plt.savefig(os.path.join(args.outpath, file_name))        

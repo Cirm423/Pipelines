@@ -4,5 +4,5 @@ channels:
 dependencies:
   - numpy
   - pandas
-  - matplotlib
+  - matplotlib =3.5.2
   - upsetplot
