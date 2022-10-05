@@ -94,10 +94,10 @@ rule bismark_methylation_extractor_se:
     params:
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes
-        extra=f"""--single-end --gzip --multicore 8 --bedGraph --counts \
-        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \
-        --cutoff {config['params']['bismark']['extract']['cutoff']} \
-        {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \
+        extra=f"""--single-end --gzip --multicore 8 --bedGraph --counts \\
+        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \\
+        --cutoff {config['params']['bismark']['extract']['cutoff']} \\
+        {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
         {config['params']['bismark']['extract']['extra']}
         """
     threads: 24
