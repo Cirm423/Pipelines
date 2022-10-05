@@ -98,8 +98,7 @@ rule bismark_methylation_extractor_se:
         {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \\
         --cutoff {config['params']['bismark']['extract']['cutoff']} \\
         {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
-        {config['params']['bismark']['extract']['extra']}
-        """
+        {config['params']['bismark']['extract']['extra']}"""
     threads: 24
     conda:
         "../envs/bismark_meth.yaml"
