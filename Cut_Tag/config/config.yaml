@@ -32,10 +32,9 @@ params:
   peak-analysis: "relaxed"
   # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
   min-reps-consensus: 1
-  #Not currently used, peaks are always normalized against spike for now
+  #Activate or deactivate spike-in normalization. If deactivated, SEACR will normalize the samples.
   callpeak:
-    p-value: 0.05
-    q-value:
+    spike: False
   deeptools-plots:
     # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
     # May crash due to high memory usage, not recommended unless you do a more exhaustive filtering.

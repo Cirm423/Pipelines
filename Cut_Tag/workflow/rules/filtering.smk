@@ -79,7 +79,7 @@ rule fragment_bed:
     shell:
         "cut -f 1,2,6 {input} | sort -k1,1 -k2,2n -k3,3n > {output}"
 
-rule genomecov_bed:
+rule genomecov_bed_spike:
     input:
         bed="results/bamtools_filtered/{sample}_fragments.bed",
         ref=f"{assembly_path}{assembly}.chrom.sizes",
@@ -93,5 +93,18 @@ rule genomecov_bed:
             "-bg -scale $(grep -m 1 'mapped (' {flagstats_file} | awk '{{print 10000/$1}}')".format(
             flagstats_file=input.flag_stats,
         )
+    wrapper:
+        "v1.3.1/bio/bedtools/genomecov"
+
+rule genomecov_bed_no_spike:
+    input:
+        bed="results/bamtools_filtered/{sample}_fragments.bed",
+        ref=f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        "results/bed_graph/{sample}.bedgraph"
+    log:
+        "logs/bed_graph/{sample}.log"
+    params:
+        "-bg"
     wrapper:
         "v1.3.1/bio/bedtools/genomecov"

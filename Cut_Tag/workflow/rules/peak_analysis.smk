@@ -46,12 +46,12 @@ rule prep_seacr:
 rule seacr_callpeak_stringent:
     input:
         "SEACR_1.3.R",
-        sample="results/bed_graph/{sample}_normalized.bedgraph",
-        control="results/bed_graph/{control}_normalized.bedgraph",
+        sample=f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else ''}.bedgraph",
+        control=f"results/bed_graph/{{control}}{'_normalized' if config['params']['callpeak']['spike'] else ''}.bedgraph",
     output:
         "results/seacr_callpeak/{sample}-{control}.stringent.bed"
     params:
-        extra=f"non stringent",
+        extra=f"{'non' if config['params']['callpeak']['spike'] else 'norm'} stringent",
         out_prefix = lambda wc, output: output[0].split(".stringent.bed")[0]
     log:
         "logs/seacr/{sample}-{control}.log"
@@ -63,12 +63,12 @@ rule seacr_callpeak_stringent:
 rule seacr_callpeak_relaxed:
     input:
         "SEACR_1.3.R",
-        sample="results/bed_graph/{sample}_normalized.bedgraph",
-        control="results/bed_graph/{control}_normalized.bedgraph",
+        sample=f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else ''}.bedgraph",
+        control=f"results/bed_graph/{{control}}{'_normalized' if config['params']['callpeak']['spike'] else ''}.bedgraph",
     output:
         "results/seacr_callpeak/{sample}-{control}.relaxed.bed"
     params:
-        extra=f"non relaxed",
+        extra=f"{'non' if config['params']['callpeak']['spike'] else 'norm'} relaxed",
         out_prefix = lambda wc, output: output[0].split(".relaxed.bed")[0]
     log:
         "logs/seacr/{sample}-{control}.log"
