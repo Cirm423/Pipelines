@@ -193,13 +193,13 @@ def get_dedup_bam(wildcards):
 
 def get_sample_splitting_reports(wildcards):
     if config["single_end"]:
-        return "results/bismark/meth/{sample}.deduplicated_splitting_report.txt"
+        return ["results/bismark/meth/{sample}.deduplicated_splitting_report.txt","results/bismark_mapped/{sample}_SE_report.txt"]
     else:
         return "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt"
 
 def get_sample_splitting_reports_ln(wildcards):
     if config["single_end"]:
-        return expand("results/bismark_mapped/{sample}.deduplicated_splitting_report.txt", sample = samples.index)
+        return expand(["results/bismark_mapped/{sample}.deduplicated_splitting_report.txt", "results/bismark_mapped/{sample}_se_SE_report.txt"], sample = samples.index)
     else:
         return expand("results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt", sample = samples.index)
 

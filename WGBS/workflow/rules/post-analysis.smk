@@ -49,7 +49,7 @@ rule bismark2summary_prepare_symlinks:
     input:
         get_sample_splitting_reports,
     output:
-        temp(f"results/bismark_mapped/{{sample}}{'' if config['single_end'] else '_pe'}.deduplicated_splitting_report.txt"),
+        temp(["results/bismark_mapped/{sample}.deduplicated_splitting_report.txt","results/bismark_mapped/{sample}_se_SE_report.txt"] if config["single_end"] else "results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt"),
     log:
         "qc/bismark/{sample}_prepare_symlinks.symlinks.log"
     run:
