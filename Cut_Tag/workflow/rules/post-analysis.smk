@@ -89,7 +89,7 @@ rule collect_multiple_metrics:
 
 rule sort_genomecov:
     input:
-        f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else ''}.bedgraph"
+        f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else '.cpm'}.bedgraph"
     output:
         "results/bed_graph/{sample}_normalized.sorted.bedgraph"
     log:
