@@ -41,9 +41,35 @@ rule meth_counts:
     shell:
         "methcounts -c {input.ref} -n -o {output} {input.sam} 2>{log}"
 
-rule call_PMDs:
+# rule sort_meth_counts:
+#     input:
+#         "results/methpipe/meth_counts/{sample}.meth"
+#     output:
+#         "results/methpipe/meth_counts/{sample}.sorted.meth"
+#     log:
+#         "logs/methpipe/{sample}.sort_counts.log"
+#     threads: 8
+#     conda:
+#         "../envs/coreutils.yaml"
+#     shell:
+#         "sort --parallel={threads} -k 1,1 -k 3,3n -k 2,2n -k 6,6 -o {output} {input} 2>{log}"
+
+rule symmetric_cpgs:
     input:
         "results/methpipe/meth_counts/{sample}.meth"
+    output:
+        "results/methpipe/meth_counts/{sample}.symmetric.meth"
+    log:
+        "logs/methpipe/{sample}.symmetric.log"
+    threads: 24
+    conda:
+        "../envs/methpipe.yaml"
+    shell:
+        "symmetric-cpgs -o {output} {input}"
+
+rule call_PMDs:
+    input:
+        "results/methpipe/meth_counts/{sample}.symmetric.meth"
     output:
         "results/methpipe/PMDs/{sample}.pmd"
     log:
