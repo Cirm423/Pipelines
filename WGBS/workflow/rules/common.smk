@@ -226,7 +226,7 @@ def get_deduplicated_bams(wildcards):
     else:
         return expand(
             [
-                "results/bismark_mapped/{{sample}}_{end}.bam",
+                "results/bismark_mapped/{{sample}}_{end}.deduplicated.bam",
             ],
             end = "se" if config["single_end"] else "pe"
         )
