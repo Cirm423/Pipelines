@@ -472,6 +472,10 @@ def all_input(wildcards):
             ],
             sample = sample
         ))
+
+        if config["params"]["lc_extrap"]["activate"]:
+                wanted_input.extend( expand(["results/preseq/{sample}.complexity_measures"], sample = sample))
+                
         if ATACseqQC_act:
             wanted_input.extend(expand(
                 [
