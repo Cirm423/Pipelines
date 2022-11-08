@@ -41,35 +41,23 @@ rule meth_counts:
     shell:
         "methcounts -c {input.ref} -n -o {output} {input.sam} 2>{log}"
 
-# rule sort_meth_counts:
-#     input:
-#         "results/methpipe/meth_counts/{sample}.meth"
-#     output:
-#         "results/methpipe/meth_counts/{sample}.sorted.meth"
-#     log:
-#         "logs/methpipe/{sample}.sort_counts.log"
-#     threads: 8
-#     conda:
-#         "../envs/coreutils.yaml"
-#     shell:
-#         "sort --parallel={threads} -k 1,1 -k 3,3n -k 2,2n -k 6,6 -o {output} {input} 2>{log}"
-
-rule symmetric_cpgs:
+#This is here just to make sure that the meth counts are sorted, but in theory they should already be
+rule sort_meth_counts:
     input:
         "results/methpipe/meth_counts/{sample}.meth"
     output:
-        "results/methpipe/meth_counts/{sample}.symmetric.meth"
+        "results/methpipe/meth_counts/{sample}.sorted.meth"
     log:
-        "logs/methpipe/{sample}.symmetric.log"
-    threads: 24
+        "logs/methpipe/{sample}.sort_counts.log"
+    threads: 8
     conda:
-        "../envs/methpipe.yaml"
+        "../envs/coreutils.yaml"
     shell:
-        "symmetric-cpgs -o {output} {input}"
+        "LC_ALL=C sort --parallel={threads} -k1,1 -k2,2g -k3,3 -o {output} {input} 2>{log}"
 
 rule call_PMDs:
     input:
-        "results/methpipe/meth_counts/{sample}.symmetric.meth"
+        "results/methpipe/meth_counts/{sample}.sorted.meth"
     output:
         "results/methpipe/PMDs/{sample}.pmd"
     log:
