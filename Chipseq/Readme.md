@@ -49,16 +49,17 @@ The first file you need to modify is *samples.tsv*. It is a tab separated file t
 
 > | sample_name | group | batch_effect | control | antibody |
 > ------------|---------|--------------|---------|----------|
-> | A_R1  | treated | batch1 | B1 | H3K9me3 |
-> | B_R1	| untreated | batch1 |  | H3K9me3 |
-> | A_R2	| treated | batch2 | B2 | RPB1 |
-> | B_R2	| untreated | batch2 |  | RPB1 |
+> | A_R1  | treated | batch1 | input | H3K9me3 |
+> | B_R1	| untreated | batch1 | input | H3K9me3 |
+> | A_R2	| treated | batch2 | input | H3K9me3 |
+> | B_R2	| untreated | batch2 | input | H3K9me3 |
+> | input | input | batch1 | | |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that **samples without control will be considered as controls in the pipeline.** The rest of the fields should be specified for every sample, including controls.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that **samples without control will be considered as controls in the pipeline.** These are usually the inputs that will be used for peak calling. The rest of the fields should be specified for every sample, including controls.
 
 **It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
-**Naming for consensus analysys:** If you want to run consensus peak analysis you need to name your samples in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:
+**Naming for consensus analysis:** If you want to run consensus peak analysis you need to name your samples (excluding controls) in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:
 
 `<sample>_R<replicate>`
 
@@ -68,6 +69,8 @@ The next file that needs to be modified is *units.tsv*, where you indicate the l
 
 > | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
 > --------------|--------|-------------------|-----------------|-----|----|------|----------|
+> | input | lane1 | | | input.lane1.R1.fastq.gz | input.lane1.R2.fastq.gz | | ILLUMINA |
+> | input | lane2 | | | input.lane2.R1.fastq.gz | input.lane2.R2.fastq.gz | | ILLUMINA |
 > | A_R1  | lane1 | | | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | ILLUMINA |
 > | A_R1  | lane2 | | | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | ILLUMINA |
 > | B_R1	| lane1 | | | B1.lane1.R1... | B1.lane1.R2...| | ILLUMINA |
