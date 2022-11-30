@@ -67,5 +67,7 @@ for pipe in args.pipes:
         if source_path == "ChIP-seq/workflow/":
             source_path = "Chipseq/workflow/"
         sftp.put_dir(source_path, target_path)
+        sftp.put(source_path.replace("workflow/","Readme.md"), target_path.replace("workflow/","Readme.md"))
+        sftp.put(source_path.replace("workflow/","Readme.html"), target_path.replace("workflow/","Readme.html"))
         sftp.close()
         print(f"Updated pipeline {pipe} in cluster {cluster}")
