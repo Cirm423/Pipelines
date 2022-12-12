@@ -26,7 +26,7 @@ res <- res[order(res$padj),]
 
 # store results
 svg(snakemake@output[["ma_plot"]])
-plotMA(res, ylim=c(-2,2))
+plotMA(res)
 dev.off()
 
 write.table(data.frame("gene"=rownames(res),res), file=snakemake@output[["table"]], row.names=FALSE, sep='\t')
