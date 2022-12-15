@@ -11,7 +11,9 @@ rule sort_mapped:
         8
     wrapper:
         "v1.3.1/bio/samtools/sort"
-        
+
+#Add a separate step for genome enzyme digestion, so it only has to be done once in the pipe
+
 rule fanc_pairs:
     input:
         R1 = "results/mapped/{sample}_R1.sorted.bam",
