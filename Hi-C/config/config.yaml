@@ -3,7 +3,6 @@
 # one row per sample. It can be parsed easily via pandas.
 samples: "config/samples.tsv"
 units: "config/units.tsv"  # to download reads from SRA the accession numbers (see https://www.ncbi.nlm.nih.gov/sra) of samples must be given in units.tsv
-single_end: False
 
 resources:
   #Path to the share resources folder for the pipeline, where common files (genomes, references) are stored.
@@ -16,17 +15,46 @@ resources:
 params:
   trimming:
     activate: True
-  # Maximum p-value and q-value (FDR adjusted p-value) for genrich peak calling, if q is specified p is ignored. The values used here are genrich defaults
-  map:
+  #Options for the fanc Hi-C pipeline
+  fanc:
     #Comma separated list of restriction enzymes used in Hi-C, used to split reads by predicted ligation junction before mapping.
+    #It can be any enzyme supported by REBASE, case sensitive (http://rebase.neb.com/rebase/rebase.html)
     enzyme: "HinfI,DpnII"
-    #Extra mapping parameters:
-    #-m (min-size) Minimum length of read before extension
-    #-s (step-size) Number of base pairs to extend at each round of mapping
-    #-q Mapping quality cutoff
-    #Defaults values are set for bwa
-    #Further explanation can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html
-    extra: "-m 25 -s 10 -q 3"
+    map:
+      #Defaults values are set for bwa
+      #Further explanation can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html
+      # Minimum length of read before extension
+      min_size: 25
+      # Number of base pairs to extend at each round of mapping
+      step_size: 10
+      # Mapping quality cutoff
+      quality: 3
+      # Extra parameters to pass to fanc map
+      extra : ""
+    #Filtering parameters
+    filter:
+      #Filters for bam files when making the pair file, many options
+      # Should unmapped reads be filtered out
+      unmap: True
+      # Should multimapping reads be filtered out. It can be set to 'strict' to perform strict multimapping reads filtering
+      multimap: True
+      # Minimum distance for inward-facing read pairs. Leave empty to not filter.
+      inward:
+      # Minimum distance for outward-facing read pairs. Leave empty to not filter.
+      outward:
+      # Maximum distance for a read to the nearest restriction site. Leave empty to not filter.
+      distance:
+      # Remove read pairs representing self-ligated fragments. Leave empty to not filter.
+      ligation: 
+      # Filter read pairs for PCR duplicates. Parameter determines distance between alignment starts below which they are considered starting at same position. 
+      # Sensible values are between 1 and 5. Leave empty to not filter.
+      pcr:
+
+      
+
+
+
+    
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True

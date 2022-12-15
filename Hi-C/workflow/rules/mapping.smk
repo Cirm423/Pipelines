@@ -35,12 +35,19 @@ rule fanc_map:
         read = "results/merged_units/{sample}_R{read}.fastq.gz",
         idx = rules.bwa_index.output
     output:
-        "results/mapped/{sample}_R{read}.bam"
+        temp("results/mapped/{sample}_R{read}.bam")
     params:
-        extra = config["params"]["map"]["extra"],
-        enzyme = onfig["params"]["map"]["enzyme"]
+        enzyme = onfig["params"]["fanc"]["enzyme"],
+        min_size = config["params"]["fanc"]["map"]["min_size"],
+        step_size = config["params"]["fanc"]["map"]["step_size"],
+        quality = config["params"]["fanc"]["map"]["quality"],
+        extra = config["params"]["fanc"]["map"]["extra"],
+    log:
+        "logs/map/{sample}_R{read}.log"
     threads: 16
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc map {input.read} {input.idx} {output} -r {params.enzyme} {params.extra} -t {threads} --mapper-type bwa"
+        """fanc map {input.read} {input.idx} {output} \
+        -r {params.enzyme} -m {params.min_size} -s {params.step_size} -q {params.quality} \
+        {params.extra} -t {threads} --mapper-type bwa"""

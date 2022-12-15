@@ -49,6 +49,10 @@ wildcard_constraints:
 
 assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
 
+#Check that settings that allow strings have valid values
+if config["params"]["fanc"]["filter"]["multimap"]:
+    assert config["params"]["fanc"]["filter"]["multimap"]==True or config["params"]["fanc"]["filter"]["multimap"] == "strict", "multimap setting must be True, False or strict"
+
 ##### reference genomes #####
 
 genecode = {
