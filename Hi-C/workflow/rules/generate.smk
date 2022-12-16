@@ -19,7 +19,9 @@ rule fanc_pairs:
         genome = f"resources/{assembly}.{enzyme_file}.fragments.bed"
     output:
         pairs = "results/pairs/{sample}.pairs",
-        stats = report("results/pairs/{sample}.pairs_stats.pdf",category="Pairs")
+        stats = report("results/pairs/{sample}.pairs_stats.pdf",category="Pairs"),
+        dist_plot = report("results/pairs/{sample}.re-dist.png",category="Pairs"),
+        l_error = report("results/pairs/{sample}.ligation-err.png",category="Pairs")
     params:
         unmap = "-m" if config["params"]["fanc"]["filter"]["unmap"] else "",
         multimap = "" if not config["params"]["fanc"]["filter"]["multimap"] else ("-us" if config["params"]["fanc"]["filter"]["multimap"] == "strict" else "-u"),
@@ -36,7 +38,7 @@ rule fanc_pairs:
         """fanc pairs {input.R1} {input.R2} {input.genome} \
         {params.unmap} {params.multimap} {params.inward} {params.outward} \
         {params.distance} {params.ligation} {params.pcr} {params.extra} \
-        --statistics-plot {output.stats} --re-dist-plot --ligation-error-plot"""
+        --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error}"""
 
 rule fanc_hic:
     input:
