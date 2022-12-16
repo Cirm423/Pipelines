@@ -33,6 +33,10 @@ assembly_path = config['resources']['path'] + config['resources']['ref']['assemb
 
 config["single_end"] = False
 
+#Make the name to use for enzymes files
+
+enzyme_file = "_".join(config["params"]["fanc"]["enzyme"].split(","))
+
 # #List of groups to remove || No use anymore since the way controls are handled changed
 # no_group = ['control','input']
 # #We remove control and input group from the groups that will be used to call peaks.

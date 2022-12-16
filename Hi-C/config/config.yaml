@@ -17,12 +17,14 @@ params:
     activate: True
   #Options for the fanc Hi-C pipeline
   fanc:
+    #Further explanation of these commands can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html
     #Comma separated list of restriction enzymes used in Hi-C, used to split reads by predicted ligation junction before mapping.
     #It can be any enzyme supported by REBASE, case sensitive (http://rebase.neb.com/rebase/rebase.html)
     enzyme: "HinfI,DpnII"
+    # Comma-separated list of chromosomes to include in fragments BED file. Chromosomes in the list will be included. If empty all will be included.
+    chr: ""
     map:
       #Defaults values are set for bwa
-      #Further explanation can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-generate-hic/fanc_modular_steps.html
       # Minimum length of read before extension
       min_size: 25
       # Number of base pairs to extend at each round of mapping
@@ -31,7 +33,7 @@ params:
       quality: 3
       # Extra parameters to pass to fanc map
       extra : ""
-    #Filtering parameters
+    #Filtering parameters for the pairs step
     filter:
       #Filters for bam files when making the pair file, many options
       # Should unmapped reads be filtered out
@@ -49,12 +51,31 @@ params:
       # Filter read pairs for PCR duplicates. Parameter determines distance between alignment starts below which they are considered starting at same position. 
       # Sensible values are between 1 and 5. Leave empty to not filter.
       pcr:
+      # Extra parameters for filtering
+      extra: ""
+    hic:
+      # bin size can be given as a number or as a common abbreviation (see default)
+      bin_size: "1Mb"
+      # 2 options for filtering
+      # -l <number> threshold for absolute number of pairs per bin minimum coverage
+      # -r <fraction> (between 0 and 1) threshold for fraction of the median number of pairs per bin
+      filter: "-r 0.1"
+      # Filter bins along the diagonal up to this specified distance. Use 0 for only filtering the diagonal. Empty for no diagonal filtering
+      diagonal:
+      #Balance Hi-C matrices
+      normalize:
+        activate: True
+        #Method to use in normalization, options: 
+        #KR (default) = Knight-Ruiz matrix balancing (Fast, accurate, but memory-intensive normalisation) 
+        #ICE = ICE matrix balancing (less accurate, but more memory-efficient) 
+        #VC = vanilla coverage (a single round of ICE balancing)
+        #VC-SQRT = vanilla coverage square root (reduces overcorrection compared to VC)
+        method: "KR"
+        #Apply the correction to the whole matrix instead of individual chromosomes
+        whole: False
+      #Extra parameters for fanc Hic
+      extra: ""
 
-      
-
-
-
-    
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True
