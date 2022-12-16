@@ -55,4 +55,4 @@ rule fanc_hic:
         "../envs/fanc.yaml
     shell:
         """fanc hic {input} {output.hic} --statistics-plot {output.stats} \
-        {params.bin} {params.filter} {params.diag} {params.norm} {params.extra}"""
+        {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads}"""
