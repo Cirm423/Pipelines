@@ -73,7 +73,7 @@ rule ATACseqQC:
         path = "results/qc/ATACseqQC/{sample}/temp"
     log:
         "logs/ATACseqQC/{sample}.log"
-    threads: 8
+    threads: 16
     conda:
         "../envs/ATACseqQC.yaml"
     script:
