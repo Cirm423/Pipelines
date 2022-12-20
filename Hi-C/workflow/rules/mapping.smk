@@ -33,7 +33,7 @@ rule merge_units_R2:
 rule fanc_map:
     input:
         read = "results/merged_units/{sample}_R{read}.fastq.gz",
-        idx = rules.bwa_index.output
+        idx = f"{assembly_path}{assembly}.fa"
     output:
         temp("results/mapped/{sample}_R{read}.bam")
     params:
@@ -50,4 +50,4 @@ rule fanc_map:
     shell:
         """fanc map {input.read} {input.idx} {output} \
         -r {params.enzyme} -m {params.min_size} -s {params.step_size} -q {params.quality} \
-        {params.extra} -t {threads} --mapper-type bwa"""
+        {params.extra} -t {threads} 2>{log}"""
