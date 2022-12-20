@@ -37,7 +37,7 @@ rule fanc_map:
     output:
         temp("results/mapped/{sample}_R{read}.bam")
     params:
-        enzyme = onfig["params"]["fanc"]["enzyme"],
+        enzyme = config["params"]["fanc"]["enzyme"],
         min_size = config["params"]["fanc"]["map"]["min_size"],
         step_size = config["params"]["fanc"]["map"]["step_size"],
         quality = config["params"]["fanc"]["map"]["quality"],

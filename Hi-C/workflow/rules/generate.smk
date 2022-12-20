@@ -6,7 +6,7 @@ rule sort_mapped:
     params:
         extra="-n"
     log:
-        "logs/bamtools_filtered/{sample}.sorted.log"
+        "logs/bamtools_filtered/{sample}_R{read}.sorted.log"
     threads:
         8
     wrapper:
@@ -54,7 +54,7 @@ rule fanc_hic:
         extra = config['params']['fanc']['hic']['extra']
     threads: 24
     conda:
-        "../envs/fanc.yaml
+        "../envs/fanc.yaml"
     shell:
         """fanc hic {input} {output.hic} --statistics-plot {output.stats} \
         {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads}"""

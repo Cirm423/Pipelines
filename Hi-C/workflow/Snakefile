@@ -21,4 +21,4 @@ include: "rules/mapping.smk"
 include: "rules/generate.smk"
 
 rule all:
-    input: all_input
+    input: test_input
