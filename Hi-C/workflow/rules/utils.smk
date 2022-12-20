@@ -16,10 +16,11 @@ rule fanc_fragments:
     output:
         f"resources/{assembly}.{enzyme_file}.fragments.bed"
     params:
-        f"-c {config['params']['fanc']['chr']}" if config['params']['fanc']['chr'] else ""
+        chr = f"-c {config['params']['fanc']['chr']}" if config['params']['fanc']['chr'] else "",
+        enzyme = config["params"]["fanc"]["enzyme"]
     log:
         f"logs/ref/{assembly}.{enzyme_file}.fragments.log"
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc fragments {input} {output} {params}"
+        "fanc fragments {params.chr} {input} {params.enzyme} {output}"
