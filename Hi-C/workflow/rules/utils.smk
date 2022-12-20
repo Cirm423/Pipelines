@@ -23,4 +23,4 @@ rule fanc_fragments:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc fragments {params.chr} {input} {params.enzyme} {output}"
+        "fanc fragments {params.chr} {input} {params.enzyme} {output} 2>{log}"

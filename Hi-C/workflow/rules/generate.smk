@@ -31,6 +31,8 @@ rule fanc_pairs:
         ligation = f"-l {config['params']['fanc']['filter']['ligation']}" if config['params']['fanc']['filter']['ligation'] else "",
         pcr = f"-p {config['params']['fanc']['filter']['pcr']}" if config['params']['fanc']['filter']['pcr'] else "",
         extra = config['params']['fanc']['filter']['extra']
+    log:
+        "logs/fanc/{sample}.pairs.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -38,7 +40,7 @@ rule fanc_pairs:
         """fanc pairs {input.R1} {input.R2} {input.genome} \
         {params.unmap} {params.multimap} {params.inward} {params.outward} \
         {params.distance} {params.ligation} {params.pcr} {params.extra} \
-        --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error}"""
+        --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error} 2>{log}"""
 
 rule fanc_hic:
     input:
@@ -52,9 +54,11 @@ rule fanc_hic:
         diag = f"-d {config['params']['fanc']['hic']['diagonal']}" if config['params']['fanc']['hic']['bin_size'] else "",
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
+    log:
+        "logs/fanc/{sample}.hic.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
     shell:
         """fanc hic {input} {output.hic} --statistics-plot {output.stats} \
-        {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads}"""
+        {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads} 2>{log}"""
