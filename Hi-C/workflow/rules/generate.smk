@@ -37,7 +37,7 @@ rule fanc_pairs:
     conda:
         "../envs/fanc.yaml"
     shell:
-        """fanc pairs {input.R1} {input.R2} {input.genome} \
+        """fanc pairs {input.R1} {input.R2} {output.pairs} -g {input.genome} \
         {params.unmap} {params.multimap} {params.inward} {params.outward} \
         {params.distance} {params.ligation} {params.pcr} {params.extra} \
         --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error} 2>{log}"""
