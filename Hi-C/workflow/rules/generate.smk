@@ -51,7 +51,7 @@ rule fanc_hic:
     params:
         bin = f"-b {config['params']['fanc']['hic']['bin_size']}",
         filter = config['params']['fanc']['hic']['filter'],
-        diag = f"-d {config['params']['fanc']['hic']['diagonal']}" if config['params']['fanc']['hic']['bin_size'] else "",
+        diag = f"-d {config['params']['fanc']['hic']['diagonal']}" if config['params']['fanc']['hic']['diagonal'] else "",
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
     log:
