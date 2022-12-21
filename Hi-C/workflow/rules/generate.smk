@@ -16,7 +16,7 @@ rule fanc_pairs:
     input:
         R1 = "results/mapped/{sample}_R1.sorted.bam",
         R2 = "results/mapped/{sample}_R2.sorted.bam",
-        genome = f"resources/{assembly}.{enzyme_file}.fragments.bed"
+        genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     output:
         pairs = "results/pairs/{sample}.pairs",
         stats = report("results/pairs/{sample}.pairs_stats.pdf",category="Pairs"),

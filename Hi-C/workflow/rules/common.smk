@@ -33,9 +33,10 @@ assembly_path = config['resources']['path'] + config['resources']['ref']['assemb
 
 config["single_end"] = False
 
-#Make the name to use for enzymes files
+#Make the name to use for enzymes and fragments files
 
 enzyme_file = "_".join(config["params"]["fanc"]["enzyme"].split(","))
+fragments_file = "_".join(config["params"]["fanc"]["chr"].split(",")) if config["params"]["fanc"]["chr"] else "all"
 
 # #List of groups to remove || No use anymore since the way controls are handled changed
 # no_group = ['control','input']
@@ -485,6 +486,9 @@ def all_input(wildcards):
 #Only used for testing
 def test_input(wildcards):
     wanted_input = []
+    wanted_input.extend([
+        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
+    ])
     for sample in samples.index:
         wanted_input.extend(expand(
             [   

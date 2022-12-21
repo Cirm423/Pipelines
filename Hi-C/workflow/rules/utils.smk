@@ -14,7 +14,7 @@ rule fanc_fragments:
     input:
         f"{assembly_path}{assembly}.fa"
     output:
-        f"resources/{assembly}.{enzyme_file}.fragments.bed"
+        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     params:
         chr = f"-c {config['params']['fanc']['chr']}" if config['params']['fanc']['chr'] else "",
         enzyme = config["params"]["fanc"]["enzyme"]
