@@ -1,1 +1,1 @@
-**Hi-C** matrix generation and QC pipeline.
+**Hi-C** matrix generation, analysis and QC pipeline.
