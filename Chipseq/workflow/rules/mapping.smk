@@ -14,7 +14,7 @@ rule bwa_mem:
         sort_extra="",
     threads: 8
     wrapper:
-        "v1.3.1/bio/bwa/mem"
+        "v1.21.1/bio/bwa/mem"
 
 rule merge_bams:
     input:
