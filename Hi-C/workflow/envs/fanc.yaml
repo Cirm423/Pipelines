@@ -4,3 +4,5 @@ channels:
 dependencies:
   - fanc =0.9.23b
   - bwa =0.7.17
+  - openjdk
+  - deprecated

@@ -62,3 +62,16 @@ rule fanc_hic:
     shell:
         """fanc hic {input} {output.hic} --statistics-plot {output.stats} \
         {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads} 2>{log}"""
+
+rule fanc_to_juicer:
+    input:
+        pairs = "results/pairs/{sample}.pairs",
+        jar = "resources/juicer/juicer_tools.2.20.00.jar"
+    output:
+        "results/juicer/{sample}.juicer.hic"
+    log:
+        "logs/fanc/{sample}.to_juicer.log"
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc to-juicer {input.pairs} {output} --juicer-tools-jar {input.jar} 2>{log}"

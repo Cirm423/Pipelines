@@ -166,3 +166,13 @@ rule sra_get_fastq_se:
         "logs/ref/sra-pe-reads/{accession}.log"
     wrapper:
         "v1.3.1/bio/sra-tools/fasterq-dump"
+
+# Juicer jar file
+
+rule get_juicer_jar:
+    output:
+        "resources/juicer/juicer_tools.2.20.00.jar"
+    log:
+        "logs/get_juicer_jar.log"
+    shell:
+        "wget https://github.com/aidenlab/Juicebox/releases/download/v2.20.00/juicer_tools.2.20.00.jar -P ./resources/juicer"

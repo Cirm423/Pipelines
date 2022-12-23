@@ -493,6 +493,7 @@ def test_input(wildcards):
         wanted_input.extend(expand(
             [   
                 "results/hic/{sample}.hic",
+                "results/juicer/{sample}.juicer.hic"
             ],
             sample = sample
         ))
