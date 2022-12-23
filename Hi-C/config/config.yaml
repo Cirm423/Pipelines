@@ -23,6 +23,8 @@ params:
     enzyme: "HinfI,DpnII"
     # Comma-separated list of chromosomes to include in fragments BED file. Chromosomes in the list will be included. If empty all will be included.
     chr: ""
+    #Should the pairs files of samples in the same group be merged before creating hic objects?
+    merge_groups: False
     map:
       #Defaults values are set for bwa
       # Minimum length of read before extension
@@ -75,7 +77,13 @@ params:
         whole: False
       #Extra parameters for fanc Hic
       extra: ""
-
+    analysis:
+      #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
+      pca_only: False
+      pca_params: ""
+      AB_params: ""
+      TAD_params: ""
+      Loop_params: ""
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True
