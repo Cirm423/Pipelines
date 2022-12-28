@@ -1,10 +1,10 @@
-sample	group	batch_effect	control
-J1_Va_Rep1	control	batch1	
-J1_Va_Rep2	control	batch1	
-J1_Va_Rep3	control	batch1	
-DnmtDKO_Va_Rep1	DnmtDKO	batch1	J1_Va_Rep1
-DnmtDKO_Va_Rep2	DnmtDKO	batch1	J1_Va_Rep2
-DnmtDKO_Va_Rep3	DnmtDKO	batch1	J1_Va_Rep3
-DnmtTKO_Va_Rep1	DnmtTKO	batch1	J1_Va_Rep1
-DnmtTKO_Va_Rep2	DnmtTKO	batch1	J1_Va_Rep2
-DnmtTKO_Va_Rep3	DnmtTKO	batch1	J1_Va_Rep3
+sample	group	batch_effect
+J1_Va_Rep1	control	batch1
+J1_Va_Rep2	control	batch1
+J1_Va_Rep3	control	batch1
+DnmtDKO_Va_Rep1	DnmtDKO	batch1
+DnmtDKO_Va_Rep2	DnmtDKO	batch1
+DnmtDKO_Va_Rep3	DnmtDKO	batch1
+DnmtTKO_Va_Rep1	DnmtTKO	batch1
+DnmtTKO_Va_Rep2	DnmtTKO	batch1
+DnmtTKO_Va_Rep3	DnmtTKO	batch1

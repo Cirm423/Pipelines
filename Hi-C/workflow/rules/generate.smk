@@ -44,10 +44,10 @@ rule fanc_pairs:
 
 rule fanc_hic:
     input:
-        "results/pairs/{sample}.pairs", #Maybe change to groups to account for biological replicates
+        get_pairs_files,
     output:
-        hic = "results/hic/{sample}.hic",
-        stats = report("results/hic/{sample}.hic_stats.pdf",category="Hi-C matrix")
+        hic = "results/hic/{sample_group}.hic",
+        stats = report("results/hic/{sample_group}.hic_stats.pdf",category="Hi-C matrix")
     params:
         bin = f"-b {config['params']['fanc']['hic']['bin_size']}",
         filter = config['params']['fanc']['hic']['filter'],
@@ -55,7 +55,7 @@ rule fanc_hic:
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
     log:
-        "logs/fanc/{sample}.hic.log"
+        "logs/fanc/{sample_group}.hic.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -65,13 +65,15 @@ rule fanc_hic:
 
 rule fanc_to_juicer:
     input:
-        pairs = "results/pairs/{sample}.pairs",
+        pairs = get_pairs_files,
         jar = "resources/juicer/juicer_tools.2.20.00.jar"
     output:
-        "results/juicer/{sample}.juicer.hic"
+        "results/juicer/{sample_group}.juicer.hic"
+    params:
+        files = lambda wc, input: " ".join(input.pairs)
     log:
-        "logs/fanc/{sample}.to_juicer.log"
+        "logs/fanc/{sample_group}.to_juicer.log"
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc to-juicer {input.pairs} {output} --juicer-tools-jar {input.jar} 2>{log}"
+        "fanc to-juicer {params.files} {output} --juicer-tools-jar {input.jar} 2>{log}"

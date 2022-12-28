@@ -49,11 +49,6 @@ wildcard_constraints:
     unit = "|".join(units["unit"]),
     group = "|".join(groups)
 
-
-#Check that the controls in samples are actually a sample in the table
-
-assert all(samples[pd.notnull(samples["control"])]["control"].isin(samples.index)), "One or more of the control samples are missing"
-
 #Check that settings that allow strings have valid values
 if config["params"]["fanc"]["filter"]["multimap"]:
     assert config["params"]["fanc"]["filter"]["multimap"]==True or config["params"]["fanc"]["filter"]["multimap"] == "strict", "multimap setting must be True, False or strict"
@@ -200,18 +195,19 @@ def get_plot_homer_annotatepeaks_input():
 def exists_replicates(group):
     return len(samples[samples["group"] == group]["sample"].unique()) > 1
 
-#Changed this to allow controls to be in a different group as the samples, i.e. in the case of an input
-def get_controls_of_group(group):
-    sample_g = samples[samples['group'] == group]
-    #controls = samples[pd.isnull(samples["control"])]
-    #return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
-    if pd.isnull(sample_g["control"]).all():
-        return ""
-    else:
-        treated = samples[pd.notnull(samples["control"])]
-        return expand(["results/genrich/{control}.sorted.bam"],
-            control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
-            )
+#No controls in Hi-C
+# #Changed this to allow controls to be in a different group as the samples, i.e. in the case of an input
+# def get_controls_of_group(group):
+#     sample_g = samples[samples['group'] == group]
+#     #controls = samples[pd.isnull(samples["control"])]
+#     #return controls[controls["group"].index.isin(list(sample_g.index))]["sample"]
+#     if pd.isnull(sample_g["control"]).all():
+#         return ""
+#     else:
+#         treated = samples[pd.notnull(samples["control"])]
+#         return expand(["results/genrich/{control}.sorted.bam"],
+#             control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
+#             )
 
 def get_samples_of_group(group):
     #Accounting for groups with no control and groups with controls
@@ -226,18 +222,14 @@ def get_samples_of_group(group):
             sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
         )
 
-def get_genrich_input(wildcards):
-    gr_input = []
-    gr_input.extend(get_samples_of_group(wildcards.group))
-    gr_input.extend(get_controls_of_group(wildcards.group))
-    return gr_input
-
-def get_map_reads_input(wildcards):
-    if is_sra_pe(wildcards.sample, wildcards.unit):
-        return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
-    elif is_single_end(wildcards.sample, wildcards.unit):
-        return "results/trimmed/{sample}-{unit}.fastq.gz"
-    return ["results/trimmed/{sample}-{unit}_1.fastq.gz", "results/trimmed/{sample}-{unit}_2.fastq.gz"]
+def get_pairs_files(wildcards):
+    if config["params"]["fanc"]["merge_groups"]:
+        sample_g = samples[samples['group'] == wildcards.sample_group]
+        return expand(["results/pairs/{sample}.pairs"],
+            sample = sample_g["sample"].index
+        )
+    else:
+        return "results/pairs/{sample_group}.pairs"
 
 def get_unit_R1_of_sample(wildcards):
     unit_list = []
@@ -492,10 +484,27 @@ def test_input(wildcards):
     for sample in samples.index:
         wanted_input.extend(expand(
             [   
-                "results/hic/{sample}.hic",
-                "results/juicer/{sample}.juicer.hic"
+                "results/pairs/{sample}.pairs"
             ],
             sample = sample
         ))
-
+        if not config["params"]["fanc"]["merge_groups"]:
+            wanted_input.extend(expand(
+                [   
+                    "results/hic/{sample_group}.hic",
+                    "results/juicer/{sample_group}.juicer.hic"
+                ],
+                sample_group = sample
+            ))
+    
+    for group in groups:
+        if config["params"]["fanc"]["merge_groups"]:
+            wanted_input.extend(expand(
+                [
+                    "results/hic/{sample_group}.hic",
+                    "results/juicer/{sample_group}.juicer.hic"  
+                ],
+                sample_group = group
+            ))
+    print(wanted_input)
     return wanted_input
