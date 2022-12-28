@@ -25,6 +25,8 @@ params:
     chr: ""
     #Should the pairs files of samples in the same group be merged before creating hic objects?
     merge_groups: False
+    #Comma separated list of regions for which to do the matrix analysis. Leave empty to not specify a particular region (whole genome will be used).
+    regions: ""
     map:
       #Defaults values are set for bwa
       # Minimum length of read before extension
@@ -56,6 +58,9 @@ params:
       # Extra parameters for filtering
       extra: ""
     hic:
+      #Should a juicer hic file also be produced in addition to fanc hic. The juicer file will be filtered according to the previous settings.
+      #The juicer file will include all normalizations and bin sizes available in juicer.
+      juicer: True
       # bin size can be given as a number or as a common abbreviation (see default)
       bin_size: "1Mb"
       # 2 options for filtering
@@ -78,6 +83,8 @@ params:
       #Extra parameters for fanc Hic
       extra: ""
     analysis:
+      #Activate or deactivate matrix analysis in the pipeline. If deactivated, it will only produce hic files.
+      activate: False
       #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
       pca_only: False
       pca_params: ""
@@ -90,9 +97,6 @@ params:
   picard_metrics:
     # Produces alignment metrics
     activate: True
-  deseq2:
-    # optional to run vst transform instead of rlog
-    vst: False
   peak-annotation-analysis:
     activate: True
   peak-qc:
