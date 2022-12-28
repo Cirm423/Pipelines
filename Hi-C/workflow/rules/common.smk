@@ -488,6 +488,7 @@ def test_input(wildcards):
             ],
             sample = sample
         ))
+        # Matrix and matrix analysis files for samples
         if not config["params"]["fanc"]["merge_groups"]:
             wanted_input.extend(expand(
                 [   
@@ -496,9 +497,9 @@ def test_input(wildcards):
                 ],
                 sample_group = sample
             ))
-    
-    for group in groups:
-        if config["params"]["fanc"]["merge_groups"]:
+    # Matrix and matrix analysis files for groups
+    if config["params"]["fanc"]["merge_groups"]:
+        for group in groups:
             wanted_input.extend(expand(
                 [
                     "results/hic/{sample_group}.hic",
@@ -506,5 +507,5 @@ def test_input(wildcards):
                 ],
                 sample_group = group
             ))
-    print(wanted_input)
+
     return wanted_input
