@@ -522,5 +522,5 @@ def test_input(wildcards):
                 ],
                 sample_group = group
             ))
-
+    
     return wanted_input
