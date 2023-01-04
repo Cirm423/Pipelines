@@ -83,14 +83,35 @@ params:
       #Extra parameters for fanc Hic
       extra: ""
     analysis:
+      #All the steps in analysis will be performed with the fanc hic file, so only for 1 resolution/normalization.
       #Activate or deactivate matrix analysis in the pipeline. If deactivated, it will only produce hic files.
       activate: False
       #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
+      #PCA plot will only be done when dealing with samples, not with groups.
       pca_only: False
-      pca_params: ""
+      #To check PCA params go here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/pca.html
+      #Names and plot are already automatically added. The PCA will be done for the whole genome unless you specify a region/s (comma separated) here.
+      pca_params: "-Z"
+      #Parameters for expected values calculation. Only one parameter necessary, chromosome to get expected values for specific chromosomes.
+      #To use, add -c chr<something> otherwise leave empty.
+      expected_params: ""
+      #Parameters for the AB compartments. More info can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/ab_compartments.html
+      #The pipe automatically generates the matrix, eigenvector, ab file, domains and profile plot. You can specify some parameters for them here.
       AB_params: ""
-      TAD_params: ""
-      Loop_params: ""
+      #This parameters deals only with the fanc plot matrix part of AB compartment section.
+      AB_plot: "-vmin -0.75 -vmax 0.75 -c RdBu_r"
+      #Only insulation scores will be calculated in this step. More info here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html
+      #Do not change the output format here
+      TAD_params: "-w 1000000 1500000 2000000 2500000 3000000 3500000 4000000"
+      #Params only for the TAD plot
+      TAD_plot: "-m 4000000 -vmin 0 -vmax 0.05"
+      #More info on these params can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/loops.html
+      #Params only for the annotation part.
+      Loop_annotate: ""
+      #Params for loop filtering:
+      Loop_filter: "--rh-filter -d 5 -o 5"
+      #Params for the loop merging:
+      Loop_merge: "-j --remove-singlets"
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
     activate: True

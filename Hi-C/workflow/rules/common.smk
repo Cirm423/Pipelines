@@ -237,6 +237,15 @@ def get_pairs_files(wildcards):
     else:
         return "results/pairs/{sample_group}.pairs"
 
+def get_hic_files(wildcards):
+    if config["params"]["fanc"]["merge_groups"]:
+        sample_g = samples[samples['group'] == wildcards.sample_group]
+        return expand(["results/hic/{sample_group}.hic"],
+            sample_group = sample_g["sample"].index
+        )
+    else:
+        return "results/pairs/{sample_group}.pairs"
+
 def get_unit_R1_of_sample(wildcards):
     unit_list = []
     for unit in units.loc[wildcards.sample, "unit"]:
