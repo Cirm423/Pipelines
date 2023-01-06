@@ -24,9 +24,9 @@ params:
     # Comma-separated list of chromosomes to include in fragments BED file. Chromosomes in the list will be included. If empty all will be included.
     chr: ""
     #Should the pairs files of samples in the same group be merged before creating hic objects?
-    merge_groups: False
+    merge_groups: True
     #Comma separated list of regions for which to do the matrix analysis. Leave empty to not specify a particular region (whole genome will be used).
-    regions: ""
+    regions: "chr8,chr2"
     map:
       #Defaults values are set for bwa
       # Minimum length of read before extension
@@ -85,7 +85,7 @@ params:
     analysis:
       #All the steps in analysis will be performed with the fanc hic file, so only for 1 resolution/normalization.
       #Activate or deactivate matrix analysis in the pipeline. If deactivated, it will only produce hic files.
-      activate: False
+      activate: True
       #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
       #PCA plot will only be done when dealing with samples, not with groups.
       pca_only: False

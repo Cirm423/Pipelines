@@ -22,10 +22,10 @@ rule fanc_pca:
         out = "results/pca/matrix.pca",
         plot = report("results/pca/matrix_pca_plot.pdf",category="PCA")
     params:
-        label = f"-n \"{'\" \"'.join(samples.index)}\"",
+        label = "-n \"" + '\" \"'.join(samples.index) + "\"",
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
     log:
-        "logs/analysis/{sample_group}_expected.log"
+        "logs/analysis/PCA.log"
     threads: 1
     conda:
         "../envs/fanc.yaml"
@@ -68,51 +68,52 @@ rule plot_compartments:
     shell:
         "fanc plot -o {output} {wildcards.region} -p square {input.AB} {params.extra} -p line {input.eigen} 2>{log}"
 
-rule fanc_insulation:
-    input:
-        "results/hic/{sample_group}.hic"
-    output:
-        "results/matrix_analysis/TADs/{sample_group}.insulation",
-    params:
-        extra = config["params"]["fanc"]["analysis"]["TAD_params"]
-    log:
-        "logs/analysis/{sample_group}_TAD.log"
-    threads: 1
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        "fanc insulation {input} {output} {params.extra} 2>{log}"
+#No insulation based TADs for now
+# rule fanc_insulation:
+#     input:
+#         "results/hic/{sample_group}.hic"
+#     output:
+#         "results/matrix_analysis/TADs/{sample_group}.insulation",
+#     params:
+#         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
+#     log:
+#         "logs/analysis/{sample_group}_TAD.log"
+#     threads: 1
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         "fanc insulation {input} {output} {params.extra} 2>{log}"
 
-rule fanc_insulation_format:
-    input:
-        "results/hic/{sample_group}.hic"
-    output:
-        directory("results/matrix_analysis/TADs/bigwig/{sample_group}"),
-    params:
-        prefix = "results/matrix_analysis/TADs/bigwig/{sample_group}/insulation"
-    log:
-        "logs/analysis/{sample_group}_TAD.log"
-    threads: 1
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        "fanc insulation {input} {params.prefix} -o bigwig 2>{log}"
+# rule fanc_insulation_format:
+#     input:
+#         "results/hic/{sample_group}.hic"
+#     output:
+#         directory("results/matrix_analysis/TADs/bigwig/{sample_group}"),
+#     params:
+#         prefix = "results/matrix_analysis/TADs/bigwig/{sample_group}/insulation"
+#     log:
+#         "logs/analysis/{sample_group}_TAD.log"
+#     threads: 1
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         "fanc insulation {input} {params.prefix} -o bigwig 2>{log}"
 
-rule plot_TAD:
-    input:
-        hic = "results/hic/{sample_group}.hic",
-        insulation = "results/matrix_analysis/TADs/{sample_group}.insulation"
-    output:
-        report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
-    params:
-        extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
-    log:
-        "logs/analysis/{sample_group}_{region}_compartments_plot.log"
-    threads: 1
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        "fanc plot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.insulation} 2>{log}"
+# rule plot_TAD:
+#     input:
+#         hic = "results/hic/{sample_group}.hic",
+#         insulation = "results/matrix_analysis/TADs/{sample_group}.insulation"
+#     output:
+#         report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
+#     params:
+#         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
+#     log:
+#         "logs/analysis/{sample_group}_{region}_compartments_plot.log"
+#     threads: 1
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         "fanc plot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.insulation} 2>{log}"
 
 rule fanc_loops_annotate:
     input:

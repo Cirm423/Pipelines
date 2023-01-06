@@ -19,6 +19,7 @@ include: "rules/stats.smk"
 include: "rules/utils.smk"
 include: "rules/mapping.smk"
 include: "rules/generate.smk"
+include: "rules/matrix_analysis.smk"
 
 rule all:
-    input: test_input
+    input: all_input

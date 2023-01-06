@@ -1,10 +1,10 @@
 rule samtools_flagstat:
     input:
-        "results/{step}/{samples_units}.bam"
+        "results/mapped/{sample}_R{read}.sorted.bam"
     output:
-        "results/{step,[^./]+}/{samples_units}.{step}.flagstat"
+        "results/mapped/{sample}_R{read}.flagstat"
     log:
-        "logs/samtools-flagstat/{step}/{samples_units}.{step}.log"
+        "logs/samtools-flagstat/{sample}_R{read}.mapped.log"
     params:
         extra=""
     wrapper:
@@ -12,12 +12,12 @@ rule samtools_flagstat:
 
 rule samtools_idxstats:
     input:
-        bam = "results/{step}/{samples_units}.bam",
-        idx = "results/{step}/{samples_units}.bam.bai"
+        bam = "results/mapped/{sample}_R{read}.sorted.bam",
+        idx = "results/mapped/{sample}_R{read}.sorted.bam.bai"
     output:
-        "results/{step,[^./]+}/{samples_units}.{step}.idxstats"
+        "results/mapped/{sample}_R{read}.idxstats"
     log:
-        "logs/samtools-idxstats/{step}/{samples_units}.{step}.log"
+        "logs/samtools-idxstats/{sample}_R{read}.log"
     params:
         extra=""
     wrapper:
@@ -25,12 +25,12 @@ rule samtools_idxstats:
 
 rule samtools_stats:
     input:
-        "results/{step}/{samples_units}.bam"
+        "results/mapped/{sample}_R{read}.sorted.bam"
     output:
-        "results/{step,[^./]+}/{samples_units}.{step}.stats.txt"
+        "results/mapped/{sample}_R{read}.stats.txt"
     params:
         extra=""
     log:
-        "logs/samtools-stats/{step}/{samples_units}.{step}.log"
+        "logs/samtools-stats/{sample}_R{read}.log"
     wrapper:
         "v1.3.1/bio/samtools/stats"

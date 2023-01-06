@@ -53,7 +53,8 @@ else:
 wildcard_constraints:
     sample = "|".join(samples.index),
     unit = "|".join(units["unit"]),
-    group = "|".join(groups)
+    group = "|".join(groups),
+    sample_group = "|".join(samples.index) + "|" + "|".join(groups)
 
 #Check that settings that allow strings have valid values
 if config["params"]["fanc"]["filter"]["multimap"]:
@@ -319,9 +320,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    "results/mapped/{sample}_R{reads}.flagstat",
+                    "results/mapped/{sample}_R{reads}.idxstats",
+                    "results/mapped/{sample}_R{reads}.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -340,69 +341,22 @@ def get_multiqc_input(wildcards):
                     reads = reads                  
                 )
             )
-    for sample in samples.index:
-        multiqc_input.extend(
-            expand (
-                [
-                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.flagstat",
-                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.idxstats",
-                    "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.stats.txt",
-                ],
-                sample = sample
-            )
-        )
 
-        if config["params"]["lc_extrap"]["activate"]:
-                multiqc_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
-        if config["params"]["picard_metrics"]["activate"]:
-            if not config["single_end"]:
-                multiqc_input.extend(
-                    expand(
-                        [
-                            "results/qc/multiple_metrics/{sample}.insert_size_metrics",
-                            "results/qc/multiple_metrics/{sample}.insert_size_histogram.pdf",
-                        ],
-                    sample = sample
-                )
-            )
-            multiqc_input.extend(
-                expand (
-                    [                        
-                        "results/qc/multiple_metrics/{sample}.alignment_summary_metrics",
-                        "results/qc/multiple_metrics/{sample}.base_distribution_by_cycle_metrics",
-                        "results/qc/multiple_metrics/{sample}.base_distribution_by_cycle.pdf",
-                        "results/qc/multiple_metrics/{sample}.quality_by_cycle_metrics",
-                        "results/qc/multiple_metrics/{sample}.quality_by_cycle.pdf",
-                        "results/qc/multiple_metrics/{sample}.quality_distribution_metrics",
-                        "results/qc/multiple_metrics/{sample}.quality_distribution.pdf"
-                    ], 
-                sample = sample
-            )
-        )
     return multiqc_input
 
 def all_input(wildcards):
-    do_annot = config["params"]["peak-annotation-analysis"]["activate"]
-    do_peak_qc = config["params"]["peak-qc"]["activate"]
-    do_consensus_peak = config["params"]["consensus-peak-analysis"]["activate"]
+    merge_groups = config["params"]["fanc"]["merge_groups"]
+    do_analysis = config["params"]["fanc"]["analysis"]["activate"]
+    only_pca = config["params"]["fanc"]["analysis"]["pca_only"]
 
     wanted_input = []
 
     # QC with fastQC and multiQC, individual stuff
     wanted_input.extend([
         "results/qc/multiqc/multiqc.html",
-        "results/genrich/plots/plot_narrow_peaks_frip_score.pdf",
-        "results/genrich/plots/plot_narrow_peaks_count.pdf",
-        "results/IGV/big_wig/merged_library.bigWig.igv.txt"
+        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     ])
 
-    if do_peak_qc:
-        wanted_input.extend(
-            [
-                "results/genrich/plots/plot_narrow_peaks_genrich.pdf"
-            ]
-        )
-    
     # trimming reads
     if config["params"]["trimming"]["activate"]:
         for (sample, unit) in units.index:
@@ -443,84 +397,93 @@ def all_input(wildcards):
     for sample in samples.index:
         wanted_input.extend(expand(
             [   
-                "results/bedtools_intersect/{sample}.intersected.bed",
-                "results/bedtools_intersect/{sample}.narrow.peaks_frip.tsv"
-            ],
-            sample = sample
-        ))
-
-        if config["params"]["lc_extrap"]["activate"]:
-                wanted_input.extend( expand(["results/preseq/{sample}.complexity_measures"], sample = sample))
-                
-        if ATACseqQC_act:
-            wanted_input.extend(expand(
-                [
-                    "results/qc/ATACseqQC/{sample}/fragmentSizeDistribution.pdf",
-                    "results/qc/ATACseqQC/{sample}/PTscore.pdf",
-                    "results/qc/ATACseqQC/{sample}/NFRscore.pdf",
-                    "results/qc/ATACseqQC/{sample}/TSSEscore.pdf",
-                    "results/qc/ATACseqQC/{sample}/cumulativePercentage.pdf",
-                    "results/qc/ATACseqQC/{sample}/featureAligndHeatmap.pdf",
-                    "results/qc/ATACseqQC/{sample}/TSS_profile.pdf",
-                    "results/qc/ATACseqQC/{sample}/CTCF_footprint.pdf",
-                    "results/qc/ATACseqQC/{sample}/CTCF_Vplot.pdf"
-                ],
-                sample = sample
-            ))
-    for group in groups:
-        wanted_input.extend(expand(
-                [
-                    "results/genrich/{group}.narrowPeak",
-                    "results/genrich/{group}.bed",
-                    "results/IGV/genrich_peaks/merged_library.{group}.narrow_peaks.igv.txt"
-
-                ],
-                group = group
-            )
-        )
-        if do_annot:
-            wanted_input.extend(expand(
-                [
-                    "results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt"
-                ],
-                group = group
-            )
-        )
-        
-    #Need to add more files as things are made, at least until peak calling for now
-    return wanted_input
-
-#Only used for testing
-def test_input(wildcards):
-    wanted_input = []
-    wanted_input.extend([
-        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
-    ])
-    for sample in samples.index:
-        wanted_input.extend(expand(
-            [   
                 "results/pairs/{sample}.pairs"
             ],
             sample = sample
         ))
-        # Matrix and matrix analysis files for samples
-        if not config["params"]["fanc"]["merge_groups"]:
+ 
+        if not merge_groups:
             wanted_input.extend(expand(
-                [   
+                [
                     "results/hic/{sample_group}.hic",
                     "results/juicer/{sample_group}.juicer.hic"
                 ],
                 sample_group = sample
             ))
-    # Matrix and matrix analysis files for groups
-    if config["params"]["fanc"]["merge_groups"]:
+
+            if do_analysis and only_pca:
+                wanted_input.extend(expand(
+                    [
+                        "results/pca/matrix_pca_plot.pdf",
+                        "results/matrix_analysis/{sample_group}_distance_decay.pdf"
+                    ],
+                    sample_group = sample
+                ))
+
+    if merge_groups:
         for group in groups:
             wanted_input.extend(expand(
-                [
-                    "results/hic/{sample_group}.hic",
-                    "results/juicer/{sample_group}.juicer.hic"  
-                ],
-                sample_group = group
-            ))
-    
+                    [
+                        "results/hic/{sample_group}.hic",
+                        "results/juicer/{sample_group}.juicer.hic"
+
+                    ],
+                    sample_group = group
+                )
+            )
+            if do_analysis:
+                wanted_input.extend(expand(
+                    [
+                        "results/matrix_analysis/{sample_group}_distance_decay.pdf",
+                        "results/matrix_analysis/loops/{sample_group}_merged.bedpe"
+                    ],
+                    sample_group = group
+                ))
+
+                if regions:
+                    for region in regions:
+                        wanted_input.extend(expand(
+                            [
+                                "results/matrix_analysis/compartments/{sample_group}.{region}.png"
+                            ],
+                            sample_group = group,
+                            region = region
+                        ))
+        
+    #Need to add more files as things are made, at least until peak calling for now
     return wanted_input
+
+# #Only used for testing
+# def test_input(wildcards):
+#     wanted_input = []
+#     wanted_input.extend([
+#         f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
+#     ])
+#     for sample in samples.index:
+#         wanted_input.extend(expand(
+#             [   
+#                 "results/pairs/{sample}.pairs"
+#             ],
+#             sample = sample
+#         ))
+#         # Matrix and matrix analysis files for samples
+#         if not config["params"]["fanc"]["merge_groups"]:
+#             wanted_input.extend(expand(
+#                 [   
+#                     "results/hic/{sample_group}.hic",
+#                     "results/juicer/{sample_group}.juicer.hic"
+#                 ],
+#                 sample_group = sample
+#             ))
+#     # Matrix and matrix analysis files for groups
+#     if config["params"]["fanc"]["merge_groups"]:
+#         for group in groups:
+#             wanted_input.extend(expand(
+#                 [
+#                     "results/hic/{sample_group}.hic",
+#                     "results/juicer/{sample_group}.juicer.hic"  
+#                 ],
+#                 sample_group = group
+#             ))
+    
+#     return wanted_input
