@@ -21,7 +21,7 @@ params:
     #Comma separated list of restriction enzymes used in Hi-C, used to split reads by predicted ligation junction before mapping.
     #It can be any enzyme supported by REBASE, case sensitive (http://rebase.neb.com/rebase/rebase.html)
     enzyme: "HinfI,DpnII"
-    # Comma-separated list of chromosomes to include in fragments BED file. Chromosomes in the list will be included. If empty all will be included.
+    # Comma-separated list of chromosomes to include in fragments BED file (used to create pairs files). Chromosomes in the list will be included. If empty all will be included.
     chr: ""
     #Should the pairs files of samples in the same group be merged before creating hic objects?
     merge_groups: True
@@ -112,26 +112,6 @@ params:
       Loop_filter: "--rh-filter -d 5 -o 5"
       #Params for the loop merging:
       Loop_merge: "-j --remove-singlets"
-  lc_extrap:
-    # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
-    activate: True
-  picard_metrics:
-    # Produces alignment metrics
-    activate: True
-  peak-annotation-analysis:
-    activate: True
-  peak-qc:
-    activate: True
-  consensus-peak-analysis:
-    # Should not be run unless there are at least 2 samples per control (not counting control) otherwise will not work.
-    activate: True
-  # samtools view parameters:
-  # if duplicates should be removed in this filtering, add "-F 0x0400" to the params
-  # if for each read, you only want to retain a single (best) mapping, add "-q 1" to params
-  # if you would like to restrict analysis to certain regions (e.g. excluding other "blacklisted" regions),
-  # the -L option is automatically activated if a path to a blacklist of the given genome exists in "config/igenomes.yaml" or has been entered there
-  samtools-view-se: "-b -F 0x004 -F 0x0400 -q 10"
-  samtools-view-pe: "-b -f 0x002 -F 0x0400 -q 10"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
