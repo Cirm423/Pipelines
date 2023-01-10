@@ -20,6 +20,7 @@ rule fanc_fragments:
         enzyme = config["params"]["fanc"]["enzyme"]
     log:
         f"logs/ref/{assembly}.{enzyme_file}.fragments.log"
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
