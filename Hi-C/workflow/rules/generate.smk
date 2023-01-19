@@ -70,7 +70,7 @@ rule fanc_to_juicer:
     output:
         "results/juicer/{sample_group}.juicer.hic"
     params:
-        files = lambda wc, input: " ".join(input.pairs)
+        files = lambda wc, input: " ".join(input.pairs) if isinstance(input.pairs,list) else input.pairs
     log:
         "logs/fanc/{sample_group}.to_juicer.log"
     conda:
