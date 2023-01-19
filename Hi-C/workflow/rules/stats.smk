@@ -1,6 +1,20 @@
+rule sort_mapped_stats:
+    input:
+        "results/mapped/{sample}_R{read}.bam"
+    output:
+        temp("results/mapped/{sample}_R{read}.sorted_stats.bam")
+    params:
+        extra=""
+    log:
+        "logs/bamtools_filtered/{sample}_R{read}.sorted.log"
+    threads:
+        8
+    wrapper:
+        "v1.3.1/bio/samtools/sort"
+
 rule samtools_flagstat:
     input:
-        "results/mapped/{sample}_R{read}.sorted.bam"
+        "results/mapped/{sample}_R{read}.sorted_stats.bam"
     output:
         "results/mapped/{sample}_R{read}.flagstat"
     log:
@@ -12,8 +26,8 @@ rule samtools_flagstat:
 
 rule samtools_idxstats:
     input:
-        bam = "results/mapped/{sample}_R{read}.sorted.bam",
-        idx = "results/mapped/{sample}_R{read}.sorted.bam.bai"
+        bam = "results/mapped/{sample}_R{read}.sorted_stats.bam",
+        idx = "results/mapped/{sample}_R{read}.sorted_stats.bam.bai"
     output:
         "results/mapped/{sample}_R{read}.idxstats"
     log:
@@ -25,7 +39,7 @@ rule samtools_idxstats:
 
 rule samtools_stats:
     input:
-        "results/mapped/{sample}_R{read}.sorted.bam"
+        "results/mapped/{sample}_R{read}.sorted_stats.bam"
     output:
         "results/mapped/{sample}_R{read}.stats.txt"
     params:
