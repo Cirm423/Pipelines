@@ -75,5 +75,6 @@ rule fanc_to_juicer:
         "logs/fanc/{sample_group}.to_juicer.log"
     conda:
         "../envs/fanc.yaml"
+    threads: 24
     shell:
         "fanc to-juicer {params.files} {output} --juicer-tools-jar {input.jar} 2>{log}"
