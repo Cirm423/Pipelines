@@ -5,7 +5,7 @@ rule fanc_expected:
         tsv = "results/matrix_analysis/{sample_group}_expected_contatcs.tsv",
         plot = report("results/matrix_analysis/{sample_group}_distance_decay.pdf",category="Expected values")
     params:
-        label = lambda wildcards: "-l {wildcards.sample_group}",
+        label = lambda wildcards: f"-l {wildcards.sample_group}",
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
         "logs/analysis/{sample_group}_expected.log"
@@ -13,7 +13,7 @@ rule fanc_expected:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc expected -p {output.plot} {params.label} {params.extra} {input} {output.tsv} 2>{log}"
+        "fanc expected -p {output.plot} {params.label} -c {params.extra} {input} {output.tsv} 2>{log}"
 
 rule fanc_pca:
     input:
