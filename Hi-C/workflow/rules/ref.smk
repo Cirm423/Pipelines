@@ -176,3 +176,15 @@ rule get_juicer_jar:
         "logs/get_juicer_jar.log"
     shell:
         "wget https://github.com/aidenlab/Juicebox/releases/download/v2.20.00/juicer_tools.2.20.00.jar -P ./resources/juicer"
+
+#Install domaincaller in the env with the dependencies (only available in pip)
+
+rule domaincaller_init:
+    output:
+        temp(touch("results/domaincaller/package.done"))
+    log:
+        "logs/domaincaller_init.log"
+    conda:
+        "../envs/domaincaller.yaml"
+    shell:
+        "pip install domaincaller 2>{log}"
