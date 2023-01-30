@@ -78,3 +78,16 @@ rule fanc_to_juicer:
     threads: 24
     shell:
         "fanc to-juicer {params.files} {output} --juicer-tools-jar {input.jar} 2>{log}"
+
+rule fanc_to_cooler:
+    input:
+        hic = "results/hic/{sample_group}.hic"
+    output:
+        "results/cooler/{sample_group}.cooler.mcool"
+    log:
+        "logs/fanc/{sample_group}.to_cooler.log"
+    conda:
+        "../envs/fanc.yaml"
+    threads: 24
+    shell:
+        "fanc to-cooler {input} {output} -t {threads} 2>{log}"

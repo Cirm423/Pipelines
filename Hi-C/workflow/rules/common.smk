@@ -406,7 +406,8 @@ def all_input(wildcards):
             wanted_input.extend(expand(
                 [
                     "results/hic/{sample_group}.hic",
-                    "results/juicer/{sample_group}.juicer.hic"
+                    "results/juicer/{sample_group}.juicer.hic",
+                    "results/cooler/{sample_group}.cooler.mcool"
                 ],
                 sample_group = sample
             ))
@@ -425,8 +426,8 @@ def all_input(wildcards):
             wanted_input.extend(expand(
                     [
                         "results/hic/{sample_group}.hic",
-                        "results/juicer/{sample_group}.juicer.hic"
-
+                        "results/juicer/{sample_group}.juicer.hic",
+                        "results/cooler/{sample_group}.cooler.mcool"
                     ],
                     sample_group = group
                 )
@@ -452,38 +453,3 @@ def all_input(wildcards):
         
     #Need to add more files as things are made, at least until peak calling for now
     return wanted_input
-
-# #Only used for testing
-# def test_input(wildcards):
-#     wanted_input = []
-#     wanted_input.extend([
-#         f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
-#     ])
-#     for sample in samples.index:
-#         wanted_input.extend(expand(
-#             [   
-#                 "results/pairs/{sample}.pairs"
-#             ],
-#             sample = sample
-#         ))
-#         # Matrix and matrix analysis files for samples
-#         if not config["params"]["fanc"]["merge_groups"]:
-#             wanted_input.extend(expand(
-#                 [   
-#                     "results/hic/{sample_group}.hic",
-#                     "results/juicer/{sample_group}.juicer.hic"
-#                 ],
-#                 sample_group = sample
-#             ))
-#     # Matrix and matrix analysis files for groups
-#     if config["params"]["fanc"]["merge_groups"]:
-#         for group in groups:
-#             wanted_input.extend(expand(
-#                 [
-#                     "results/hic/{sample_group}.hic",
-#                     "results/juicer/{sample_group}.juicer.hic"  
-#                 ],
-#                 sample_group = group
-#             ))
-    
-#     return wanted_input
