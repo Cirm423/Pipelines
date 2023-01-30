@@ -93,7 +93,7 @@ params:
       #Names and plot are already automatically added. The PCA will be done for the whole genome unless you specify a region/s (comma separated) here.
       pca_params: "-Z"
       #Parameters for expected values calculation. Only one parameter necessary, chromosome to get expected values for specific chromosomes.
-      #To use, add -c chr<something>. This parameter is needed for fanc expected to work.
+      #To use, add a chromosome. This parameter is needed for fanc expected to work.
       expected_params: "chr1"
       #Parameters for the AB compartments. More info can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/ab_compartments.html
       #The pipe automatically generates the matrix, eigenvector, ab file, domains and profile plot. You can specify some parameters for them here.
