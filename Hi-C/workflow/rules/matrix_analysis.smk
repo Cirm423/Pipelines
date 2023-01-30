@@ -66,7 +66,7 @@ rule plot_compartments:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc plot -o {output} {wildcards.region} -p square {input.AB} {params.extra} -p line {input.eigen} 2>{log}"
+        "fancplot -o {output} {wildcards.region} -p square {input.AB} {params.extra} -p line {input.eigen} 2>{log}"
 
 #No insulation based TADs for now
 # rule fanc_insulation:
