@@ -436,7 +436,9 @@ def all_input(wildcards):
                 wanted_input.extend(expand(
                     [
                         "results/matrix_analysis/{sample_group}_distance_decay.pdf",
-                        "results/matrix_analysis/loops/{sample_group}_merged.bedpe"
+                        "results/matrix_analysis/loops/{sample_group}_merged.bedpe",
+                        "results/domaincaller/{sample_group}.cooler.domains",
+                        "results/domaincaller/{sample_group}.cooler.di_domains"
                     ],
                     sample_group = group
                 ))

@@ -183,7 +183,7 @@ rule domaincaller_init:
     output:
         temp(touch("results/domaincaller/package.done"))
     log:
-        "logs/domaincaller_init.log"
+        "logs/domaincaller/domaincaller_init.log"
     conda:
         "../envs/domaincaller.yaml"
     shell:

@@ -172,3 +172,23 @@ rule fanc_loops_export:
         "../envs/fanc.yaml"
     shell:
         "fanc loops {input} -b {output} 2>{log}"
+
+#From here domaincaller instead of fanc
+
+rule domaincaller:
+    input:
+        hic = "results/cooler/{sample_group}.cooler.mcool",
+        ini = "results/domaincaller/package.done"
+    output:
+        out = "results/domaincaller/{sample_group}.cooler.domains",
+        di_out = "results/domaincaller/{sample_group}.cooler.di_domains"
+    params:
+        extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
+    log:
+        "logs/domaincaller/{sample_group}.log"
+    threads: 24
+    conda:
+        "../envs/domaincaller.yaml"
+    shell:
+        "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log}"

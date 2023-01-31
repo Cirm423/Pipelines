@@ -112,6 +112,12 @@ params:
       Loop_filter: "--rh-filter -d 5 -o 5"
       #Params for the loop merging:
       Loop_merge: "-j --remove-singlets"
+      #Params for domaincaller
+      #Specify the resolution for the cooler hic. 1000000, 2000000, 4000000 seem to be common resolutions.
+      #If it fails you can check the domaincaller log for available resolutions if these don't work.
+      domaincaller_res: "1000000"
+      #Extra params for domaincaller. Defaults are set.
+      domaincaller_extra: "--window-size 2000000 --weight-col weight"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
