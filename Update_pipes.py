@@ -27,7 +27,7 @@ class MySFTPClient(paramiko.SFTPClient):
             else:
                 raise
 
-pipelines = ["ATAC-seq","ChIP-seq","Cut_Tag","RNA-seq","WGBS"]
+pipelines = ["ATAC-seq","ChIP-seq","Cut_Tag","RNA-seq","WGBS","Hi-C"]
 
 clusters = {
     "hpc2.ust.hk" : "/home/share/dcyleung/snakemake/", 
