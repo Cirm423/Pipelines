@@ -14,6 +14,31 @@ rule preseq_lc_extrap:
     script:
         "../scripts/preseq.py"
 
+rule get_complexity_measures:
+    input:
+        "logs/preseq/{sample}.log"
+    output:
+        "results/preseq/{sample}.complexity_measures"
+    run:
+        with open(input[0], 'r') as fp:
+            for line in fp:
+                if line.startswith('TOTAL READS'):
+                    tot_reads = float(line.strip().split("= ")[1])
+                elif line.startswith('DISTINCT READS'):
+                    distinct_reads = float(line.strip().split('= ')[1])
+                elif line.startswith('1\t'):
+                    one_pair = float(line.strip().split()[1])
+                elif line.startswith('2\t'):
+                    two_pair = float(line.strip().split()[1])
+
+        NRF = distinct_reads/tot_reads
+        PBC1 = one_pair/distinct_reads
+        PBC2 = one_pair/two_pair
+        sample = wildcards.sample
+
+        with open(output[0], 'w') as f:
+            f.write(f"Complexity measures for sample {sample}\n\nNRF:\t{NRF}\nPBC1:\t{PBC1}\nPBC2:\t{PBC2}")
+
 rule collect_multiple_metrics:
     input:
          bam="results/bamtools_filtered/{sample}.sorted.bam",
