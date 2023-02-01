@@ -4,31 +4,25 @@
 - [Starting](#starting)
 - [Configuring Snakemake](#configuring-snakemake)
   - [Input dataset](#input-dataset)
+  - [Mode of use](#mode-of-use)
+  - [Restriction Enzymes](#restriction-enzymes)
   - [Assembly](#assembly)
-    - [ATACseqQC](#atacseqqc)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
 - [Too long, don't want to read](#too-long-dont-want-to-read)
-- [QC plots explanation](#qc-plots-explanation)
-  - [Fragment Size](#fragment-size)
-  - [Promoter/Transcript body (PT) score](#promotertranscript-body-pt-score)
-  - [Nucleosome Free Regions (NFR) score](#nucleosome-free-regions-nfr-score)
-  - [Transcription Start Site (TSS) enrichment score](#transcription-start-site-tss-enrichment-score)
-  - [Coverage curve for nucleosome positions](#coverage-curve-for-nucleosome-positions)
-  - [Footprint plot](#footprint-plot)
-  - [V-plot](#v-plot)
+- [References](#references)
 
 # Starting
 
-This readme provides instructions on how to run the snakemake ATAC-seq pipeline on a cluster.
+This readme provides instructions on how to run the snakemake Hi-C pipeline on a cluster.
 
 To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:
 > hpc2:\
-> /home/share/dcyleung/snakemake/ATAC-seq/\
+> /home/share/dcyleung/snakemake/Hi-C/\
 > biocrfhpc1:\
-> /home4/share/dcyleung/snakemake/ATAC-seq/\
+> /home4/share/dcyleung/snakemake/Hi-C/\
 > biocrfhpc2:\
-> /data1/share/dcyleung/Pipeline/snakemake/ATAC-seq/
+> /data1/share/dcyleung/Pipeline/snakemake/Hi-C/
 
 and place it in your own folder, preferentially in its own folder since snakemake will create many new files.
 
@@ -39,8 +33,6 @@ The config folder includes the following files:
 - config.yaml
 - samples.tsv
 - units.tsv
-- pe_bamtools_filtering_rules.json
-- se_bamtools_filtering_rules.json
 
 Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Particularly, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.
 
@@ -54,37 +46,35 @@ The previously mentioned *samples.tsv* has to be modified according to your own 
 
 The first file you need to modify is *samples.tsv*. It is a tab separated file that looks like this:
 
-> | sample_name | group | batch_effect | control |
-> ------------|---------|--------------|---------|
-> | J1_Va_Rep1  | J1 | batch1 |  |
-> | J1_Va_Rep2	| J1 | batch1 |  |
-> | J1_Va_Rep3	| J1 | batch1 |  |
-> | DnmtTKO_Co_Rep1	| DnmtTKO | batch2 | |
-> | DnmtTKO_Co_Rep2	| DnmtTKO | batch2 | |
-> | DnmtTKO_Co_Rep3	| DnmtTKO | batch2 | |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep1 |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep2 |
-> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 | DnmtTKO_Co_Rep3 |
+> | sample_name | group | batch_effect |
+> ------------|---------|--------------|
+> | J1_Va_Rep1  | J1 | batch1 |
+> | J1_Va_Rep2	| J1 | batch1 |
+> | J1_Va_Rep3	| J1 | batch1 |
+> | DnmtTKO_Co_Rep1	| DnmtTKO | batch2 |
+> | DnmtTKO_Co_Rep2	| DnmtTKO | batch2 |
+> | DnmtTKO_Co_Rep3	| DnmtTKO | batch2 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 |
+> | DnmtTKO_Va_Rep1	| DnmtTKO | batch3 |
 
-You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model and for consensus peak calling), batch and control samples. Note that **samples without control will be considered as controls in the pipeline, unless all the samples in the same group have no control.** In the latter case, the peaks will be called without control using all the samples in the group. In the table above, the peak calling of the group *DnmtTKO* will be done with controls from its group, while the peak calling for the *J1* group will be done without controls.
+You need to modify this file to include any samples you want to analyze in the pipeline, along with their group, which represents biological replicates of the same sample. **Samples belonging to the same group can be merged to create a Hi-C matrix for all the biological replicates together.** The batch effect column currently does nothing, but it is good to keep track of it.
 
 **It is also advisable to avoid special characters (like - or |) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.**
 
-By default the pipeline will do a consensus peak calling for all the samples in the same group. If you want to call peaks individually for every sample instead, you can give each sample their own separate group, so peaks are only called for the sample. If you use the pipeline like this, the differential analysis will not be executed as there would not be replicates.
-
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
 
-> | sample_name |	unit | fragment_len_mean | fragment_len_sd | fq1 | fq2 | sra | platform |
-> --------------|--------|-------------------|-----------------|-----|----|------|----------|
-> | J1_Va_Rep1  | 1 | | | J1_1.lane1.R1.fastq.gz | J1_1.lane1.R2.fastq.gz | | ILLUMINA |
-> | J1_Va_Rep2  | 1 | | | J1_2.lane1.R1.fastq.gz | J1_2.lane1.R2.fastq.gz | | ILLUMINA |
-> | J1_Va_Rep3	| 1 | | | J1_3.lane1.R1.fastq.gz | J1_3.lane1.R2.fastq.gz| | ILLUMINA |
-> | DnmtTKO_Co_Rep1	| 1 | | |  |  | SRR10194959 | ILLUMINA |
-> | DnmtTKO_Co_Rep2	| 1 | | |  |  | SRR10194960 | ILLUMINA |
-> | DnmtTKO_Co_Rep3	| 1 | | |  |  | SRR10194961 | ILLUMINA |
-> | DnmtTKO_Va_Rep1	| 1 | | |  |  | SRR10194962 | ILLUMINA |
-> | DnmtTKO_Va_Rep2	| 1 | | |  |  | SRR10194963 | ILLUMINA |
-> | DnmtTKO_Va_Rep3	| 1 | | |  |  | SRR10194964 | ILLUMINA |
+> | sample_name |	unit | fq1 | fq2 | sra | platform |
+> --------------|--------|-----|----|------|----------|
+> | J1_Va_Rep1  | 1 | J1_1.lane1.R1.fastq.gz | J1_1.lane1.R2.fastq.gz | | ILLUMINA |
+> | J1_Va_Rep2  | 1 | J1_2.lane1.R1.fastq.gz | J1_2.lane1.R2.fastq.gz | | ILLUMINA |
+> | J1_Va_Rep3	| 1 | J1_3.lane1.R1.fastq.gz | J1_3.lane1.R2.fastq.gz| | ILLUMINA |
+> | DnmtTKO_Co_Rep1	| 1 |  |  | SRR10194959 | ILLUMINA |
+> | DnmtTKO_Co_Rep2	| 1 |  |  | SRR10194960 | ILLUMINA |
+> | DnmtTKO_Co_Rep3	| 1 |  |  | SRR10194961 | ILLUMINA |
+> | DnmtTKO_Va_Rep1	| 1 |  |  | SRR10194962 | ILLUMINA |
+> | DnmtTKO_Va_Rep2	| 1 |  |  | SRR10194963 | ILLUMINA |
+> | DnmtTKO_Va_Rep3	| 1 |  |  | SRR10194964 | ILLUMINA |
 
 You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 
@@ -96,13 +86,28 @@ or a relative path from where snakemake is run, which is the directory where the
 
 This latter approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will try to run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting should be set accordingly even for fq only runs as some steps make use of it. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**Note that this pipeline currently only supports Paired End samples as most methods currently available only accept Paired End samples. Running it will Single End samples will probably crash the pipeline**
 
-The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.
+Lastly, the *config.yaml* file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs.
 
-Lastly, the *config.yaml* file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs. 
+Hi-C many different parameters for each step, each one of them is briefly explained in the config.yaml file itself. As this pipeline uses [fanC](https://github.com/vaquerizaslab/fanc)[1] as a base, it is recommended that you also check their [documentation](https://fan-c.readthedocs.io/en/latest/)
 
-However, some options require further explanation that can be seen bellow.
+## Mode of use
+
+This pipeline can be used in different ways. The main "switches" are found in the fanc section of config.yaml: `merge_groups` at the start of the fanc section and `activate` and `pca_only` in the analysis section.
+
+- If you only want to get the `.hic` files and do your own analysis and plots, turn off the analysis activation so the pipeline only maps your fastqs and generates the matrix.
+
+- If you want to analyze your data is advised that you first check how similar your biological replicates are in order to be merged safely. To do this, run the pipeline with merge_groups as `False` and pca_only as `True` with the analysis activated. In this case, each sample will have its own Hi-C matrix generated and compared by doing a PCA plot.
+
+- If you are confident in your biological replicates or the PCA looks ok, you can then run the analysis with pca_only as `False` and merge_groups as `True`, which will produce the rest of the analysis.
+
+**Do note that Hi-C can be really slow if you use the full genome, so if you are interested only in specific chromosomes or regions, it is better to restrict the pipeline to only map to those regions in the `chr` option of the fanc section.**
+
+## Restriction Enzymes
+
+In Hi-C, the genome needs to be "digested" and separated into fragments that change depending on the restriction enzymes utilized by the protocol
+used to sequence your samples. The pipeline can digest the genome if you provide the name of the restriction enzymes as long as they're found in [REBASE](http://rebase.neb.com/rebase/rebase.html). By default the pipeline is set to digest using the restriction enzymes used by the common Arima protocol.
 
 ## Assembly
 
@@ -123,14 +128,6 @@ If you indicate any assembly name that does not appear in the table, the pipelin
 
 For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.
 
-### ATACseqQC
-
-ATACseqQC is an R package used to produce some specific ATACseq QC plots. Unfortunately, it needs assembly specific packages to run and not many are available at the moment. Thus, ATACseqQC will only run when one of the following assemblies are selected in the config:
-> |    | Human | Mouse | Rat |
-> -----|----|-----|-----|
-> |**Gencode**|GRCh38, GRCh37|GRCm38|
-> |**UCSC**|h38, h19|mm10| rn6 | 
-
 # Running Snakemake
 
 To run the pipeline simply send the run_snk.sh script to slurm by doing:
@@ -147,11 +144,15 @@ Additionally, snakemake is configured to run up to 5 simultaneous jobs by defaul
 
 Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like bwa, fastqc, etc; with sample folders within them. For example:
 
-    results/bwa/sample1/bwa_output_files
+    results/bwa/sample1_bwa_outputs
 
 In results, the qc folder will contain the files `multiqc_report_data` and `multiqc_report.html`, which includes fastqc and rseqc, along with the folder ATACseqQC, where all its plots are found. You can download these files and view in a browser. The file `report.html` will also be found in the root directory of the pipeline, in which you can find the rest of the QC and stats that are not included in multiqc.
 
-The peaks and related info will be in a folder called genrich (the peak caller program), and all the plots will be included in the pipeline report, which can be found in the root directory of the pipeline when the pipeline is done.
+In addition to the plots and qc that will be present in these files, the pipeline will provide you with 3 Hi-C matrices files:
+
+  - A FanC Hi-C file that can be used with FanC software to make plots.
+  - A Juicer Hi-C file with multiple resolutions that can be used with the juicebox software tools.
+  - A cooler Hi-C file that can be used with cooler and domaincaller.
 
 Additionally logs for each step will be stored in the logs folder. 
 
@@ -162,57 +163,11 @@ The basic steps to run the pipe are:
 - Make a copy of the pipeline.
 - Put your samples and groups in samples.tsv.
 - Put your units and file paths/sra codes in units.tsv
-- Change config.yaml to single or paired end, set assembly and any specific step option you need.
+- Change config.yaml to your restriction enzymes, set assembly and any specific step option you need.
 - Use `sbatch` to send run_snk.sh to the cluster.
 
-# QC plots explanation
-This section provides more context on how to interpret the ATAC-seq specific QC plots produced by ATACseqQC R package.
-
-## Fragment Size
-
-![image](Images/fragment.png)
-
-Due to the nature of ATAC-seq, cleaving the DNA between nucleosomes, we expect the fragment length to be on the small side, so the fragment size plot should be skewed to the left side.
-
-## Promoter/Transcript body (PT) score
-
-![image](Images/PT.png)
-
-This plot shows the proportion of Promoter vs Transcripts on our samples. In ATAC-seq we expect there to be an enrichment of promoters in our sequences, so this plot should be skewed to the top (positive values indicate enrichment of promoters)
-
-## Nucleosome Free Regions (NFR) score
-
-![image](Images/nfr.png)
-
-We also expect an enrichment of nucleosome free regions near TSSs, so this plot should show higher coverage of NFRs (plot skewed towards left and up)
-
-## Transcription Start Site (TSS) enrichment score
-
-![image](Images/TSS.png)
-
-Is the ratio of reads present in the TSS and reads present in the regions surrounding the TSS. The maximum value that this plot shows in the TSS (0 in the x axis) should be at least of 5 for the experiment to be successful.
-
-## Coverage curve for nucleosome positions
-
-![image](Images/coverage.png)
-
-This plot measures the signal of nuclesome free fragments (black line) vs nucleosome bound fragments (red dotted line). We expect more signal of nuclesome free fragments in the TSS and more signal of nuclesome bound fragments in the flanks of a TSS.
-
-## Footprint plot
-
-![image](Images/Footprint.png)
-
-Infers factor occupancy genome-wide.
-
-## V-plot
-
-![image](Images/vplot.png)
-
-Visualizes fragment midpoint vs length for transcription factors.
-
-![image](Images/Vplot_diagram.jpg)
-
-This figure provides a good visual explanation of what a V plot is showing. White dots in the fragments represent the midpoint. Figure obtained from [this paper](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2012-13-10-250)
-
-
-A more in depth explanation of these plots can be found [here](https://bioconductor.org/packages/devel/bioc/vignettes/ATACseqQC/inst/doc/ATACseqQC.html)
+# References
+[1] Kruse, K., Hug, C.B. & Vaquerizas, J.M. 
+FAN-C: a feature-rich framework for the analysis and visualisation of chromosome conformation capture data. 
+Genome Biol 21, 303 (2020). 
+https://doi.org/10.1186/s13059-020-02215-9
