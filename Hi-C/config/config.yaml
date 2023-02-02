@@ -92,7 +92,7 @@ params:
       #To check PCA params go here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/pca.html
       #Names and plot are already automatically added. The PCA will be done for the whole genome unless you specify a region/s (comma separated) here.
       pca_params: "-Z"
-      #Parameters for expected values calculation. Only one parameter necessary, chromosome to get expected values for specific chromosomes.
+      #Parameters for expected values calculation. Only one parameter necessary, chromosome to get expected values for specific chromosome.
       #To use, add a chromosome. This parameter is needed for fanc expected to work.
       expected_params: "chr1"
       #Parameters for the AB compartments. More info can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/ab_compartments.html
@@ -100,10 +100,13 @@ params:
       AB_params: ""
       #This parameters deals only with the fanc plot matrix part of AB compartment section.
       AB_plot: "-vmin -0.75 -vmax 0.75 -c RdBu_r"
-      #Only insulation scores will be calculated in this step. More info here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html
+      #The directionality index will be calculated in this step. More info here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html
       #Do not change the output format here
+      #The window sizes can be removed and they will be automatically calculated based on the resolution of the matrix
       TAD_params: "-w 1000000 1500000 2000000 2500000 3000000 3500000 4000000"
-      #Params only for the TAD plot
+      #Format to export the TAD directionality index result. Choose between bed, gff or bigwig.
+      TAD_format: "bigwig"
+      #Params only for the TAD plot. Note that to plot the TADs regions must be specified.
       TAD_plot: "-m 4000000 -vmin 0 -vmax 0.05"
       #More info on these params can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/loops.html
       #Params only for the annotation part.

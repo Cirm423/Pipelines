@@ -60,6 +60,10 @@ wildcard_constraints:
 if config["params"]["fanc"]["filter"]["multimap"]:
     assert config["params"]["fanc"]["filter"]["multimap"]==True or config["params"]["fanc"]["filter"]["multimap"] == "strict", "multimap setting must be True, False or strict"
 
+if config["params"]["fanc"]["analysis"]["activate"] and not config["params"]["fanc"]["analysis"]["pca_only"]:
+    tad_form = config["params"]["fanc"]["analysis"]["TAD_format"]
+    assert tad_form == "bed" or tad_form == "gff" or tad_form == "bigwig", "The TAD output format must be either bed gff or bigwig, please check this option"
+
 ##### reference genomes #####
 
 genecode = {
@@ -437,17 +441,25 @@ def all_input(wildcards):
                     [
                         "results/matrix_analysis/{sample_group}_distance_decay.pdf",
                         "results/matrix_analysis/loops/{sample_group}_merged.bedpe",
-                        "results/domaincaller/{sample_group}.cooler.domains",
-                        "results/domaincaller/{sample_group}.cooler.di_domains"
+                        "results/matrix_analysis/TADs/{sample_group}.directionality",
                     ],
                     sample_group = group
                 ))
+
+                #Adding directories
+                wanted_input.extend(directory(expand(
+                    [
+                        "results/matrix_analysis/TADs/output/{sample_group}"
+                    ],
+                    sample_group = group
+                    )))
 
                 if regions:
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                "results/matrix_analysis/compartments/{sample_group}.{region}.png"
+                                "results/matrix_analysis/compartments/{sample_group}.{region}.png",
+                                "results/matrix_analysis/TADs/{sample_group}.{region}.png"
                             ],
                             sample_group = group,
                             region = region

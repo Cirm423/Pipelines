@@ -68,52 +68,53 @@ rule plot_compartments:
     shell:
         "fancplot -o {output} {wildcards.region} -p square {input.AB} {params.extra} -p line {input.eigen} 2>{log}"
 
-#No insulation based TADs for now
-# rule fanc_insulation:
-#     input:
-#         "results/hic/{sample_group}.hic"
-#     output:
-#         "results/matrix_analysis/TADs/{sample_group}.insulation",
-#     params:
-#         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
-#     log:
-#         "logs/analysis/{sample_group}_TAD.log"
-#     threads: 1
-#     conda:
-#         "../envs/fanc.yaml"
-#     shell:
-#         "fanc insulation {input} {output} {params.extra} 2>{log}"
+#Only directionality index for TAD calling, not insulation.
+rule fanc_directionality:
+    input:
+        "results/hic/{sample_group}.hic"
+    output:
+        "results/matrix_analysis/TADs/{sample_group}.directionality",
+    params:
+        extra = config["params"]["fanc"]["analysis"]["TAD_params"]
+    log:
+        "logs/analysis/{sample_group}_TAD.log"
+    threads: 24
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc insulation {input} {output} {params.extra} 2>{log}"
 
-# rule fanc_insulation_format:
-#     input:
-#         "results/hic/{sample_group}.hic"
-#     output:
-#         directory("results/matrix_analysis/TADs/bigwig/{sample_group}"),
-#     params:
-#         prefix = "results/matrix_analysis/TADs/bigwig/{sample_group}/insulation"
-#     log:
-#         "logs/analysis/{sample_group}_TAD.log"
-#     threads: 1
-#     conda:
-#         "../envs/fanc.yaml"
-#     shell:
-#         "fanc insulation {input} {params.prefix} -o bigwig 2>{log}"
+rule fanc_directionality_format:
+    input:
+        "results/matrix_analysis/TADs/{sample_group}.directionality"
+    output:
+        directory("results/matrix_analysis/TADs/output/{sample_group}"),
+    params:
+        form = config["params"]["fanc"]["analysis"]["TAD_format"],
+        prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.directionality"
+    log:
+        "logs/analysis/{sample_group}_TAD_format.log"
+    threads: 24
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc insulation {input} {params.prefix} -o {params.form} 2>{log}"
 
-# rule plot_TAD:
-#     input:
-#         hic = "results/hic/{sample_group}.hic",
-#         insulation = "results/matrix_analysis/TADs/{sample_group}.insulation"
-#     output:
-#         report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
-#     params:
-#         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
-#     log:
-#         "logs/analysis/{sample_group}_{region}_compartments_plot.log"
-#     threads: 1
-#     conda:
-#         "../envs/fanc.yaml"
-#     shell:
-#         "fanc plot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.insulation} 2>{log}"
+rule plot_TAD:
+    input:
+        hic = "results/hic/{sample_group}.hic",
+        directionality = "results/matrix_analysis/TADs/{sample_group}.directionality"
+    output:
+        report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
+    params:
+        extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
+    log:
+        "logs/analysis/{sample_group}_{region}_directionality_plot.log"
+    threads: 1
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc plot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.directionality} 2>{log}"
 
 rule fanc_loops_annotate:
     input:
@@ -173,22 +174,22 @@ rule fanc_loops_export:
     shell:
         "fanc loops {input} -b {output} 2>{log}"
 
-#From here domaincaller instead of fanc
+#Domaincaller replaced by the fanc function above
 
-rule domaincaller:
-    input:
-        hic = "results/cooler/{sample_group}.cooler.mcool",
-        ini = "results/domaincaller/package.done"
-    output:
-        out = "results/domaincaller/{sample_group}.cooler.domains",
-        di_out = "results/domaincaller/{sample_group}.cooler.di_domains"
-    params:
-        extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
-        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
-    log:
-        "logs/domaincaller/{sample_group}.log"
-    threads: 24
-    conda:
-        "../envs/domaincaller.yaml"
-    shell:
-        "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log}"
+# rule domaincaller:
+#     input:
+#         hic = "results/cooler/{sample_group}.cooler.mcool",
+#         ini = "results/domaincaller/package.done"
+#     output:
+#         out = "results/domaincaller/{sample_group}.cooler.domains",
+#         di_out = "results/domaincaller/{sample_group}.cooler.di_domains"
+#     params:
+#         extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
+#         uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
+#     log:
+#         "logs/domaincaller/{sample_group}.log"
+#     threads: 24
+#     conda:
+#         "../envs/domaincaller.yaml"
+#     shell:
+#         "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log}"
