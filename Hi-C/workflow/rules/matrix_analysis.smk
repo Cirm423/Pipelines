@@ -2,8 +2,8 @@ rule fanc_expected:
     input:
         f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
     output:
-        tsv = "results/matrix_analysis/{sample_group}_{chr}_expected_contatcs.tsv",
-        plot = report("results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf",category="Expected values")
+        tsv = f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.expected_contatcs.tsv",
+        plot = report(f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf",category="Expected values")
     params:
         label = lambda wildcards: f"-l {wildcards.sample_group}",
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
@@ -19,8 +19,8 @@ rule fanc_pca:
     input:
         expand(f"results/hic/{{sample}}.{enzyme_file}.{fragments_file}.hic", sample = samples.index)
     output:
-        out = "results/pca/matrix.pca",
-        plot = report("results/pca/matrix_pca_plot.pdf",category="PCA")
+        out = f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca",
+        plot = report(f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca_plot.pdf",category="PCA")
     params:
         label = "-n \"" + '\" \"'.join(samples.index) + "\"",
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
@@ -37,11 +37,11 @@ rule fanc_compartments:
         hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
         fa = f"{assembly_path}{assembly}.fa"
     output:
-        AB = "results/matrix_analysis/compartments/{sample_group}_compartments.ab",
-        eigen = "results/matrix_analysis/compartments/{sample_group}.ev.txt",
-        domains = "results/matrix_analysis/compartments/{sample_group}_domains.bed",
-        plot = report("results/matrix_analysis/compartments/{sample_group}_ab_profile.png", category="AB domains"),
-        matrix = "results/matrix_analysis/compartments/{sample_group}_enrichment_matrix.txt"
+        AB = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}._compartments.ab",
+        eigen = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ev.txt",
+        domains = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.domains.bed",
+        plot = report(f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ab_profile.png", category="AB domains"),
+        matrix = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.enrichment_matrix.txt"
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
@@ -54,10 +54,10 @@ rule fanc_compartments:
 
 rule plot_compartments:
     input:
-        AB = "results/matrix_analysis/compartments/{sample_group}_compartments.ab",
-        eigen = "results/matrix_analysis/compartments/{sample_group}.ev.txt"
+        AB = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}._compartments.ab",
+        eigen = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ev.txt"
     output:
-        report("results/matrix_analysis/compartments/{sample_group}.{region}.png",category ="AB domains")
+        report(f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{{region}}.png",category ="AB domains")
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_plot"]
     log:
@@ -73,7 +73,7 @@ rule fanc_directionality:
     input:
         f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
     output:
-        "results/matrix_analysis/TADs/{sample_group}.directionality",
+        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality",
     params:
         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
     log:
@@ -86,12 +86,12 @@ rule fanc_directionality:
 
 rule fanc_directionality_format:
     input:
-        "results/matrix_analysis/TADs/{sample_group}.directionality"
+        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality"
     output:
         directory("results/matrix_analysis/TADs/output/{sample_group}"),
     params:
         form = config["params"]["fanc"]["analysis"]["TAD_format"],
-        prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.directionality"
+        prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.{enzyme_file}.{fragments_file}.directionality"
     log:
         "logs/analysis/{sample_group}_TAD_format.log"
     threads: 24
@@ -103,9 +103,9 @@ rule fanc_directionality_format:
 rule plot_TAD:
     input:
         hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
-        directionality = "results/matrix_analysis/TADs/{sample_group}.directionality"
+        directionality = f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality"
     output:
-        report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
+        report(f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{{region}}.png",category ="TADs")
     params:
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
     log:
@@ -120,7 +120,7 @@ rule fanc_loops_annotate:
     input:
         f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
     output:
-        "results/matrix_analysis/loops/{sample_group}.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
@@ -133,9 +133,9 @@ rule fanc_loops_annotate:
 
 rule fanc_loops_filter:
     input:
-        "results/matrix_analysis/loops/{sample_group}.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}_filtered.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.filtered_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_filter"]
     log:
@@ -148,9 +148,9 @@ rule fanc_loops_filter:
 
 rule fanc_loops_merge:
     input:
-        "results/matrix_analysis/loops/{sample_group}_filtered.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.filtered_loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}_merged.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_merge"]
     log:
@@ -163,9 +163,9 @@ rule fanc_loops_merge:
 
 rule fanc_loops_export:
     input:
-        "results/matrix_analysis/loops/{sample_group}_merged.loops",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged_loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}_merged.bedpe",
+        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged.bedpe",
     log:
         "logs/analysis/{sample_group}_loop_export.log"
     threads: 24

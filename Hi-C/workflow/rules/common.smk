@@ -419,7 +419,7 @@ def all_input(wildcards):
             if do_analysis and only_pca:
                 wanted_input.extend(expand(
                     [
-                        "results/pca/matrix_pca_plot.pdf",
+                        f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca_plot.pdf",
                         "results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf"
                     ],
                     sample_group = sample,
@@ -440,9 +440,9 @@ def all_input(wildcards):
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf",
-                        "results/matrix_analysis/loops/{sample_group}_merged.bedpe",
-                        "results/matrix_analysis/TADs/{sample_group}.directionality",
+                        f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf",
+                        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged.bedpe",
+                        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality",
                     ],
                     sample_group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"]
@@ -460,8 +460,8 @@ def all_input(wildcards):
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                "results/matrix_analysis/compartments/{sample_group}.{region}.png",
-                                "results/matrix_analysis/TADs/{sample_group}.{region}.png"
+                                f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{{region}}.png",
+                                f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{{region}}.png"
                             ],
                             sample_group = group,
                             region = region
