@@ -2,7 +2,7 @@ rule sort_mapped:
     input:
         "results/mapped/{sample}_R{read}.bam"
     output:
-        "results/mapped/{sample}_R{read}.sorted.bam"
+        f"results/mapped/{{sample}}_R{{read}}.{enzyme_file}.{fragments_file}.sorted.bam"
     params:
         extra="-n"
     log:
@@ -14,14 +14,14 @@ rule sort_mapped:
 
 rule fanc_pairs:
     input:
-        R1 = "results/mapped/{sample}_R1.sorted.bam",
-        R2 = "results/mapped/{sample}_R2.sorted.bam",
+        R1 = f"results/mapped/{{sample}}_R1.{enzyme_file}.{fragments_file}.sorted.bam",
+        R2 = f"results/mapped/{{sample}}_R2.{enzyme_file}.{fragments_file}.sorted.bam",
         genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     output:
-        pairs = "results/pairs/{sample}.pairs",
-        stats = report("results/pairs/{sample}.pairs_stats.pdf",category="Pairs"),
-        dist_plot = report("results/pairs/{sample}.re-dist.png",category="Pairs"),
-        l_error = report("results/pairs/{sample}.ligation-err.png",category="Pairs")
+        pairs = f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs",
+        stats = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs_stats.pdf",category="Pairs"),
+        dist_plot = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.re-dist.png",category="Pairs"),
+        l_error = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.ligation-err.png",category="Pairs")
     params:
         unmap = "-m" if config["params"]["fanc"]["filter"]["unmap"] else "",
         multimap = "" if not config["params"]["fanc"]["filter"]["multimap"] else ("-us" if config["params"]["fanc"]["filter"]["multimap"] == "strict" else "-u"),
@@ -46,8 +46,8 @@ rule fanc_hic:
     input:
         get_pairs_files,
     output:
-        hic = "results/hic/{sample_group}.hic",
-        stats = report("results/hic/{sample_group}.hic_stats.pdf",category="Hi-C matrix")
+        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
+        stats = report(f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic_stats.pdf",category="Hi-C matrix")
     params:
         bin = f"-b {config['params']['fanc']['hic']['bin_size']}",
         filter = config['params']['fanc']['hic']['filter'],
@@ -68,7 +68,7 @@ rule fanc_to_juicer:
         pairs = get_pairs_files,
         jar = "resources/juicer/juicer_tools.2.20.00.jar"
     output:
-        "results/juicer/{sample_group}.juicer.hic"
+        f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic"
     params:
         files = lambda wc, input: " ".join(input.pairs) if isinstance(input.pairs,list) else input.pairs
     log:
@@ -81,9 +81,9 @@ rule fanc_to_juicer:
 
 rule fanc_to_cooler:
     input:
-        hic = "results/hic/{sample_group}.hic"
+        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
     output:
-        "results/cooler/{sample_group}.cooler.mcool"
+        f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
     log:
         "logs/fanc/{sample_group}.to_cooler.log"
     conda:

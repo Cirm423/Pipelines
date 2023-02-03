@@ -236,20 +236,20 @@ def get_samples_of_group(group):
 def get_pairs_files(wildcards):
     if config["params"]["fanc"]["merge_groups"]:
         sample_g = samples[samples['group'] == wildcards.sample_group]
-        return expand(["results/pairs/{sample}.pairs"],
+        return expand([f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs"],
             sample = sample_g["sample"].index
         )
     else:
-        return "results/pairs/{sample_group}.pairs"
+        return f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs"
 
 def get_hic_files(wildcards):
     if config["params"]["fanc"]["merge_groups"]:
         sample_g = samples[samples['group'] == wildcards.sample_group]
-        return expand(["results/hic/{sample_group}.hic"],
+        return expand([f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"],
             sample_group = sample_g["sample"].index
         )
     else:
-        return "results/pairs/{sample_group}.pairs"
+        return f"results/pairs/{{sample_group}}.{enzyme_file}.{fragments_file}.pairs"
 
 def get_unit_R1_of_sample(wildcards):
     unit_list = []
@@ -401,7 +401,7 @@ def all_input(wildcards):
     for sample in samples.index:
         wanted_input.extend(expand(
             [   
-                "results/pairs/{sample}.pairs"
+                f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs"
             ],
             sample = sample
         ))
@@ -409,9 +409,9 @@ def all_input(wildcards):
         if not merge_groups:
             wanted_input.extend(expand(
                 [
-                    "results/hic/{sample_group}.hic",
-                    "results/juicer/{sample_group}.juicer.hic",
-                    "results/cooler/{sample_group}.cooler.mcool"
+                    f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
+                    f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic",
+                    f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
                 ],
                 sample_group = sample
             ))
@@ -420,18 +420,19 @@ def all_input(wildcards):
                 wanted_input.extend(expand(
                     [
                         "results/pca/matrix_pca_plot.pdf",
-                        "results/matrix_analysis/{sample_group}_distance_decay.pdf"
+                        "results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf"
                     ],
-                    sample_group = sample
+                    sample_group = sample,
+                    chr = config["params"]["fanc"]["analysis"]["expected_params"]
                 ))
 
     if merge_groups:
         for group in groups:
             wanted_input.extend(expand(
                     [
-                        "results/hic/{sample_group}.hic",
-                        "results/juicer/{sample_group}.juicer.hic",
-                        "results/cooler/{sample_group}.cooler.mcool"
+                        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
+                        f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic",
+                        f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
                     ],
                     sample_group = group
                 )
@@ -439,11 +440,12 @@ def all_input(wildcards):
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/matrix_analysis/{sample_group}_distance_decay.pdf",
+                        "results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf",
                         "results/matrix_analysis/loops/{sample_group}_merged.bedpe",
                         "results/matrix_analysis/TADs/{sample_group}.directionality",
                     ],
-                    sample_group = group
+                    sample_group = group,
+                    chr = config["params"]["fanc"]["analysis"]["expected_params"]
                 ))
 
                 #Adding directories
@@ -465,5 +467,4 @@ def all_input(wildcards):
                             region = region
                         ))
         
-    #Need to add more files as things are made, at least until peak calling for now
     return wanted_input

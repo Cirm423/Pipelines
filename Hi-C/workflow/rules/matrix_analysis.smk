@@ -1,14 +1,14 @@
 rule fanc_expected:
     input:
-        "results/hic/{sample_group}.hic",
+        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
     output:
-        tsv = "results/matrix_analysis/{sample_group}_expected_contatcs.tsv",
-        plot = report("results/matrix_analysis/{sample_group}_distance_decay.pdf",category="Expected values")
+        tsv = "results/matrix_analysis/{sample_group}_{chr}_expected_contatcs.tsv",
+        plot = report("results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf",category="Expected values")
     params:
         label = lambda wildcards: f"-l {wildcards.sample_group}",
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
-        "logs/analysis/{sample_group}_expected.log"
+        "logs/analysis/{sample_group}_{chr}_expected.log"
     threads: 1
     conda:
         "../envs/fanc.yaml"
@@ -17,7 +17,7 @@ rule fanc_expected:
 
 rule fanc_pca:
     input:
-        expand("results/hic/{sample}.hic", sample = samples.index)
+        expand(f"results/hic/{{sample}}.{enzyme_file}.{fragments_file}.hic", sample = samples.index)
     output:
         out = "results/pca/matrix.pca",
         plot = report("results/pca/matrix_pca_plot.pdf",category="PCA")
@@ -34,7 +34,7 @@ rule fanc_pca:
 
 rule fanc_compartments:
     input:
-        hic = "results/hic/{sample_group}.hic",
+        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
         fa = f"{assembly_path}{assembly}.fa"
     output:
         AB = "results/matrix_analysis/compartments/{sample_group}_compartments.ab",
@@ -71,7 +71,7 @@ rule plot_compartments:
 #Only directionality index for TAD calling, not insulation.
 rule fanc_directionality:
     input:
-        "results/hic/{sample_group}.hic"
+        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
     output:
         "results/matrix_analysis/TADs/{sample_group}.directionality",
     params:
@@ -102,7 +102,7 @@ rule fanc_directionality_format:
 
 rule plot_TAD:
     input:
-        hic = "results/hic/{sample_group}.hic",
+        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
         directionality = "results/matrix_analysis/TADs/{sample_group}.directionality"
     output:
         report("results/matrix_analysis/TADs/{sample_group}.{region}.png",category ="TADs")
@@ -118,7 +118,7 @@ rule plot_TAD:
 
 rule fanc_loops_annotate:
     input:
-        "results/hic/{sample_group}.hic"
+        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
     output:
         "results/matrix_analysis/loops/{sample_group}.loops",
     params:
