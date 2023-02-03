@@ -240,7 +240,7 @@ def get_pairs_files(wildcards):
             sample = sample_g["sample"].index
         )
     else:
-        return f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs"
+        return f"results/pairs/{{sample_group}}.{enzyme_file}.{fragments_file}.pairs"
 
 def get_hic_files(wildcards):
     if config["params"]["fanc"]["merge_groups"]:
@@ -420,7 +420,7 @@ def all_input(wildcards):
                 wanted_input.extend(expand(
                     [
                         f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca_plot.pdf",
-                        "results/matrix_analysis/{sample_group}_{chr}_distance_decay.pdf"
+                        f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf"
                     ],
                     sample_group = sample,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"]
