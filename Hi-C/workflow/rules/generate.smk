@@ -2,7 +2,7 @@ rule sort_mapped:
     input:
         "results/mapped/{sample}_R{read}.bam"
     output:
-        f"results/mapped/{{sample}}_R{{read}}.{enzyme_file}.{fragments_file}.sorted.bam"
+        f"results/mapped/{{sample}}_R{{read}}.{enzyme_file}.sorted.bam"
     params:
         extra="-n"
     log:
@@ -14,8 +14,8 @@ rule sort_mapped:
 
 rule fanc_pairs:
     input:
-        R1 = f"results/mapped/{{sample}}_R1.{enzyme_file}.{fragments_file}.sorted.bam",
-        R2 = f"results/mapped/{{sample}}_R2.{enzyme_file}.{fragments_file}.sorted.bam",
+        R1 = f"results/mapped/{{sample}}_R1.{enzyme_file}.sorted.bam",
+        R2 = f"results/mapped/{{sample}}_R2.{enzyme_file}.sorted.bam",
         genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     output:
         pairs = f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs",
