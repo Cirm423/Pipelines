@@ -101,8 +101,10 @@ params:
       AB_plot: "-vmin -0.75 -vmax 0.75 -c RdBu_r"
       #The directionality index will be calculated in this step. More info here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html
       #Do not change the output format here
-      #The window sizes can be removed and they will be automatically calculated based on the resolution of the matrix
-      TAD_params: "-w 1000000 1500000 2000000 2500000 3000000 3500000 4000000"
+      #The window sizes they will be automatically calculated based on the resolution of the matrix, but can also be set with:
+      # -w <bp1> <bp2>... where each bp is a window size in base pairs.
+      #If the window size is smaller than the matrix resolution it can cause the program to crash.
+      TAD_params: ""
       #Format to export the TAD directionality index result. Choose between bed, gff or bigwig.
       TAD_format: "bigwig"
       #Params only for the TAD plot. Note that to plot the TADs regions must be specified.
