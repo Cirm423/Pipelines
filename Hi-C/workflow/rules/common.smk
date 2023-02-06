@@ -359,6 +359,7 @@ def all_input(wildcards):
     merge_groups = config["params"]["fanc"]["merge_groups"]
     do_analysis = config["params"]["fanc"]["analysis"]["activate"]
     only_pca = config["params"]["fanc"]["analysis"]["pca_only"]
+    juicer = config["params"]["fanc"]["hic"]["juicer"]
 
     wanted_input = []
 
@@ -424,7 +425,6 @@ def all_input(wildcards):
             wanted_input.extend(expand(
                 [
                     "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-                    "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
                     "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
                 ],
                 sample_group = sample,
@@ -432,6 +432,17 @@ def all_input(wildcards):
                 fragments = fragments_file,
                 resolution = bin_sizes
             ))
+
+            if juicer:
+                wanted_input.extend(expand(
+                        [
+                            "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
+                        ],
+                        sample_group = sample,
+                        enzyme = enzyme_file,
+                        fragments = fragments_file
+                    )
+                )
 
             if do_analysis and only_pca:
                 wanted_input.extend(expand(
@@ -451,7 +462,6 @@ def all_input(wildcards):
             wanted_input.extend(expand(
                     [
                         "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-                        "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
                         "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
                     ],
                     sample_group = group,
@@ -460,6 +470,18 @@ def all_input(wildcards):
                     resolution = bin_sizes
                 )
             )
+
+            if juicer:
+                wanted_input.extend(expand(
+                        [
+                            "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
+                        ],
+                        sample_group = group,
+                        enzyme = enzyme_file,
+                        fragments = fragments_file
+                    )
+                )
+
             if do_analysis:
                 wanted_input.extend(expand(
                     [
