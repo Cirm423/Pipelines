@@ -114,7 +114,7 @@ rule plot_TAD:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc plot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.directionality} 2>{log}"
+        "fancplot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.directionality} 2>{log}"
 
 rule fanc_loops_annotate:
     input:
