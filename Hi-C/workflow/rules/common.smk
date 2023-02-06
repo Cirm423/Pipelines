@@ -356,10 +356,15 @@ def all_input(wildcards):
     wanted_input = []
 
     # QC with fastQC and multiQC, individual stuff
-    wanted_input.extend([
+    wanted_input.extend(
+        expand([
         "results/qc/multiqc/multiqc.html",
-        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
-    ])
+        "resources/{assembly}.{enzyme}.{fragments}.fragments.bed"
+        ],
+        assembly = assembly,
+        enzyme = enzyme_file,
+        fragments = fragments_file
+        ))
 
     # trimming reads
     if config["params"]["trimming"]["activate"]:
@@ -401,51 +406,61 @@ def all_input(wildcards):
     for sample in samples.index:
         wanted_input.extend(expand(
             [   
-                f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs"
+                "results/pairs/{sample}.{enzyme}.{fragments}.pairs"
             ],
-            sample = sample
+            sample = sample,
+            enzyme = enzyme_file,
+            fragments = fragments_file
         ))
  
         if not merge_groups:
             wanted_input.extend(expand(
                 [
-                    f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
-                    f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic",
-                    f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
+                    "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+                    "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
+                    "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
                 ],
-                sample_group = sample
+                sample_group = sample,
+                enzyme = enzyme_file,
+                fragments = fragments_file
             ))
 
             if do_analysis and only_pca:
                 wanted_input.extend(expand(
                     [
-                        f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca_plot.pdf",
-                        f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf"
+                        "results/pca/matrix.{enzyme}.{fragments}.pca_plot.pdf",
+                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.distance_decay.pdf"
                     ],
                     sample_group = sample,
-                    chr = config["params"]["fanc"]["analysis"]["expected_params"]
+                    chr = config["params"]["fanc"]["analysis"]["expected_params"],
+                    enzyme = enzyme_file,
+                    fragments = fragments_file
                 ))
 
     if merge_groups:
         for group in groups:
             wanted_input.extend(expand(
                     [
-                        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
-                        f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic",
-                        f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
+                        "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+                        "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
+                        "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
                     ],
-                    sample_group = group
+                    sample_group = group,
+                    enzyme = enzyme_file,
+                    fragments = fragments_file
                 )
             )
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf",
-                        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged.bedpe",
-                        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality",
+                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.distance_decay.pdf",
+                        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.merged.bedpe",
+                        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.directionality",
                     ],
                     sample_group = group,
-                    chr = config["params"]["fanc"]["analysis"]["expected_params"]
+                    chr = config["params"]["fanc"]["analysis"]["expected_params"],
+                    enzyme = enzyme_file,
+                    fragments = fragments_file
                 ))
 
                 #Adding directories
@@ -460,11 +475,13 @@ def all_input(wildcards):
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{{region}}.png",
-                                f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{{region}}.png"
+                                "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}.png",
+                                "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}.png"
                             ],
                             sample_group = group,
-                            region = region
+                            region = region,
+                            enzyme = enzyme_file,
+                            fragments = fragments_file
                         ))
         
     return wanted_input

@@ -1,14 +1,14 @@
 rule fanc_expected:
     input:
-        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
+        "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
     output:
-        tsv = f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.expected_contatcs.tsv",
-        plot = report(f"results/matrix_analysis/{{sample_group}}_{{chr}}.{enzyme_file}.distance_decay.pdf",category="Expected values")
+        tsv = "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.expected_contatcs.tsv",
+        plot = report("results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.distance_decay.pdf",category="Expected values")
     params:
         label = lambda wildcards: f"-l {wildcards.sample_group}",
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
-        "logs/analysis/{sample_group}_{chr}_expected.log"
+        "logs/analysis/{sample_group}_{chr}.{enzyme}.{fragments}.expected.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -17,15 +17,15 @@ rule fanc_expected:
 
 rule fanc_pca:
     input:
-        expand(f"results/hic/{{sample}}.{enzyme_file}.{fragments_file}.hic", sample = samples.index)
+        expand("results/hic/{sample}.{enzyme}.{fragments}.hic", sample = samples.index, enzyme = enzyme_file, fragments = fragments_file)
     output:
-        out = f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca",
-        plot = report(f"results/pca/matrix.{enzyme_file}.{fragments_file}.pca_plot.pdf",category="PCA")
+        out = "results/pca/matrix.{enzyme}.{fragments}.pca",
+        plot = report("results/pca/matrix.{enzyme}.{fragments}.pca_plot.pdf",category="PCA")
     params:
         label = "-n \"" + '\" \"'.join(samples.index) + "\"",
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
     log:
-        "logs/analysis/PCA.log"
+        "logs/analysis/PCA.{enzyme}.{fragments}.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -34,18 +34,18 @@ rule fanc_pca:
 
 rule fanc_compartments:
     input:
-        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
         fa = f"{assembly_path}{assembly}.fa"
     output:
-        AB = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}._compartments.ab",
-        eigen = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ev.txt",
-        domains = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.domains.bed",
-        plot = report(f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ab_profile.png", category="AB domains"),
-        matrix = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.enrichment_matrix.txt"
+        AB = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}._compartments.ab",
+        eigen = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.ev.txt",
+        domains = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.domains.bed",
+        plot = report("results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.ab_profile.png", category="AB domains"),
+        matrix = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.enrichment_matrix.txt"
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
-        "logs/analysis/{sample_group}_compartments.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}_compartments.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -54,14 +54,14 @@ rule fanc_compartments:
 
 rule plot_compartments:
     input:
-        AB = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}._compartments.ab",
-        eigen = f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{fragments_file}.ev.txt"
+        AB = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}._compartments.ab",
+        eigen = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.ev.txt"
     output:
-        report(f"results/matrix_analysis/compartments/{{sample_group}}.{enzyme_file}.{{region}}.png",category ="AB domains")
+        report("results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}.png",category ="AB domains")
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_plot"]
     log:
-        "logs/analysis/{sample_group}_{region}_compartments_plot.log"
+        "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}.compartments_plot.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -71,13 +71,13 @@ rule plot_compartments:
 #Only directionality index for TAD calling, not insulation.
 rule fanc_directionality:
     input:
-        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
+        "results/hic/{sample_group}.{enzyme}.{fragments}.hic"
     output:
-        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality",
+        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.directionality",
     params:
         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
     log:
-        "logs/analysis/{sample_group}_TAD.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}.TAD.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -105,14 +105,14 @@ rule fanc_directionality_format:
 
 rule plot_TAD:
     input:
-        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
-        directionality = f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}.directionality"
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+        directionality = "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.directionality"
     output:
-        report(f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{{region}}.png",category ="TADs")
+        report("results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}.png",category ="TADs")
     params:
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
     log:
-        "logs/analysis/{sample_group}_{region}_directionality_plot.log"
+        "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}.directionality_plot.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -121,13 +121,13 @@ rule plot_TAD:
 
 rule fanc_loops_annotate:
     input:
-        f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
+        "results/hic/{sample_group}.{enzyme}.{fragments}.hic"
     output:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
-        "logs/analysis/{sample_group}_loop_annotate.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}.loop_annotate.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -136,13 +136,13 @@ rule fanc_loops_annotate:
 
 rule fanc_loops_filter:
     input:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.loops",
     output:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.filtered_loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.filtered_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_filter"]
     log:
-        "logs/analysis/{sample_group}_loop_filter.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}.loop_filter.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -151,13 +151,13 @@ rule fanc_loops_filter:
 
 rule fanc_loops_merge:
     input:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.filtered_loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.filtered_loops",
     output:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged_loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.merged_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_merge"]
     log:
-        "logs/analysis/{sample_group}_loop_merge.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}.loop_merge.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -166,11 +166,11 @@ rule fanc_loops_merge:
 
 rule fanc_loops_export:
     input:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged_loops",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.merged_loops",
     output:
-        f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged.bedpe",
+        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.merged.bedpe",
     log:
-        "logs/analysis/{sample_group}_loop_export.log"
+        "logs/analysis/{sample_group}.{enzyme}.{fragments}.loop_export.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"

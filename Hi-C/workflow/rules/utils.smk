@@ -14,12 +14,12 @@ rule fanc_fragments:
     input:
         f"{assembly_path}{assembly}.fa"
     output:
-        f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
+        "resources/{assembly}.{enzyme}.{fragments}.fragments.bed"
     params:
         chr = f"-c {config['params']['fanc']['chr']}" if config['params']['fanc']['chr'] else "",
         enzyme = config["params"]["fanc"]["enzyme"]
     log:
-        f"logs/ref/{assembly}.{enzyme_file}.fragments.log"
+        "logs/ref/{assembly}.{enzyme}.{fragments}.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"

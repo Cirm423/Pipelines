@@ -2,11 +2,11 @@ rule sort_mapped:
     input:
         "results/mapped/{sample}_R{read}.bam"
     output:
-        f"results/mapped/{{sample}}_R{{read}}.{enzyme_file}.sorted.bam"
+        "results/mapped/{sample}_R{read}.{enzyme}.sorted.bam"
     params:
         extra="-n"
     log:
-        "logs/bamtools_filtered/{sample}_R{read}.sorted.log"
+        "logs/bamtools_filtered/{sample}_R{read}_{enzyme}.sorted.log"
     threads:
         8
     wrapper:
@@ -14,14 +14,14 @@ rule sort_mapped:
 
 rule fanc_pairs:
     input:
-        R1 = f"results/mapped/{{sample}}_R1.{enzyme_file}.sorted.bam",
-        R2 = f"results/mapped/{{sample}}_R2.{enzyme_file}.sorted.bam",
+        R1 = "results/mapped/{sample}_R1.{enzyme}.sorted.bam",
+        R2 = "results/mapped/{sample}_R2.{enzyme}.sorted.bam",
         genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
     output:
-        pairs = f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs",
-        stats = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.pairs_stats.pdf",category="Pairs"),
-        dist_plot = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.re-dist.png",category="Pairs"),
-        l_error = report(f"results/pairs/{{sample}}.{enzyme_file}.{fragments_file}.ligation-err.png",category="Pairs")
+        pairs = "results/pairs/{sample}.{enzyme}.{fragments}.pairs",
+        stats = report("results/pairs/{sample}.{enzyme}.{fragments}.pairs_stats.pdf",category="Pairs"),
+        dist_plot = report("results/pairs/{sample}.{enzyme}.{fragments}.re-dist.png",category="Pairs"),
+        l_error = report("results/pairs/{sample}.{enzyme}.{fragments}.ligation-err.png",category="Pairs")
     params:
         unmap = "-m" if config["params"]["fanc"]["filter"]["unmap"] else "",
         multimap = "" if not config["params"]["fanc"]["filter"]["multimap"] else ("-us" if config["params"]["fanc"]["filter"]["multimap"] == "strict" else "-u"),
@@ -32,7 +32,7 @@ rule fanc_pairs:
         pcr = f"-p {config['params']['fanc']['filter']['pcr']}" if config['params']['fanc']['filter']['pcr'] else "",
         extra = config['params']['fanc']['filter']['extra']
     log:
-        "logs/fanc/{sample}.pairs.log"
+        "logs/fanc/{sample}.{enzyme}.{fragments}.pairs.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -46,8 +46,8 @@ rule fanc_hic:
     input:
         get_pairs_files,
     output:
-        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic",
-        stats = report(f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic_stats.pdf",category="Hi-C matrix")
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+        stats = report("results/hic/{sample_group}.{enzyme}.{fragments}.hic_stats.pdf",category="Hi-C matrix")
     params:
         bin = f"-b {config['params']['fanc']['hic']['bin_size']}",
         filter = config['params']['fanc']['hic']['filter'],
@@ -55,7 +55,7 @@ rule fanc_hic:
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
     log:
-        "logs/fanc/{sample_group}.hic.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.hic.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -68,11 +68,11 @@ rule fanc_to_juicer:
         pairs = get_pairs_files,
         jar = "resources/juicer/juicer_tools.2.20.00.jar"
     output:
-        f"results/juicer/{{sample_group}}.{enzyme_file}.{fragments_file}.juicer.hic"
+        "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic"
     params:
         files = lambda wc, input: " ".join(input.pairs) if isinstance(input.pairs,list) else input.pairs
     log:
-        "logs/fanc/{sample_group}.to_juicer.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.to_juicer.log"
     conda:
         "../envs/fanc.yaml"
     threads: 24
@@ -81,11 +81,11 @@ rule fanc_to_juicer:
 
 rule fanc_to_cooler:
     input:
-        hic = f"results/hic/{{sample_group}}.{enzyme_file}.{fragments_file}.hic"
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic"
     output:
-        f"results/cooler/{{sample_group}}.{enzyme_file}.{fragments_file}.mcool"
+        "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
     log:
-        "logs/fanc/{sample_group}.to_cooler.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.to_cooler.log"
     conda:
         "../envs/fanc.yaml"
     threads: 24
