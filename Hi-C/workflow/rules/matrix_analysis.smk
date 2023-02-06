@@ -68,56 +68,56 @@ rule plot_compartments:
     shell:
         "fancplot -o {output} {wildcards.region} -p square {input.AB} {params.extra} -p line {input.eigen} 2>{log}"
 
-#Only directionality index for TAD calling, not insulation.
-rule fanc_directionality:
-    input:
-        "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
-    output:
-        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality",
-    params:
-        extra = config["params"]["fanc"]["analysis"]["TAD_params"]
-    log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.TAD.log"
-    threads: 4
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        "fanc insulation {input} {output} {params.extra} 2>{log}"
+# #Only directionality index for TAD calling, not insulation. Fanc directionality does not call TADs!!!
+# rule fanc_directionality:
+#     input:
+#         "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
+#     output:
+#         "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality",
+#     params:
+#         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
+#     log:
+#         "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.TAD.log"
+#     threads: 4
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         "fanc insulation {input} {output} {params.extra} 2>{log}"
 
-rule fanc_directionality_format:
-    input:
-        f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
-    output:
-        directory("results/matrix_analysis/TADs/output/{sample_group}"),
-    params:
-        form = config["params"]["fanc"]["analysis"]["TAD_format"],
-        prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
-    log:
-        "logs/analysis/{sample_group}_TAD_format.log"
-    threads: 4
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        """
-        mkdir -p {output}
-        fanc insulation {input} {params.prefix} -o {params.form} 2>{log}
-        """
+# rule fanc_directionality_format:
+#     input:
+#         f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
+#     output:
+#         directory("results/matrix_analysis/TADs/output/{sample_group}"),
+#     params:
+#         form = config["params"]["fanc"]["analysis"]["TAD_format"],
+#         prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
+#     log:
+#         "logs/analysis/{sample_group}_TAD_format.log"
+#     threads: 4
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         """
+#         mkdir -p {output}
+#         fanc insulation {input} {params.prefix} -o {params.form} 2>{log}
+#         """
 
-rule plot_TAD:
-    input:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-        directionality = "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality"
-    output:
-        report("results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",category ="TADs")
-    params:
-        extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
-    log:
-        "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}-{resolution}.directionality_plot.log"
-    threads: 4
-    conda:
-        "../envs/fanc.yaml"
-    shell:
-        "fancplot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.directionality} 2>{log}"
+# rule plot_TAD:
+#     input:
+#         hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+#         directionality = "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality"
+#     output:
+#         report("results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",category ="TADs")
+#     params:
+#         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
+#     log:
+#         "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}-{resolution}.directionality_plot.log"
+#     threads: 4
+#     conda:
+#         "../envs/fanc.yaml"
+#     shell:
+#         "fancplot -o {output} {wildcards.region} -p triangular {input.hic} {params.extra} -p scores {input.directionality} 2>{log}"
 
 rule fanc_loops_annotate:
     input:
@@ -179,20 +179,35 @@ rule fanc_loops_export:
 
 #Domaincaller replaced by the fanc function above
 
-# rule domaincaller:
-#     input:
-#         hic = "results/cooler/{sample_group}.cooler.mcool",
-#         ini = "results/domaincaller/package.done"
-#     output:
-#         out = "results/domaincaller/{sample_group}.cooler.domains",
-#         di_out = "results/domaincaller/{sample_group}.cooler.di_domains"
-#     params:
-#         extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
-#         uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
-#     log:
-#         "logs/domaincaller/{sample_group}.log"
-#     threads: 24
-#     conda:
-#         "../envs/domaincaller.yaml"
-#     shell:
-#         "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log}"
+rule domaincaller:
+    input:
+        hic = "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool",
+        ini = "results/tadlib/package.done"
+    output:
+        out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        di_out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
+    params:
+        extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
+    log:
+        "logs/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.log"
+    threads: 24
+    conda:
+        "../envs/tadlib.yaml"
+    shell:
+        "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log} --removeCache"
+
+#Add script, check that it works first
+rule plot_TADs:
+    input:
+        hic = "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool",
+        loops = "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
+        out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        ini = "results/tadlib/package.done"
+    output:
+        report("results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.pdf",category="TAD calling"),
+    threads: 1
+    conda:
+        "../envs/tadlib.yaml"
+    script:
+        "../scripts/plot_TAD.py"

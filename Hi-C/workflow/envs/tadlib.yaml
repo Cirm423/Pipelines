@@ -9,3 +9,6 @@ dependencies:
   - pomegranate =0.10.0
   - networkx =1.11
   - joblib =0.17.0
+  - setuptools
+  - matplotlib
+  - scikit-learn

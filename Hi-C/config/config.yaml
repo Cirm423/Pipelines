@@ -102,23 +102,20 @@ params:
       AB_params: ""
       #This parameters deals only with the fanc plot matrix part of AB compartment section.
       AB_plot: "-vmin -0.75 -vmax 0.75 -c RdBu_r"
-      #The directionality index will be calculated in this step. More info here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/domains.html
-      #Do not change the output format here
-      #The window sizes they will be automatically calculated based on the resolution of the matrix, but can also be set with:
-      # -w <bp1> <bp2>... where each bp is a window size in base pairs.
-      #If the window size is smaller than the matrix resolution it can cause the program to crash.
-      TAD_params: ""
-      #Format to export the TAD directionality index result. Choose between bed, gff or bigwig.
-      TAD_format: "bigwig"
-      #Params only for the TAD plot. Note that to plot the TADs regions must be specified.
-      TAD_plot: "-m 4000000 -vmin 0 -vmax 0.05"
-      #More info on these params can be found here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/loops.html
       #Params only for the annotation part.
       Loop_annotate: ""
       #Params for loop filtering:
       Loop_filter: "--rh-filter -d 5 -o 5"
       #Params for the loop merging:
       Loop_merge: "-j --remove-singlets"
+      #Params for domaincaller (TADs calling)
+      #Specify the resolution for the cooler hic in base pairs.
+      #Resolution is analysis bin_size, bin_size*2, bin_size*2 + bin_size*2
+      #If you use 5kb, options would be 5000, 10000, 20000
+      #If it fails you can check the domaincaller log for available resolutions.
+      domaincaller_res: "5000"
+      #Extra params for domaincaller. Defaults are set.
+      domaincaller_extra: "--window-size 2000000 --weight-col weight"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types

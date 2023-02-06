@@ -62,9 +62,10 @@ wildcard_constraints:
 if config["params"]["fanc"]["filter"]["multimap"]:
     assert config["params"]["fanc"]["filter"]["multimap"]==True or config["params"]["fanc"]["filter"]["multimap"] == "strict", "multimap setting must be True, False or strict"
 
-if config["params"]["fanc"]["analysis"]["activate"] and not config["params"]["fanc"]["analysis"]["pca_only"]:
-    tad_form = config["params"]["fanc"]["analysis"]["TAD_format"]
-    assert tad_form == "bed" or tad_form == "gff" or tad_form == "bigwig", "The TAD output format must be either bed gff or bigwig, please check this option"
+#Used only for fanc directionality
+# if config["params"]["fanc"]["analysis"]["activate"] and not config["params"]["fanc"]["analysis"]["pca_only"]:
+#     tad_form = config["params"]["fanc"]["analysis"]["TAD_format"]
+#     assert tad_form == "bed" or tad_form == "gff" or tad_form == "bigwig", "The TAD output format must be either bed gff or bigwig, please check this option"
 
 #Check that analysis bin size is in matrix bin sizes if analysis is activated
 if config["params"]["fanc"]["analysis"]["activate"]:
@@ -464,7 +465,8 @@ def all_input(wildcards):
                     [
                         "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",
                         "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
-                        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality",
+                        "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+                        "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
                     ],
                     sample_group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -473,20 +475,20 @@ def all_input(wildcards):
                     resolution = analysis_resolution
                 ))
 
-                #Adding directories
-                wanted_input.extend(directory(expand(
-                    [
-                        "results/matrix_analysis/TADs/output/{sample_group}"
-                    ],
-                    sample_group = group
-                    )))
+                #Adding directories (only for fanc directionality, not used)
+                # wanted_input.extend(directory(expand(
+                #     [
+                #         "results/matrix_analysis/TADs/output/{sample_group}"
+                #     ],
+                #     sample_group = group
+                #     )))
 
                 if regions:
                     for region in regions:
                         wanted_input.extend(expand(
                             [
                                 "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",
-                                "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png"
+                                #"results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png"
                             ],
                             sample_group = group,
                             region = region,
