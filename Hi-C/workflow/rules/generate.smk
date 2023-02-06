@@ -46,16 +46,29 @@ rule fanc_hic:
     input:
         get_pairs_files,
     output:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
-        stats = report("results/hic/{sample_group}.{enzyme}.{fragments}.hic_stats.pdf",category="Hi-C matrix")
+        "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
+    log:
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.fragment_level.hic.log"
+    threads: 24
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc hic {input} {output} -t {threads} 2>{log}"
+
+rule fanc_hic_bin:
+    input:
+        "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
+    output:
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        stats = report("results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic_stats.pdf",category="Hi-C matrix")
     params:
-        bin = f"-b {config['params']['fanc']['hic']['bin_size']}",
+        bin = lambda wildcards: f"-b {wildcards.resolution}",
         filter = config['params']['fanc']['hic']['filter'],
         diag = f"-d {config['params']['fanc']['hic']['diagonal']}" if config['params']['fanc']['hic']['diagonal'] else "",
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
     log:
-        "logs/fanc/{sample_group}.{enzyme}.{fragments}.hic.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}-{resolution}.hic.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -81,11 +94,11 @@ rule fanc_to_juicer:
 
 rule fanc_to_cooler:
     input:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.hic"
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
     output:
-        "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
+        "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
     log:
-        "logs/fanc/{sample_group}.{enzyme}.{fragments}.to_cooler.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}-{resolution}.to_cooler.log"
     conda:
         "../envs/fanc.yaml"
     threads: 24

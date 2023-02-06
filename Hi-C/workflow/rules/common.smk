@@ -37,6 +37,8 @@ config["single_end"] = False
 
 enzyme_file = "_".join(config["params"]["fanc"]["enzyme"].split(","))
 fragments_file = "_".join(config["params"]["fanc"]["chr"].split(",")) if config["params"]["fanc"]["chr"] else "all"
+bin_sizes = config["params"]["fanc"]["hic"]["bin_size"].split(",")
+analysis_resolution = config["params"]["fanc"]["analysis"]["bin_size"]
 
 # Get list of regions for the matrix analysis
 if config["params"]["fanc"]["regions"]:
@@ -63,6 +65,10 @@ if config["params"]["fanc"]["filter"]["multimap"]:
 if config["params"]["fanc"]["analysis"]["activate"] and not config["params"]["fanc"]["analysis"]["pca_only"]:
     tad_form = config["params"]["fanc"]["analysis"]["TAD_format"]
     assert tad_form == "bed" or tad_form == "gff" or tad_form == "bigwig", "The TAD output format must be either bed gff or bigwig, please check this option"
+
+#Check that analysis bin size is in matrix bin sizes if analysis is activated
+if config["params"]["fanc"]["analysis"]["activate"]:
+    assert analysis_resolution in bin_sizes, "The analysis bin size must be one of the bin sizes specified in the hic section"
 
 ##### reference genomes #####
 
@@ -416,51 +422,55 @@ def all_input(wildcards):
         if not merge_groups:
             wanted_input.extend(expand(
                 [
-                    "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+                    "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
                     "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
-                    "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
+                    "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
                 ],
                 sample_group = sample,
                 enzyme = enzyme_file,
-                fragments = fragments_file
+                fragments = fragments_file,
+                resolution = bin_sizes
             ))
 
             if do_analysis and only_pca:
                 wanted_input.extend(expand(
                     [
-                        "results/pca/matrix.{enzyme}.{fragments}.pca_plot.pdf",
-                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.distance_decay.pdf"
+                        "results/pca/matrix.{enzyme}.{fragments}-{resolution}.pca_plot.pdf",
+                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf"
                     ],
                     sample_group = sample,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
                     enzyme = enzyme_file,
-                    fragments = fragments_file
+                    fragments = fragments_file,
+                    resolution = analysis_resolution
                 ))
 
     if merge_groups:
         for group in groups:
             wanted_input.extend(expand(
                     [
-                        "results/hic/{sample_group}.{enzyme}.{fragments}.hic",
+                        "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
                         "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic",
-                        "results/cooler/{sample_group}.{enzyme}.{fragments}.mcool"
+                        "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
                     ],
                     sample_group = group,
                     enzyme = enzyme_file,
-                    fragments = fragments_file
+                    fragments = fragments_file,
+                    resolution = bin_sizes
                 )
             )
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.distance_decay.pdf",
-                        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}.merged.bedpe",
-                        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.directionality",
+                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",
+                        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
+                        "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality",
                     ],
                     sample_group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
                     enzyme = enzyme_file,
-                    fragments = fragments_file
+                    fragments = fragments_file,
+                    resolution = analysis_resolution
                 ))
 
                 #Adding directories
@@ -475,13 +485,14 @@ def all_input(wildcards):
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}.png",
-                                "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}.png"
+                                "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",
+                                "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png"
                             ],
                             sample_group = group,
                             region = region,
                             enzyme = enzyme_file,
-                            fragments = fragments_file
+                            fragments = fragments_file,
+                            resolution = analysis_resolution
                         ))
         
     return wanted_input

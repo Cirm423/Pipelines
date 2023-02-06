@@ -61,8 +61,9 @@ params:
       #Should a juicer hic file also be produced in addition to fanc hic. The juicer file will be filtered according to the previous settings.
       #The juicer file will include all normalizations and bin sizes available in juicer.
       juicer: True
-      # bin size can be given as a number or as a common abbreviation (see default)
-      bin_size: "1Mb"
+      # bin size (resolution) can be given as a number or as a common abbreviation (see default).
+      #Several resolutions can be set, separate by comma (,).
+      bin_size: "5mb,2mb,1mb,500kb,250kb,100kb,50kb,25kb,10kb,5kb"
       # 2 options for filtering
       # -l <number> threshold for absolute number of pairs per bin minimum coverage
       # -r <fraction> (between 0 and 1) threshold for fraction of the median number of pairs per bin
@@ -89,6 +90,8 @@ params:
       #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
       #PCA plot will only be done when dealing with samples, not with groups.
       pca_only: False
+      #bin size to use for the analysis. It should be one of the listed above for the hic generation.
+      bin_size: "5kb"
       #To check PCA params go here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/pca.html
       #Names and plot are already automatically added. The PCA will be done for the whole genome unless you specify a region/s (comma separated) here.
       pca_params: "-Z"
