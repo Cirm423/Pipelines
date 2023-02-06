@@ -9,7 +9,7 @@ rule fanc_expected:
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
         "logs/analysis/{sample_group}_{chr}_expected.log"
-    threads: 1
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -26,7 +26,7 @@ rule fanc_pca:
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
     log:
         "logs/analysis/PCA.log"
-    threads: 1
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -46,7 +46,7 @@ rule fanc_compartments:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
         "logs/analysis/{sample_group}_compartments.log"
-    threads: 1
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -62,7 +62,7 @@ rule plot_compartments:
         extra = config["params"]["fanc"]["analysis"]["AB_plot"]
     log:
         "logs/analysis/{sample_group}_{region}_compartments_plot.log"
-    threads: 1
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -78,7 +78,7 @@ rule fanc_directionality:
         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
     log:
         "logs/analysis/{sample_group}_TAD.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -94,11 +94,14 @@ rule fanc_directionality_format:
         prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.{enzyme_file}.{fragments_file}.directionality"
     log:
         "logs/analysis/{sample_group}_TAD_format.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc insulation {input} {params.prefix} -o {params.form} 2>{log}"
+        """
+        mkdir -p {output}
+        fanc insulation {input} {params.prefix} -o {params.form} 2>{log}
+        """
 
 rule plot_TAD:
     input:
@@ -110,7 +113,7 @@ rule plot_TAD:
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
     log:
         "logs/analysis/{sample_group}_{region}_directionality_plot.log"
-    threads: 1
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -125,7 +128,7 @@ rule fanc_loops_annotate:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
         "logs/analysis/{sample_group}_loop_annotate.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -140,7 +143,7 @@ rule fanc_loops_filter:
         extra = config["params"]["fanc"]["analysis"]["Loop_filter"]
     log:
         "logs/analysis/{sample_group}_loop_filter.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -155,7 +158,7 @@ rule fanc_loops_merge:
         extra = config["params"]["fanc"]["analysis"]["Loop_merge"]
     log:
         "logs/analysis/{sample_group}_loop_merge.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -168,7 +171,7 @@ rule fanc_loops_export:
         f"results/matrix_analysis/loops/{{sample_group}}.{enzyme_file}.{fragments_file}.merged.bedpe",
     log:
         "logs/analysis/{sample_group}_loop_export.log"
-    threads: 24
+    threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
