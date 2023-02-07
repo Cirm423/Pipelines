@@ -168,47 +168,6 @@ def get_fastqs(wildcards):
         u = units.loc[ (wildcards.sample, wildcards.unit), ["fq1", "fq2"] ].dropna()
         return [ f"{u.fq1}", f"{u.fq2}" ]
 
-#Not used in ATAC since there are not different antybodies, but may be useful for something
-
-# def is_control(sample):
-#     control = samples.loc[sample]["control"]
-#     return pd.isna(control) or pd.isnull(control)
-
-# def get_sample_control_peak_combinations_list():
-#     sam_contr = []
-#     for sample in samples.index:
-#         if not is_control(sample):
-#             sam_contr.extend(expand(["{sample}-{control}.{peak}"], sample = sample, control = samples.loc[sample]["control"], peak = config["params"]["peak-analysis"]))
-#     return sam_contr
-
-def get_peaks_count_plot_input():
-    return expand(
-        "results/macs2_callpeak/peaks_count/{sam_contr_peak}.peaks_count.tsv",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-def get_frip_score_input():
-    return expand(
-        "results/bedtools_intersect/{sam_contr_peak}.peaks_frip.tsv",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-#Change the function bellow to get the ATAC peaks, not macs2
-# def get_macs2_peaks():
-#     return expand(
-#         "results/macs2_callpeak/{sam_contr_peak}_peaks.{peak}Peak",
-#         sam_contr_peak = get_sample_control_peak_combinations_list(), peak =config["params"]["peak-analysis"]
-#     )
-
-def get_plot_homer_annotatepeaks_input():
-    return expand("results/homer/annotate_peaks/{sam_contr_peak}_peaks.annotatePeaks.txt",
-        sam_contr_peak = get_sample_control_peak_combinations_list()
-    )
-
-# No use for this one, save just in case for now
-# def exists_multiple_groups(antibody):
-#     return len(samples[samples["antibody"] == antibody]["group"].unique()) > 1
-
 #Not tested
 def exists_replicates(group):
     return len(samples[samples["group"] == group]["sample"].unique()) > 1
@@ -227,18 +186,15 @@ def exists_replicates(group):
 #             control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
 #             )
 
-def get_samples_of_group(group):
+def get_tadlib_input(wildcards):
     #Accounting for groups with no control and groups with controls
-    sample_g = samples[samples['group'] == group]
-    if pd.isnull(sample_g["control"]).all():
-        return expand(["results/genrich/{sample}.sorted.bam"],
-            sample = sample_g["sample"].index
-        )
-    else:
-        treated = samples[pd.notnull(samples["control"])]
-        return expand(["results/genrich/{sample}.sorted.bam"],
-            sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
-        )
+    sample_g = samples[samples['group'] == wildcards.sample_group]
+    return expand(["results/cooler/{sample}.{enzyme}.{fragments}-{resolution}.mcool"],
+        sample = sample_g["sample"].index,
+        enzyme = enzyme_file,
+        fragments = fragments_file,
+        resolution = analysis_resolution
+    )
 
 def get_pairs_files(wildcards):
     if config["params"]["fanc"]["merge_groups"]:

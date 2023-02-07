@@ -177,7 +177,6 @@ rule fanc_loops_export:
     shell:
         "fanc loops {input} -b {output} 2>{log}"
 
-#Domaincaller replaced by the fanc function above
 
 rule domaincaller:
     input:
@@ -188,7 +187,7 @@ rule domaincaller:
         di_out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
     params:
         extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
-        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["domaincaller_res"]
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["TAD_res"]
     log:
         "logs/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.log"
     threads: 24
@@ -198,7 +197,7 @@ rule domaincaller:
         "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log} --removeCache"
 
 #Add script, check that it works first
-rule plot_TADs:
+rule plot_single_TADs:
     input:
         hic = "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool",
         loops = "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
@@ -211,3 +210,60 @@ rule plot_TADs:
         "../envs/tadlib.yaml"
     script:
         "../scripts/plot_TAD.py"
+
+rule create_hitad_meta:
+    input:
+        files = get_tadlib_input,
+        ini = "results/tadlib/package.done"
+    output:
+        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt"
+    params:
+        config["params"]["fanc"]["analysis"]["TAD_res"]
+    log:
+        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_meta.log"
+    run:
+        with open(output[0],"w") as fout:
+            fout.write(f"res:{params[0]}\n")
+            for fin in input.files:
+                label = fin.split("/")[-1].split(f".{wildcards.enzyme}")[0]
+                fout.write(f"  {label}:{fin}\n")
+
+rule hitad:
+    input:
+        meta = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt",
+        ini = "results/tadlib/package.done"
+    output:
+        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt"
+    params:
+        config["params"]["fanc"]["analysis"]["hitad_extra"]
+    log:
+        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_hitad.log"
+    threads: 24
+    conda:
+        "../envs/tadlib.yaml"
+    shell:
+        "hitad -O {output} -d {input.meta} --logFile {log} {params} --removeCache -p {threads}"
+
+rule plot_hierarchical_TADs:
+    input:
+        hitad = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+        ini = "results/tadlib/package.done"
+    output:
+        report("results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.pdf",category="TAD calling")
+    params:
+
+    log:
+        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_plot.log"
+    shell:
+        "tad-plot 2>{log}"
+
+rule multi_TAD_browser:
+    input:
+        hitad = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+        ini = "results/tadlib/package.done"
+    output:
+        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.DI.BedGraph"
+    log:
+        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_DI.log"
+    shell:
+        "output-DI {input.hitad} {output} 2>{log}"

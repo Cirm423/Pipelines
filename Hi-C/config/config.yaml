@@ -108,14 +108,19 @@ params:
       Loop_filter: "--rh-filter -d 5 -o 5"
       #Params for the loop merging:
       Loop_merge: "-j --remove-singlets"
-      #Params for domaincaller (TADs calling)
+      #Params for hitad and domaincaller (TADs calling)
       #Specify the resolution for the cooler hic in base pairs.
       #Resolution is analysis bin_size, bin_size*2, bin_size*2 + bin_size*2
       #If you use 5kb, options would be 5000, 10000, 20000
-      #If it fails you can check the domaincaller log for available resolutions.
-      domaincaller_res: "5000"
+      #If it fails you can check the hitad or domaincaller log for available resolutions.
+      TAD_res: "5000"
+      #Should domaincaller be used to detect TADs only, or hitad instead to detect hierarchical TADs (TADs, sub-TADs, small domains)
+      #Note: hitad may make the pipe much slower since it needs single sample matrices too.
+      hierarchical_TADs: True
       #Extra params for domaincaller. Defaults are set.
       domaincaller_extra: "--window-size 2000000 --weight-col weight"
+      #Extra params for hitad. Defaults are set.
+      hitad_extra: "--maxsize 4000000"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
