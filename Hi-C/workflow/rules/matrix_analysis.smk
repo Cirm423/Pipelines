@@ -132,7 +132,7 @@ rule fanc_loops_annotate:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} 2>{log}"
+        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_filter:
     input:
@@ -147,7 +147,7 @@ rule fanc_loops_filter:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} 2>{log}"
+        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_merge:
     input:
@@ -162,7 +162,7 @@ rule fanc_loops_merge:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} 2>{log}"
+        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_export:
     input:
@@ -175,7 +175,7 @@ rule fanc_loops_export:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} -b {output} 2>{log}"
+        "fanc loops {input} -b {output} -t {threads} 2>{log}"
 
 
 rule domaincaller:
