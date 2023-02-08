@@ -117,8 +117,8 @@ params:
       #Should domaincaller be used to detect TADs only, or hitad instead to detect hierarchical TADs (TADs, sub-TADs, small domains)
       #Note: hitad may make the pipe much slower since it needs single sample matrices too.
       hierarchical_TADs: True
-      #Extra params for domaincaller. Defaults are set.
-      domaincaller_extra: "--window-size 2000000 --weight-col weight"
+      #Extra params for domaincaller. Defaults are set.  Specify "--weight-col RAW" if you want to run with the raw matrix.
+      domaincaller_extra: "--weight-col weight --exclude ['chrY','chrM']"
       #Extra params for hitad. Defaults are set.
       hitad_extra: "--maxsize 4000000"
   # these cutadapt parameters need to contain the required flag(s) for
