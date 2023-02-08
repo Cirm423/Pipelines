@@ -9,7 +9,7 @@ rule fanc_expected:
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
         "logs/analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.expected.log"
-    threads: 4
+    threads: 24
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -26,7 +26,7 @@ rule fanc_pca:
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
     log:
         "logs/analysis/PCA.{enzyme}.{fragments}-{resolution}.log"
-    threads: 4
+    threads: 24
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -128,7 +128,7 @@ rule fanc_loops_annotate:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
         "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.loop_annotate.log"
-    threads: 4
+    threads: 24
     conda:
         "../envs/fanc.yaml"
     shell:
