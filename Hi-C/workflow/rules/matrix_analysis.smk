@@ -34,18 +34,18 @@ rule fanc_pca:
 
 rule fanc_compartments:
     input:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        hic = "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic",
         fa = f"{assembly_path}{assembly}.fa"
     output:
-        AB = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
-        eigen = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}.ev.txt",
-        domains = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}.domains.bed",
-        plot = report("results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}.ab_profile.png", category="AB domains"),
-        matrix = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}.enrichment_matrix.txt"
+        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
+        eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ev.txt",
+        domains = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.domains.bed",
+        plot = report("results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ab_profile.png", category="AB domains"),
+        matrix = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.enrichment_matrix.txt"
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}_compartments.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}_compartments.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -54,14 +54,14 @@ rule fanc_compartments:
 
 rule plot_compartments:
     input:
-        AB = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
-        eigen = "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}-{resolution}.ev.txt"
+        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
+        eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ev.txt"
     output:
-        report("results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",category ="AB domains")
+        report("results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{region}-{resolution}.compartments.png",category ="AB domains")
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_plot"]
     log:
-        "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}-{resolution}.compartments_plot.log"
+        "logs/analysis/{group}_{region}.{enzyme}.{fragments}-{resolution}.compartments_plot.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -71,13 +71,13 @@ rule plot_compartments:
 # #Only directionality index for TAD calling, not insulation. Fanc directionality does not call TADs!!!
 # rule fanc_directionality:
 #     input:
-#         "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
+#         "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic"
 #     output:
-#         "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality",
+#         "results/matrix_analysis/TADs/{group}.{enzyme}.{fragments}-{resolution}.directionality",
 #     params:
 #         extra = config["params"]["fanc"]["analysis"]["TAD_params"]
 #     log:
-#         "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.TAD.log"
+#         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.TAD.log"
 #     threads: 4
 #     conda:
 #         "../envs/fanc.yaml"
@@ -86,14 +86,14 @@ rule plot_compartments:
 
 # rule fanc_directionality_format:
 #     input:
-#         f"results/matrix_analysis/TADs/{{sample_group}}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
+#         f"results/matrix_analysis/TADs/{{group}}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
 #     output:
-#         directory("results/matrix_analysis/TADs/output/{sample_group}"),
+#         directory("results/matrix_analysis/TADs/output/{group}"),
 #     params:
 #         form = config["params"]["fanc"]["analysis"]["TAD_format"],
-#         prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample_group}/{wildcards.sample_group}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
+#         prefix = lambda wildcards: f"results/matrix_analysis/TADs/output/{wildcards.sample}/{wildcards.sample}.{enzyme_file}.{fragments_file}-{analysis_resolution}.directionality"
 #     log:
-#         "logs/analysis/{sample_group}_TAD_format.log"
+#         "logs/analysis/{group}_TAD_format.log"
 #     threads: 4
 #     conda:
 #         "../envs/fanc.yaml"
@@ -105,14 +105,14 @@ rule plot_compartments:
 
 # rule plot_TAD:
 #     input:
-#         hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-#         directionality = "results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}-{resolution}.directionality"
+#         hic = "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic",
+#         directionality = "results/matrix_analysis/TADs/{group}.{enzyme}.{fragments}-{resolution}.directionality"
 #     output:
-#         report("results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",category ="TADs")
+#         report("results/matrix_analysis/TADs/{group}.{enzyme}.{fragments}.{region}-{resolution}.png",category ="TADs")
 #     params:
 #         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
 #     log:
-#         "logs/analysis/{sample_group}_{region}.{enzyme}.{fragments}-{resolution}.directionality_plot.log"
+#         "logs/analysis/{group}_{region}.{enzyme}.{fragments}-{resolution}.directionality_plot.log"
 #     threads: 4
 #     conda:
 #         "../envs/fanc.yaml"
@@ -121,13 +121,13 @@ rule plot_compartments:
 
 rule fanc_loops_annotate:
     input:
-        "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
+        "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic"
     output:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.loop_annotate.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_annotate.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"
@@ -136,13 +136,13 @@ rule fanc_loops_annotate:
 
 rule fanc_loops_filter:
     input:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_filter"]
     log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.loop_filter.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_filter.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -151,13 +151,13 @@ rule fanc_loops_filter:
 
 rule fanc_loops_merge:
     input:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged_loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged_loops",
     params:
         extra = config["params"]["fanc"]["analysis"]["Loop_merge"]
     log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.loop_merge.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_merge.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
@@ -166,30 +166,29 @@ rule fanc_loops_merge:
 
 rule fanc_loops_export:
     input:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged_loops",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged_loops",
     output:
-        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
     log:
-        "logs/analysis/{sample_group}.{enzyme}.{fragments}-{resolution}.loop_export.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_export.log"
     threads: 4
     conda:
         "../envs/fanc.yaml"
     shell:
         "fanc loops {input} -b {output} -t {threads} 2>{log}"
 
-
 rule domaincaller:
     input:
-        hic = "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool",
+        hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
         ini = "results/tadlib/package.done"
     output:
-        out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
-        di_out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
+        out = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        di_out = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
     params:
         extra = config["params"]["fanc"]["analysis"]["domaincaller_extra"],
-        uri = lambda wildcards, input: input.hic + "::/resolutions/" + config["params"]["fanc"]["analysis"]["TAD_res"]
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res
     log:
-        "logs/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.log"
+        "logs/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.log"
     threads: 24
     conda:
         "../envs/tadlib.yaml"
@@ -199,28 +198,31 @@ rule domaincaller:
 #Add script, check that it works first
 rule plot_single_TADs:
     input:
-        hic = "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool",
-        loops = "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
-        out = "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
+        out = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
         ini = "results/tadlib/package.done"
     output:
-        report("results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.pdf",category="TAD calling"),
+        report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png",category="TAD calling"),
+    params:
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
+        extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
+        coords = get_coord_params        
     threads: 1
     conda:
         "../envs/tadlib.yaml"
-    script:
-        "../scripts/plot_TAD.py"
+    shell:
+        "tad-plot -P {params.uri} -O {output} {params.coords} {params.extra} 2>{log}"
 
 rule create_hitad_meta:
     input:
         files = get_tadlib_input,
         ini = "results/tadlib/package.done"
     output:
-        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt"
+        "results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt"
     params:
-        config["params"]["fanc"]["analysis"]["TAD_res"]
+        TAD_res
     log:
-        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_meta.log"
+        "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}_meta.log"
     run:
         with open(output[0],"w") as fout:
             fout.write(f"res:{params[0]}\n")
@@ -230,14 +232,14 @@ rule create_hitad_meta:
 
 rule hitad:
     input:
-        meta = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt",
+        meta = "results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad_meta.txt",
         ini = "results/tadlib/package.done"
     output:
-        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt"
+        "results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad.txt"
     params:
         config["params"]["fanc"]["analysis"]["hitad_extra"]
     log:
-        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_hitad.log"
+        "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}_hitad.log"
     threads: 24
     conda:
         "../envs/tadlib.yaml"
@@ -246,24 +248,31 @@ rule hitad:
 
 rule plot_hierarchical_TADs:
     input:
-        hitad = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+        hitad = get_hitad_output,
+        hic = "results/cooler/{sample}.{enzyme}.{fragments}-{resolution}.mcool",
         ini = "results/tadlib/package.done"
     output:
-        report("results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.pdf",category="TAD calling")
+        report("results/hitad/{sample}.{enzyme}.{fragments}.{region}-{resolution}.hitad.png",category="TAD calling")
     params:
-
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
+        extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
+        coords = get_coord_params
     log:
-        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_plot.log"
+        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_plot.log"
     shell:
-        "tad-plot 2>{log}"
+        "tad-plot -P {params.uri} -O {output} {params.coords} {params.extra} 2>{log}"
 
+#This rule outputs at sample level instead of group
 rule multi_TAD_browser:
     input:
-        hitad = "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+        hitad = get_hitad_output,
+        hic = "results/cooler/{sample}.{enzyme}.{fragments}-{resolution}.mcool",
         ini = "results/tadlib/package.done"
     output:
-        "results/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}.hitad.DI.BedGraph"
+        "results/hitad/{sample}.{enzyme}.{fragments}-{resolution}.hitad.DIs.BedGraph"
+    params:
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res
     log:
-        "logs/hitad/{sample_group}.{enzyme}.{fragments}-{resolution}_DI.log"
+        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}_DI.log"
     shell:
-        "output-DI {input.hitad} {output} 2>{log}"
+        "output-DI -P {params.uri} -O {output} 2>{log}"

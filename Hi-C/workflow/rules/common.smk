@@ -33,12 +33,36 @@ assembly_path = config['resources']['path'] + config['resources']['ref']['assemb
 
 config["single_end"] = False
 
+##Add naming helper functions
+
+#Converts kb and mb notation to base pairs
+def bases_to_bp(bases):
+    bases = bases.lower()
+    if type(bases) == int:
+        return str(bases)
+    if "mb" in bases:
+        return str(int(bases.split("mb")[0]) * 1000000)
+    elif "kb" in bases:
+        return str(int(bases.split("kb")[0]) * 1000)
+    else:
+        return bases
+
+#Extract chromosome, start and end from coordinates in config
+def split_coords(coords):
+    if ":" in coords:
+        chrom, coord = coords.split(":")
+        start, end = coord.split("-")
+        return [chrom,bases_to_bp(start),bases_to_bp(end)]
+    else:
+        return [coords]
+
 #Make the name to use for enzymes and fragments files
 
 enzyme_file = "_".join(config["params"]["fanc"]["enzyme"].split(","))
 fragments_file = "_".join(config["params"]["fanc"]["chr"].split(",")) if config["params"]["fanc"]["chr"] else "all"
 bin_sizes = config["params"]["fanc"]["hic"]["bin_size"].split(",")
 analysis_resolution = config["params"]["fanc"]["analysis"]["bin_size"]
+TAD_res = bases_to_bp(analysis_resolution)
 
 # Get list of regions for the matrix analysis
 if config["params"]["fanc"]["regions"]:
@@ -187,8 +211,7 @@ def exists_replicates(group):
 #             )
 
 def get_tadlib_input(wildcards):
-    #Accounting for groups with no control and groups with controls
-    sample_g = samples[samples['group'] == wildcards.sample_group]
+    sample_g = samples[samples['group'] == wildcards.group]
     return expand(["results/cooler/{sample}.{enzyme}.{fragments}-{resolution}.mcool"],
         sample = sample_g["sample"].index,
         enzyme = enzyme_file,
@@ -213,6 +236,23 @@ def get_hic_files(wildcards):
         )
     else:
         return f"results/pairs/{{sample_group}}.{enzyme_file}.{fragments_file}.pairs"
+
+def get_coord_params(wildcards):
+    coords = split_coords(wildcards.region)
+    if len(coords) == 1:
+        return f"-C {coords[0]}"
+    elif len(coords) == 3:
+        return f"-C {coords[0]} -S {coords[1]} -E {coords[2]}"
+
+#Get the group of the sample and return the hitad file for the group
+def get_hitad_output(wildcards):
+    group_s = samples.loc[wildcards.sample]["group"]
+    return expand(["results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad.txt"],
+        group = group_s,
+        enzyme = enzyme_file,
+        fragments = fragments_file,
+        resolution = analysis_resolution
+    )
 
 def get_unit_R1_of_sample(wildcards):
     unit_list = []
@@ -313,9 +353,9 @@ def get_multiqc_input(wildcards):
 
 def all_input(wildcards):
     merge_groups = config["params"]["fanc"]["merge_groups"]
-    do_analysis = config["params"]["fanc"]["analysis"]["activate"]
-    only_pca = config["params"]["fanc"]["analysis"]["pca_only"]
     juicer = config["params"]["fanc"]["hic"]["juicer"]
+    do_analysis = config["params"]["fanc"]["analysis"]["activate"]
+    multi_TADs = config["params"]["fanc"]["analysis"]["hierarchical_TADs"]
 
     wanted_input = []
 
@@ -400,7 +440,7 @@ def all_input(wildcards):
                     )
                 )
 
-            if do_analysis and only_pca:
+            if do_analysis:
                 wanted_input.extend(expand(
                     [
                         "results/pca/matrix.{enzyme}.{fragments}-{resolution}.pca_plot.pdf",
@@ -412,6 +452,30 @@ def all_input(wildcards):
                     fragments = fragments_file,
                     resolution = analysis_resolution
                 ))
+        else:
+            if do_analysis and multi_TADs:
+                wanted_input.extend(expand(
+                    [
+                        "results/hitad/{sample}.{enzyme}.{fragments}-{resolution}.hitad.DIs.BedGraph"
+                    ],
+                    sample = sample,
+                    chr = config["params"]["fanc"]["analysis"]["expected_params"],
+                    enzyme = enzyme_file,
+                    fragments = fragments_file,
+                    resolution = analysis_resolution
+                ))
+                if regions:
+                    for region in regions:
+                        wanted_input.extend(expand(
+                            [
+                                "results/hitad/{sample}.{enzyme}.{fragments}.{region}-{resolution}.hitad.png"
+                            ],
+                            sample = sample,
+                            region = region,
+                            enzyme = enzyme_file,
+                            fragments = fragments_file,
+                            resolution = analysis_resolution
+                        ))
 
     if merge_groups:
         for group in groups:
@@ -441,38 +505,63 @@ def all_input(wildcards):
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",
-                        "results/matrix_analysis/loops/{sample_group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
-                        "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.tad.bed",
-                        "results/domaincaller/{sample_group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
+                        "results/matrix_analysis/{group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",
+                        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
                     ],
-                    sample_group = group,
+                    group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
                     enzyme = enzyme_file,
                     fragments = fragments_file,
                     resolution = analysis_resolution
                 ))
 
-                #Adding directories (only for fanc directionality, not used)
-                # wanted_input.extend(directory(expand(
-                #     [
-                #         "results/matrix_analysis/TADs/output/{sample_group}"
-                #     ],
-                #     sample_group = group
-                #     )))
+                if not multi_TADs:
+                    wanted_input.extend(expand(
+                        [
+                            "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+                            "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
+                        ],
+                        group = group,
+                        chr = config["params"]["fanc"]["analysis"]["expected_params"],
+                        enzyme = enzyme_file,
+                        fragments = fragments_file,
+                        resolution = analysis_resolution
+                    ))
+                else:
+                    wanted_input.extend(expand(
+                        [
+                            "results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+                        ],
+                        group = group,
+                        chr = config["params"]["fanc"]["analysis"]["expected_params"],
+                        enzyme = enzyme_file,
+                        fragments = fragments_file,
+                        resolution = analysis_resolution
+                    ))
 
                 if regions:
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                "results/matrix_analysis/compartments/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png",
-                                #"results/matrix_analysis/TADs/{sample_group}.{enzyme}.{fragments}.{region}-{resolution}.png"
+                                "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{region}-{resolution}.compartments.png",
                             ],
-                            sample_group = group,
+                            group = group,
                             region = region,
                             enzyme = enzyme_file,
                             fragments = fragments_file,
                             resolution = analysis_resolution
                         ))
-        
+
+                        if not multi_TADs:
+                            wanted_input.extend(expand(
+                                [
+                                    "results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png"
+                                ],
+                                group = group,
+                                region = region,
+                                enzyme = enzyme_file,
+                                fragments = fragments_file,
+                                resolution = analysis_resolution
+                            ))
+
     return wanted_input

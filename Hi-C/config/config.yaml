@@ -24,6 +24,9 @@ params:
     # Comma-separated list of chromosomes to include in fragments BED file (used to create pairs files). Chromosomes in the list will be included. If empty all will be included.
     chr: ""
     #Should the pairs files of samples in the same group be merged before creating hic objects?
+    #It also changes the behavior of the analysis.
+    #False -> Do the PCA and the expected values for the samples.
+    #True -> Do all the analysis to merged groups, except PCA.
     merge_groups: True
     #Comma separated list of regions for which to do the matrix analysis. Leave empty to not specify a particular region (whole genome will be used).
     regions: "chr8,chr2"
@@ -87,9 +90,6 @@ params:
       #All the steps in analysis will be performed with the fanc hic file, so only for 1 resolution/normalization.
       #Activate or deactivate matrix analysis in the pipeline. If deactivated, it will only produce hic files.
       activate: True
-      #Create only a pca plot of the samples. Useful for testing whether biological replicates in the same condition can be merged.
-      #PCA plot will only be done when dealing with samples, not with groups.
-      pca_only: False
       #bin size to use for the analysis. It should be one of the listed above for the hic generation.
       bin_size: "5kb"
       #To check PCA params go here https://fan-c.readthedocs.io/en/latest/fanc-executable/fanc-analyse-hic/pca.html
@@ -109,18 +109,20 @@ params:
       #Params for the loop merging:
       Loop_merge: "-j --remove-singlets"
       #Params for hitad and domaincaller (TADs calling)
-      #Specify the resolution for the cooler hic in base pairs.
-      #Resolution is analysis bin_size, bin_size*2, bin_size*2 + bin_size*2
-      #If you use 5kb, options would be 5000, 10000, 20000
-      #If it fails you can check the hitad or domaincaller log for available resolutions.
-      TAD_res: "5000"
       #Should domaincaller be used to detect TADs only, or hitad instead to detect hierarchical TADs (TADs, sub-TADs, small domains)
       #Note: hitad may make the pipe much slower since it needs single sample matrices too.
-      hierarchical_TADs: True
+      hierarchical_TADs: False
       #Extra params for domaincaller. Defaults are set.  Specify "--weight-col RAW" if you want to run with the raw matrix.
       domaincaller_extra: "--weight-col weight --exclude ['chrY','chrM']"
       #Extra params for hitad. Defaults are set.
       hitad_extra: "--maxsize 4000000"
+      #Params for plotting TADs. The plotting needs at least a region to be set.
+      #Useful params here are:
+      #--dpi <resolution>, default: 300
+      #--arrowhead : to use the arrowhead transformed matrix
+      #--vmin <value> minimum value that the colorvar covers
+      #--vmax <value> maximum value that the colorvar covers
+      TAD_plot: "--vmin 0 --vmax 0.05"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
