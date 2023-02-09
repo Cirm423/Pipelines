@@ -199,7 +199,7 @@ rule domaincaller:
 rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
-        out = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        tad = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
         ini = "results/tadlib/package.done"
     output:
         report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png",category="TAD calling"),
@@ -213,7 +213,7 @@ rule plot_single_TADs:
     conda:
         "../envs/tadlib.yaml"
     shell:
-        "tad-plot -P {params.uri} -O {output} {params.coords} {params.extra} 2>{log}"
+        "tad-plot -p {params.uri} -T {input.tad} -O {output} {params.coords} {params.extra} 2>{log}"
 
 rule create_hitad_meta:
     input:
@@ -262,7 +262,7 @@ rule plot_hierarchical_TADs:
     log:
         "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_hitad-plot.log"
     shell:
-        "tad-plot -P {params.uri} -O {output} {params.coords} {params.extra} 2>{log}"
+        "tad-plot -p {params.uri} -T {input.hitad} -O {output} {params.coords} {params.extra} 2>{log}"
 
 #This rule outputs at sample level instead of group
 rule multi_TAD_browser:
