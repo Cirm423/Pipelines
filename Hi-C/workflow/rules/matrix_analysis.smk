@@ -208,7 +208,7 @@ rule plot_single_TADs:
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
         coords = get_coord_params
     log:
-        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_TAD-plot.log"     
+        "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}.{region}_TAD-plot.log"     
     threads: 1
     conda:
         "../envs/tadlib.yaml"
