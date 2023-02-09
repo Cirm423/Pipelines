@@ -200,7 +200,7 @@ rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
         tad = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
-        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe"
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
         ini = "results/tadlib/package.done"
     output:
         report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png",category="TAD calling"),
