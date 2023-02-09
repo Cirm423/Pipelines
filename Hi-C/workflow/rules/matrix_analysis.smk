@@ -195,7 +195,6 @@ rule domaincaller:
     shell:
         "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log} --removeCache"
 
-#Add script, check that it works first
 rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
