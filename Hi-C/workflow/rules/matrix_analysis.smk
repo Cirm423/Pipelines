@@ -200,20 +200,20 @@ rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
         tad = "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe"
         ini = "results/tadlib/package.done"
     output:
         report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png",category="TAD calling"),
     params:
         uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
-        extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
         coords = get_coord_params
     log:
         "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}.{region}_TAD-plot.log"     
     threads: 1
     conda:
         "../envs/tadlib.yaml"
-    shell:
-        "tad-plot -p {params.uri} -T {input.tad} -O {output} {params.coords} {params.extra} 2>{log}"
+    script:
+        "../scripts/plot_TADs.py"
 
 rule create_hitad_meta:
     input:
