@@ -407,6 +407,7 @@ def all_input(wildcards):
                         unit = unit
                 )
             )
+    
     for sample in samples.index:
         wanted_input.extend(expand(
             [   
@@ -416,7 +417,8 @@ def all_input(wildcards):
             enzyme = enzyme_file,
             fragments = fragments_file
         ))
- 
+
+        #Output at sample level
         if not merge_groups:
             wanted_input.extend(expand(
                 [
@@ -453,6 +455,7 @@ def all_input(wildcards):
                     resolution = analysis_resolution
                 ))
         else:
+            #Account for TADlib output that needs single sample files
             if do_analysis and multi_TADs:
                 wanted_input.extend(expand(
                     [
@@ -466,16 +469,18 @@ def all_input(wildcards):
                 ))
                 if regions:
                     for region in regions:
-                        wanted_input.extend(expand(
-                            [
-                                "results/hitad/{sample}.{enzyme}.{fragments}.{region}-{resolution}.hitad.png"
-                            ],
-                            sample = sample,
-                            region = region,
-                            enzyme = enzyme_file,
-                            fragments = fragments_file,
-                            resolution = analysis_resolution
-                        ))
+                        #HiTAD plots only work for specific region coordinates, so only use regions that have coords.
+                        if len(split_coords(region)) > 1:
+                            wanted_input.extend(expand(
+                                [
+                                    "results/hitad/{sample}.{enzyme}.{fragments}.{region}-{resolution}.hitad.png"
+                                ],
+                                sample = sample,
+                                region = region,
+                                enzyme = enzyme_file,
+                                fragments = fragments_file,
+                                resolution = analysis_resolution
+                            ))
 
     if merge_groups:
         for group in groups:
@@ -553,15 +558,17 @@ def all_input(wildcards):
                         ))
 
                         if not multi_TADs:
-                            wanted_input.extend(expand(
-                                [
-                                    "results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png"
-                                ],
-                                group = group,
-                                region = region,
-                                enzyme = enzyme_file,
-                                fragments = fragments_file,
-                                resolution = analysis_resolution
-                            ))
+                            #HiTAD plots only work for specific region coordinates, so only use regions that have coords.
+                            if len(split_coords(region)) > 1:
+                                wanted_input.extend(expand(
+                                    [
+                                        "results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png"
+                                    ],
+                                    group = group,
+                                    region = region,
+                                    enzyme = enzyme_file,
+                                    fragments = fragments_file,
+                                    resolution = analysis_resolution
+                                ))
 
     return wanted_input

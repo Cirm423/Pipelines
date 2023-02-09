@@ -266,7 +266,6 @@ rule plot_hierarchical_TADs:
     shell:
         "tad-plot -p {params.uri} -T {input.hitad} -O {output} {params.coords} {params.extra} 2>{log}"
 
-#This rule outputs at sample level instead of group
 rule multi_TAD_browser:
     input:
         hitad = get_hitad_output,
