@@ -281,4 +281,4 @@ rule multi_TAD_browser:
     conda:
         "../envs/tadlib.yaml"
     shell:
-        "output-DI -P {params.uri} -O {output} 2>{log}"
+        "output-DI -p {params.uri} -O {output} 2>{log}"
