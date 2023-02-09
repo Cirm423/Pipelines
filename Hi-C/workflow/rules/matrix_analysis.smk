@@ -230,7 +230,7 @@ rule create_hitad_meta:
             fout.write(f"res:{params[0]}\n")
             for fin in input.files:
                 label = fin.split("/")[-1].split(f".{wildcards.enzyme}")[0]
-                fout.write(f"  {label}:{fin}\n")
+                fout.write(f"  {label}:{fin}::/resolutions/{TAD_res}\n")
 
 rule hitad:
     input:
