@@ -206,7 +206,9 @@ rule plot_single_TADs:
     params:
         uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
-        coords = get_coord_params        
+        coords = get_coord_params
+    log:
+        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_TAD-plot.log"     
     threads: 1
     conda:
         "../envs/tadlib.yaml"
@@ -258,7 +260,7 @@ rule plot_hierarchical_TADs:
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"],
         coords = get_coord_params
     log:
-        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_plot.log"
+        "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_hitad-plot.log"
     shell:
         "tad-plot -P {params.uri} -O {output} {params.coords} {params.extra} 2>{log}"
 
