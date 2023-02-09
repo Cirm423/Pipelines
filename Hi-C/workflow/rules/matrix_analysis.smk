@@ -261,6 +261,8 @@ rule plot_hierarchical_TADs:
         coords = get_coord_params
     log:
         "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}.{region}_hitad-plot.log"
+    conda:
+        "../envs/tadlib.yaml"
     shell:
         "tad-plot -p {params.uri} -T {input.hitad} -O {output} {params.coords} {params.extra} 2>{log}"
 
@@ -276,5 +278,7 @@ rule multi_TAD_browser:
         uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res
     log:
         "logs/hitad/{sample}.{enzyme}.{fragments}-{resolution}_DI.log"
+    conda:
+        "../envs/tadlib.yaml"
     shell:
         "output-DI -P {params.uri} -O {output} 2>{log}"
