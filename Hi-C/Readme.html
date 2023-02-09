@@ -15,41 +15,6 @@
 	display: none;
 }
 
-/* From extension ms-toolsai.jupyter */
-/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
-
-.alert {
-    width: auto;
-    padding: 1em;
-    margin-top: 1em;
-    margin-bottom: 1em;
-}
-.alert > *:last-child {
-    margin-bottom: 0;
-}
-#preview > .alert:last-child {
-    /* Prevent this being set to zero by the default notebook stylesheet */
-    padding-bottom: 1em;
-}
-
-.alert-success {
-    /* Note there is no suitable color available, so we just copy "info" */
-    background-color: var(--theme-info-background);
-    color: var(--theme-info-foreground);
-}
-.alert-info {
-    background-color: var(--theme-info-background);
-    color: var(--theme-info-foreground);
-}
-.alert-warning {
-    background-color: var(--theme-warning-background);
-    color: var(--theme-warning-foreground);
-}
-.alert-danger {
-    background-color: var(--theme-error-background);
-    color: var(--theme-error-foreground);
-}
-
 </style>
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
@@ -85,6 +50,7 @@
 <li><a href="#mode-of-use">Mode of use</a></li>
 <li><a href="#restriction-enzymes">Restriction Enzymes</a></li>
 <li><a href="#assembly">Assembly</a></li>
+<li><a href="#warning">Warning</a></li>
 </ul>
 </li>
 <li><a href="#running-snakemake">Running Snakemake</a></li>
@@ -278,19 +244,18 @@ biocrfhpc2:<br>
 <p>Lastly, the <em>config.yaml</em> file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs.</p>
 <p>Hi-C many different parameters for each step, each one of them is briefly explained in the config.yaml file itself. As this pipeline uses <a href="https://github.com/vaquerizaslab/fanc">fanC</a>[1] as a base, it is recommended that you also check their <a href="https://fan-c.readthedocs.io/en/latest/">documentation</a></p>
 <h2 id="mode-of-use">Mode of use</h2>
-<p>This pipeline can be used in different ways. The main &quot;switches&quot; are found in the fanc section of config.yaml: <code>merge_groups</code> at the start of the fanc section and <code>activate</code> and <code>pca_only</code> in the analysis section.</p>
+<p>This pipeline can be used in different ways. The main &quot;switches&quot; are found in the fanc section of config.yaml: <code>merge_groups</code> at the start of the fanc section and <code>activate</code> in the analysis section.</p>
 <ul>
 <li>
-<p>If you only want to get the <code>.hic</code> files and do your own analysis and plots, turn off the analysis activation so the pipeline only maps your fastqs and generates the matrix.</p>
+<p>If you only want to get the <code>.hic</code> files and do your own analysis and plots, turn off the analysis activation so the pipeline only maps your fastqs and generates the matrix, either for merged groups or single samples.</p>
 </li>
 <li>
-<p>If you want to analyze your data is advised that you first check how similar your biological replicates are in order to be merged safely. To do this, run the pipeline with merge_groups as <code>False</code> and pca_only as <code>True</code> with the analysis activated. In this case, each sample will have its own Hi-C matrix generated and compared by doing a PCA plot.</p>
+<p>If you want to analyze your data is advised that you first check how similar your biological replicates are in order to be merged safely. To do this, run the pipeline with merge_groups as <code>False</code> with the analysis activated. In this case, each sample will have its own Hi-C matrix generated and compared by doing a PCA plot.</p>
 </li>
 <li>
-<p>If you are confident in your biological replicates or the PCA looks ok, you can then run the analysis with pca_only as <code>False</code> and merge_groups as <code>True</code>, which will produce the rest of the analysis.</p>
+<p>If you are confident in your biological replicates or the PCA looks ok, you can then run the analysis with merge_groups as <code>True</code> and the analysis activated, which will perform the rest of the analysis.</p>
 </li>
 </ul>
-<p><strong>Do note that Hi-C can be really slow if you use the full genome, so if you are interested only in specific chromosomes or regions, it is better to restrict the pipeline to only map to those regions in the <code>chr</code> option of the fanc section.</strong></p>
 <h2 id="restriction-enzymes">Restriction Enzymes</h2>
 <p>In Hi-C, the genome needs to be &quot;digested&quot; and separated into fragments that change depending on the restriction enzymes utilized by the protocol
 used to sequence your samples. The pipeline can digest the genome if you provide the name of the restriction enzymes as long as they're found in <a href="http://rebase.neb.com/rebase/rebase.html">REBASE</a>. By default the pipeline is set to digest using the restriction enzymes used by the common Arima protocol.</p>
@@ -327,6 +292,11 @@ used to sequence your samples. The pipeline can digest the genome if you provide
 </blockquote>
 <p>If you indicate any assembly name that does not appear in the table, the pipeline will try to download an UCSC reference genome. For example, if you want to use the reference mouse genome from UCSC, you can indicate mm39 instead of GCRm39 in the assembly field.</p>
 <p>For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.</p>
+<h2 id="warning">Warning</h2>
+<p>This pipeline can take a long time to run (a week or more) depending on your settings.</p>
+<p><strong>Using the full genome can make the Hi-C matrix generation step really slow, so if you are interested only in specific chromosomes or regions, it is better to restrict the pipeline to only construct Hi-C matrices of the desired regions in the <code>chr</code> option of the fanc section.</strong></p>
+<p><strong>Setting a high resolution matrix (small bp bins) for the analysis can make some steps of the analysis very slow. If you want to test your data and need some quick plots, maybe is better to choose a lower resolution.</strong></p>
+<p><strong>This pipeline has many parameters for every step, and Hi-C can be very sensitive to them, so it is recommended that you read the documentation for every step or the explanations that are in <code>config.yaml</code> at the very least.</strong></p>
 <h1 id="running-snakemake">Running Snakemake</h1>
 <p>To run the pipeline simply send the run_snk.sh script to slurm by doing:</p>
 <pre><code>sbatch run_snk.sh

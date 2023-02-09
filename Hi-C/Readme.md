@@ -7,6 +7,7 @@
   - [Mode of use](#mode-of-use)
   - [Restriction Enzymes](#restriction-enzymes)
   - [Assembly](#assembly)
+  - [Warning](#warning)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
 - [Too long, don't want to read](#too-long-dont-want-to-read)
@@ -94,15 +95,13 @@ Hi-C many different parameters for each step, each one of them is briefly explai
 
 ## Mode of use
 
-This pipeline can be used in different ways. The main "switches" are found in the fanc section of config.yaml: `merge_groups` at the start of the fanc section and `activate` and `pca_only` in the analysis section.
+This pipeline can be used in different ways. The main "switches" are found in the fanc section of config.yaml: `merge_groups` at the start of the fanc section and `activate` in the analysis section.
 
-- If you only want to get the `.hic` files and do your own analysis and plots, turn off the analysis activation so the pipeline only maps your fastqs and generates the matrix.
+- If you only want to get the `.hic` files and do your own analysis and plots, turn off the analysis activation so the pipeline only maps your fastqs and generates the matrix, either for merged groups or single samples.
 
-- If you want to analyze your data is advised that you first check how similar your biological replicates are in order to be merged safely. To do this, run the pipeline with merge_groups as `False` and pca_only as `True` with the analysis activated. In this case, each sample will have its own Hi-C matrix generated and compared by doing a PCA plot.
+- If you want to analyze your data is advised that you first check how similar your biological replicates are in order to be merged safely. To do this, run the pipeline with merge_groups as `False` with the analysis activated. In this case, each sample will have its own Hi-C matrix generated and compared by doing a PCA plot.
 
-- If you are confident in your biological replicates or the PCA looks ok, you can then run the analysis with pca_only as `False` and merge_groups as `True`, which will produce the rest of the analysis.
-
-**Do note that Hi-C can be really slow if you use the full genome, so if you are interested only in specific chromosomes or regions, it is better to restrict the pipeline to only map to those regions in the `chr` option of the fanc section.**
+- If you are confident in your biological replicates or the PCA looks ok, you can then run the analysis with merge_groups as `True` and the analysis activated, which will perform the rest of the analysis.
 
 ## Restriction Enzymes
 
@@ -127,6 +126,16 @@ Four Genecode assemblies are supported:
 If you indicate any assembly name that does not appear in the table, the pipeline will try to download an UCSC reference genome. For example, if you want to use the reference mouse genome from UCSC, you can indicate mm39 instead of GCRm39 in the assembly field. 
 
 For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.
+
+## Warning
+
+This pipeline can take a long time to run (a week or more) depending on your settings.
+
+**Using the full genome can make the Hi-C matrix generation step really slow, so if you are interested only in specific chromosomes or regions, it is better to restrict the pipeline to only construct Hi-C matrices of the desired regions in the `chr` option of the fanc section.**
+
+**Setting a high resolution matrix (small bp bins) for the analysis can make some steps of the analysis very slow. If you want to test your data and need some quick plots, maybe is better to choose a lower resolution.**
+
+**This pipeline has many parameters for every step, and Hi-C can be very sensitive to them, so it is recommended that you read the documentation for every step or the explanations that are in `config.yaml` at the very least.**
 
 # Running Snakemake
 
