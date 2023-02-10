@@ -55,8 +55,8 @@ params:
       outward:
       # Maximum distance for a read to the nearest restriction site. Leave empty to not filter.
       distance:
-      # Remove read pairs representing self-ligated fragments. Leave empty to not filter.
-      ligation: 
+      # Remove read pairs representing self-ligated fragments.
+      ligation: True
       # Filter read pairs for PCR duplicates. Parameter determines distance between alignment starts below which they are considered starting at same position. 
       # Sensible values are between 1 and 5. Leave empty to not filter.
       pcr:

@@ -28,7 +28,7 @@ rule fanc_pairs:
         inward = f"-i {config['params']['fanc']['filter']['inward']}" if config['params']['fanc']['filter']['inward'] else "",
         outward = f"-o {config['params']['fanc']['filter']['outward']}" if config['params']['fanc']['filter']['outward'] else "",
         distance = f"-d {config['params']['fanc']['filter']['distance']}" if config['params']['fanc']['filter']['distance'] else "",
-        ligation = f"-l {config['params']['fanc']['filter']['ligation']}" if config['params']['fanc']['filter']['ligation'] else "",
+        ligation = f"-l" if config['params']['fanc']['filter']['ligation'] else "",
         pcr = f"-p {config['params']['fanc']['filter']['pcr']}" if config['params']['fanc']['filter']['pcr'] else "",
         extra = config['params']['fanc']['filter']['extra']
     log:
