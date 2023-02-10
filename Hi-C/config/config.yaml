@@ -119,10 +119,10 @@ params:
       #Params for plotting TADs. The plotting needs at least a region to be set.
       #Useful params here are:
       #--dpi <resolution>, default: 300
-      #--arrowhead : to use the arrowhead transformed matrix
+      #--arrowhead : to use the arrowhead transformed matrix (only for hierarchical TADs)
       #--vmin <value> minimum value that the colorvar covers
       #--vmax <value> maximum value that the colorvar covers
-      TAD_plot: "--vmin 0 --vmax 0.05"
+      TAD_plot: "--dpi 300 --vmin 0 --vmax 0.05"
   # these cutadapt parameters need to contain the required flag(s) for
   # the type of adapter(s) to trim, i.e.:
   # * https://cutadapt.readthedocs.io/en/stable/guide.html#adapter-types
