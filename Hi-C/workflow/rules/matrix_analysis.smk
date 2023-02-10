@@ -195,7 +195,6 @@ rule domaincaller:
     shell:
         "domaincaller --uri {params.uri} -O {output.out} -D {output.di_out} -p {threads} {params.extra} --logFile {log} --removeCache"
 
-#Add script, check that it works first
 rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}-{resolution}.mcool",
@@ -206,7 +205,7 @@ rule plot_single_TADs:
         report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png",category="TAD calling"),
     params:
         uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
-        coords = get_coord_params,
+        coords = lambda wildcards: split_coords(wildcards.region),
         extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
     log:
         "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}.{region}_TAD-plot.log"     
