@@ -10,6 +10,7 @@
   - [Warning](#warning)
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
+- [Possible errors](#possible-errors)
 - [Too long, don't want to read](#too-long-dont-want-to-read)
 - [References](#references)
 
@@ -164,6 +165,11 @@ In addition to the plots and qc that will be present in these files, the pipelin
   - A cooler Hi-C file that can be used with cooler and domaincaller.
 
 Additionally logs for each step will be stored in the logs folder. 
+
+# Possible errors
+
+The steps fanc_compartments, fanc_expected and fanc_loops_annotate are a bit sensible and can fail since all of them could be accessing the Hi-C matrix at the same time, especially if they use the same node as they can have memory issues. The pipeline tries to go over this by repeating the step in case it fails. If despite this the pipeline fails to complete with an error in these steps just resubmitting the pipeline to slurm fixes the problem in most cases. **Check that the pipeline has finished running all current steps before resubmitting.**
+
 
 # Too long, don't want to read
 

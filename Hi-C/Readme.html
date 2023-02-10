@@ -55,6 +55,7 @@
 </li>
 <li><a href="#running-snakemake">Running Snakemake</a></li>
 <li><a href="#output">Output</a></li>
+<li><a href="#possible-errors">Possible errors</a></li>
 <li><a href="#too-long-dont-want-to-read">Too long, don't want to read</a></li>
 <li><a href="#references">References</a></li>
 </ul>
@@ -316,6 +317,8 @@ used to sequence your samples. The pipeline can digest the genome if you provide
 <li>A cooler Hi-C file that can be used with cooler and domaincaller.</li>
 </ul>
 <p>Additionally logs for each step will be stored in the logs folder.</p>
+<h1 id="possible-errors">Possible errors</h1>
+<p>The steps fanc_compartments, fanc_expected and fanc_loops_annotate are a bit sensible and can fail since all of them could be accessing the Hi-C matrix at the same time, especially if they use the same node as they can have memory issues. The pipeline tries to go over this by repeating the step in case it fails. If despite this the pipeline fails to complete with an error in these steps just resubmitting the pipeline to slurm fixes the problem in most cases. <strong>Check that the pipeline has finished running all current steps before resubmitting.</strong></p>
 <h1 id="too-long-dont-want-to-read">Too long, don't want to read</h1>
 <p>The basic steps to run the pipe are:</p>
 <ul>
