@@ -9,7 +9,6 @@ extra = snakemake.params["extra"].split(" ")
 
 for key in extra_dict.keys():
     if key in extra:
-        print(key)
         value = float(extra[extra.index(key) + 1])
         extra_dict[key] = value
 
