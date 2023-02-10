@@ -29,7 +29,9 @@ params:
     #True -> Do all the analysis to merged groups, except PCA.
     merge_groups: True
     #Comma separated list of regions for which to do the matrix analysis. Leave empty to not specify a particular region (whole genome will be used).
-    regions: "chr8,chr2"
+    #The format is <chromosome>:<start>-<end> (check default)
+    #Note that the TADs plots need specific regions (i.e. not whole chromosomes) to work.
+    regions: "chr1:5kb-1Mb,chr2:0-5000000,chr3"
     map:
       #Defaults values are set for bwa
       # Minimum length of read before extension
