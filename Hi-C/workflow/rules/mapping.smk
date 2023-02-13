@@ -33,7 +33,8 @@ rule merge_units_R2:
 rule fanc_map:
     input:
         read = "results/merged_units/{sample}_R{read}.fastq.gz",
-        idx = f"{assembly_path}{assembly}.fa"
+        idx = f"{assembly_path}{assembly}.fa",
+        ini = "results/fanc/package.done"
     output:
         temp("results/mapped/{sample}_R{read}.bam")
     params:

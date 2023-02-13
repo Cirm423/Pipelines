@@ -2,7 +2,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - fanc =0.9.23b
-  - bwa =0.7.17
+  - cython
+  - pysam
+  - bwa
   - openjdk
   - deprecated
+  - hdf5 =1.14.0

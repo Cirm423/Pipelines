@@ -16,7 +16,8 @@ rule fanc_pairs:
     input:
         R1 = "results/mapped/{sample}_R1.{enzyme}.sorted.bam",
         R2 = "results/mapped/{sample}_R2.{enzyme}.sorted.bam",
-        genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed"
+        genome = f"resources/{assembly}.{enzyme_file}.{fragments_file}.fragments.bed",
+        ini = "results/fanc/package.done"
     output:
         pairs = "results/pairs/{sample}.{enzyme}.{fragments}.pairs",
         stats = report("results/pairs/{sample}.{enzyme}.{fragments}.pairs_stats.pdf",category="Pairs"),
@@ -45,7 +46,8 @@ rule fanc_pairs:
 
 rule fanc_hic:
     input:
-        get_pairs_files,
+        hic = get_pairs_files,
+        ini = "results/fanc/package.done"
     output:
         "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
     log:
@@ -54,11 +56,12 @@ rule fanc_hic:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc hic {input} {output} -t {threads} 2>{log}"
+        "fanc hic {input.hic} {output} -t {threads} 2>{log}"
 
 rule fanc_hic_bin:
     input:
-        "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
+        ini = "results/fanc/package.done"
     output:
         hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
         stats = report("results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic_stats.pdf",category="Hi-C matrix")
@@ -74,13 +77,14 @@ rule fanc_hic_bin:
     conda:
         "../envs/fanc.yaml"
     shell:
-        """fanc hic {input} {output.hic} --statistics-plot {output.stats} \
+        """fanc hic {input.hic} {output.hic} --statistics-plot {output.stats} \
         {params.bin} {params.filter} {params.diag} {params.norm} {params.extra} -t {threads} 2>{log}"""
 
 rule fanc_to_juicer:
     input:
         pairs = get_pairs_files,
-        jar = "resources/juicer/juicer_tools.2.20.00.jar"
+        jar = "resources/juicer/juicer_tools.2.20.00.jar",
+        ini = "results/fanc/package.done"
     output:
         "results/juicer/{sample_group}.{enzyme}.{fragments}.juicer.hic"
     params:
@@ -95,7 +99,8 @@ rule fanc_to_juicer:
 
 rule fanc_to_cooler:
     input:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic"
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        ini = "results/fanc/package.done"
     output:
         "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
     log:

@@ -1,6 +1,7 @@
 rule fanc_expected:
     input:
-        "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        ini = "results/fanc/package.done"
     output:
         tsv = "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.expected_contatcs.tsv",
         plot = report("results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",category="Expected values")
@@ -13,11 +14,12 @@ rule fanc_expected:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc expected -p {output.plot} {params.label} -c {params.extra} {input} {output.tsv} 2>{log}"
+        "fanc expected -p {output.plot} {params.label} -c {params.extra} {input.hic} {output.tsv} 2>{log}"
 
 rule fanc_pca:
     input:
-        expand("results/hic/{sample}.{enzyme}.{fragments}-{resolution}.hic", sample = samples.index, enzyme = enzyme_file, fragments = fragments_file, resolution=analysis_resolution)
+        hic = expand("results/hic/{sample}.{enzyme}.{fragments}-{resolution}.hic", sample = samples.index, enzyme = enzyme_file, fragments = fragments_file, resolution=analysis_resolution),
+        ini = "results/fanc/package.done"
     output:
         out = "results/pca/matrix.{enzyme}.{fragments}-{resolution}.pca",
         plot = report("results/pca/matrix.{enzyme}.{fragments}-{resolution}.pca_plot.pdf",category="PCA")
@@ -30,12 +32,13 @@ rule fanc_pca:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc pca {params.label} -p {output.plot} {params.extra} {input} {output.out} 2>{log}"
+        "fanc pca {params.label} -p {output.plot} {params.extra} {input.hic} {output.out} 2>{log}"
 
 rule fanc_compartments:
     input:
         hic = "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic",
-        fa = f"{assembly_path}{assembly}.fa"
+        fa = f"{assembly_path}{assembly}.fa",
+        ini = "results/fanc/package.done"
     output:
         AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
         eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ev.txt",
@@ -55,7 +58,8 @@ rule fanc_compartments:
 rule plot_compartments:
     input:
         AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}._compartments.ab",
-        eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ev.txt"
+        eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}-{resolution}.ev.txt",
+        ini = "results/fanc/package.done"
     output:
         report("results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{region}-{resolution}.compartments.png",category ="AB domains")
     params:
@@ -121,7 +125,8 @@ rule plot_compartments:
 
 rule fanc_loops_annotate:
     input:
-        "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic"
+        hic = "results/hic/{group}.{enzyme}.{fragments}-{resolution}.hic",
+        ini = "results/fanc/package.done"
     output:
         "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.loops",
     params:
@@ -132,11 +137,12 @@ rule fanc_loops_annotate:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
+        "fanc loops {input.hic} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_filter:
     input:
-        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.loops",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.loops",
+        ini = "results/fanc/package.done"
     output:
         "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
     params:
@@ -147,11 +153,12 @@ rule fanc_loops_filter:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
+        "fanc loops {input.loops} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_merge:
     input:
-        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.filtered_loops",
+        ini = "results/fanc/package.done"
     output:
         "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged_loops",
     params:
@@ -162,11 +169,12 @@ rule fanc_loops_merge:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} {output} {params.extra} -t {threads} 2>{log}"
+        "fanc loops {input.loops} {output} {params.extra} -t {threads} 2>{log}"
 
 rule fanc_loops_export:
     input:
-        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged_loops",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged_loops",
+        ini = "results/fanc/package.done"
     output:
         "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
     log:
@@ -175,7 +183,7 @@ rule fanc_loops_export:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc loops {input} -b {output} -t {threads} 2>{log}"
+        "fanc loops {input.loops} -b {output} -t {threads} 2>{log}"
 
 rule domaincaller:
     input:

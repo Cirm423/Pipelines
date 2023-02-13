@@ -167,6 +167,19 @@ rule sra_get_fastq_se:
     wrapper:
         "v1.3.1/bio/sra-tools/fasterq-dump"
 
+#Install fanc in the env with the dependencies (latest version only in pip)
+
+rule fanc_init:
+    output:
+        temp(touch("results/fanc/package.done"))
+    log:
+        "logs/fanc/fanc_init.log"
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "pip install fanc 2>{log}"
+
+
 # Juicer jar file
 
 rule get_juicer_jar:
