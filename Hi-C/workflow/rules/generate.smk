@@ -41,7 +41,7 @@ rule fanc_pairs:
         """fanc pairs {input.R1} {input.R2} {output.pairs} -g {input.genome} \
         {params.unmap} {params.multimap} {params.inward} {params.outward} \
         {params.distance} {params.ligation} {params.pcr} {params.extra} \
-        --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error} 2>{log}"""
+        --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error} -t {threads} 2>{log}"""
 
 rule fanc_hic:
     input:
