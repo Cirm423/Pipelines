@@ -45,7 +45,7 @@ rule fanc_map:
         extra = config["params"]["fanc"]["map"]["extra"],
     log:
         "logs/map/{sample}_R{read}.log"
-    threads: 16
+    threads: 24
     conda:
         "../envs/fanc.yaml"
     shell:
