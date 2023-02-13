@@ -23,6 +23,7 @@ rule fanc_pairs:
         dist_plot = report("results/pairs/{sample}.{enzyme}.{fragments}.re-dist.png",category="Pairs"),
         l_error = report("results/pairs/{sample}.{enzyme}.{fragments}.ligation-err.png",category="Pairs")
     params:
+        quality = f"-q {config["params"]["fanc"]["filter"]["quality"]}" if config["params"]["fanc"]["filter"]["quality"] else "",
         unmap = "-m" if config["params"]["fanc"]["filter"]["unmap"] else "",
         multimap = "" if not config["params"]["fanc"]["filter"]["multimap"] else ("-us" if config["params"]["fanc"]["filter"]["multimap"] == "strict" else "-u"),
         inward = f"-i {config['params']['fanc']['filter']['inward']}" if config['params']['fanc']['filter']['inward'] else "",

@@ -45,6 +45,8 @@ params:
     #Filtering parameters for the pairs step
     filter:
       #Filters for bam files when making the pair file, many options
+      #Discard reads with low quality (3 is recommend for BWA). Leave empty to not filter
+      quality: 3
       # Should unmapped reads be filtered out
       unmap: True
       # Should multimapping reads be filtered out. It can be set to 'strict' to perform strict multimapping reads filtering
