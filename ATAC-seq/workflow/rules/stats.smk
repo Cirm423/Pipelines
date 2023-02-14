@@ -2,7 +2,7 @@ rule samtools_index:
     input:
         "results/{step}/{samples_units}.bam"
     output:
-        "results/{step}/{samples_units}.bam.bai"
+        temp("results/{step}/{samples_units}.bam.bai")
     params:
         extra="" # optional params string
     log:
