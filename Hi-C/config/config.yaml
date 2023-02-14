@@ -61,7 +61,7 @@ params:
       ligation: True
       # Filter read pairs for PCR duplicates. Parameter determines distance between alignment starts below which they are considered starting at same position. 
       # Sensible values are between 1 and 5. Leave empty to not filter.
-      pcr:
+      pcr: 2
       # Extra parameters for filtering
       extra: ""
     hic:
