@@ -109,4 +109,4 @@ rule fanc_to_cooler:
         "../envs/fanc.yaml"
     threads: 24
     shell:
-        "fanc to-cooler {input} {output} -t {threads} 2>{log}"
+        "fanc to-cooler {input.hic} {output} -t {threads} 2>{log}"
