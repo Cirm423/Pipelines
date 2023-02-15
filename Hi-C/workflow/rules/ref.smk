@@ -177,8 +177,7 @@ rule fanc_init:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "pip install fanc 2>{log}"
-
+        "pip install fanc --upgrade 2>{log}"
 
 # Juicer jar file
 
