@@ -8,3 +8,4 @@ dependencies:
   - openjdk
   - deprecated
   - hdf5 =1.14.0
+  - numpy =1.19.2
