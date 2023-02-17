@@ -10,7 +10,7 @@ rule fanc_expected:
         extra = config["params"]["fanc"]["analysis"]["expected_params"]
     log:
         "logs/analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.expected.log"
-    threads: 24
+    threads: 40
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -28,7 +28,7 @@ rule fanc_pca:
         extra = config["params"]["fanc"]["analysis"]["pca_params"]
     log:
         "logs/analysis/PCA.{enzyme}.{fragments}-{resolution}.log"
-    threads: 24
+    threads: 8
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -49,7 +49,7 @@ rule fanc_compartments:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}_compartments.log"
-    threads: 24
+    threads: 8
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -133,7 +133,7 @@ rule fanc_loops_annotate:
         extra = config["params"]["fanc"]["analysis"]["Loop_annotate"]
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_annotate.log"
-    threads: 24
+    threads: 40
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -149,7 +149,7 @@ rule fanc_loops_filter:
         extra = config["params"]["fanc"]["analysis"]["Loop_filter"]
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_filter.log"
-    threads: 4
+    threads: 8
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -165,7 +165,7 @@ rule fanc_loops_merge:
         extra = config["params"]["fanc"]["analysis"]["Loop_merge"]
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}.loop_merge.log"
-    threads: 4
+    threads: 8
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -250,7 +250,7 @@ rule hitad:
         config["params"]["fanc"]["analysis"]["hitad_extra"]
     log:
         "logs/hitad/{group}.{enzyme}.{fragments}-{resolution}_hitad.log"
-    threads: 24
+    threads: 40
     conda:
         "../envs/tadlib.yaml"
     shell:

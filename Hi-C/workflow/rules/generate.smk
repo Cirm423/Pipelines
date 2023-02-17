@@ -35,7 +35,7 @@ rule fanc_pairs:
         extra = config['params']['fanc']['filter']['extra']
     log:
         "logs/fanc/{sample}.{enzyme}.{fragments}.pairs.log"
-    threads: 24
+    threads: 40
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -73,7 +73,7 @@ rule fanc_hic_bin:
         extra = config['params']['fanc']['hic']['extra']
     log:
         "logs/fanc/{sample_group}.{enzyme}.{fragments}-{resolution}.hic.log"
-    threads: 24
+    threads: 40
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -93,7 +93,7 @@ rule fanc_to_juicer:
         "logs/fanc/{sample_group}.{enzyme}.{fragments}.to_juicer.log"
     conda:
         "../envs/fanc.yaml"
-    threads: 24
+    threads: 40
     shell:
         "fanc to-juicer {params.files} {output} --juicer-tools-jar {input.jar} 2>{log}"
 
