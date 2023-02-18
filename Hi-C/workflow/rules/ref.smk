@@ -174,6 +174,7 @@ rule fanc_init:
         touch("results/fanc/package.done")
     log:
         "logs/fanc/fanc_init.log"
+    priority: 1
     conda:
         "../envs/fanc.yaml"
     shell:
@@ -186,6 +187,7 @@ rule get_juicer_jar:
         "resources/juicer/juicer_tools.2.20.00.jar"
     log:
         "logs/get_juicer_jar.log"
+    priority: 1
     shell:
         "wget https://github.com/aidenlab/Juicebox/releases/download/v2.20.00/juicer_tools.2.20.00.jar -P ./resources/juicer"
 
@@ -197,6 +199,7 @@ rule tadlib_init:
         touch("results/tadlib/package.done")
     log:
         "logs/tadlib/tadlib_init.log"
+    priority: 1
     conda:
         "../envs/tadlib.yaml"
     shell:
