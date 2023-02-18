@@ -2,7 +2,7 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - fanc
+  - python =3.6.15
   - bwa
   - openjdk
   - deprecated
