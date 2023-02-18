@@ -171,7 +171,7 @@ rule sra_get_fastq_se:
 
 rule fanc_init:
     output:
-        temp(touch("results/fanc/package.done"))
+        touch("results/fanc/package.done")
     log:
         "logs/fanc/fanc_init.log"
     conda:
@@ -194,7 +194,7 @@ rule get_juicer_jar:
 
 rule tadlib_init:
     output:
-        temp(touch("results/tadlib/package.done"))
+        touch("results/tadlib/package.done")
     log:
         "logs/tadlib/tadlib_init.log"
     conda:
