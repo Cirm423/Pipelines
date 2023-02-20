@@ -49,7 +49,7 @@ rule fanc_compartments:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}-{resolution}_compartments.log"
-    threads: 8
+    threads: 40
     conda:
         "../envs/fanc.yaml"
     shell:
