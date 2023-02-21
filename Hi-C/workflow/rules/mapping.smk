@@ -34,6 +34,7 @@ rule fanc_map:
     input:
         read = "results/merged_units/{sample}_R{read}.fastq.gz",
         idx = f"{assembly_path}{assembly}.fa",
+        index = rules.bwa_index.output,
         ini = "results/fanc/package.done"
     output:
         temp("results/mapped/{sample}_R{read}.bam")
