@@ -10,9 +10,7 @@ resources:
   path: /data1/share/dcyleung/Pipeline/snakemake/resources/
   ref:
     # Genecode or UCSC assembly name
-    # For Genecode assemblies that support it (all except GRCh37), add -PRI for primary assembly (with scaffolds) or -CHR for only chromosomes assembly.
-    # For example, GRCh38-PRI or GRCh38-CHR
-    assembly: GRCh38-CHR
+    assembly: GRCh38
 
 params:
   trimming:
