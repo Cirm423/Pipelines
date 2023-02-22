@@ -16,7 +16,7 @@ rule fanc_fragments:
     output:
         "resources/{assembly}.{enzyme}.{fragments}.fragments.bed"
     params:
-        chr = f"-c {config['params']['fanc']['chr']}" if config['params']['fanc']['chr'] else "",
+        chr = f"-c {fragment_chr}" if fragment_chr else "",
         enzyme = config["params"]["fanc"]["enzyme"]
     log:
         "logs/ref/{assembly}.{enzyme}.{fragments}.log"

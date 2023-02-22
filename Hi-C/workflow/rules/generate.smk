@@ -63,8 +63,8 @@ rule fanc_hic_bin:
         hic = "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
         ini = "results/fanc/package.done"
     output:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-        stats = report("results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic_stats.pdf",category="Hi-C matrix")
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
+        stats = report("results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic_stats.pdf",category="Hi-C matrix")
     params:
         bin = lambda wildcards: f"-b {wildcards.resolution}",
         filter = config['params']['fanc']['hic']['filter'],
@@ -72,7 +72,7 @@ rule fanc_hic_bin:
         norm = (f"-n -m {config['params']['fanc']['hic']['normalize']['method']} -w" if config['params']['fanc']['hic']['normalize']['whole'] else f"-n -m {config['params']['fanc']['hic']['normalize']['method']}") if config['params']['fanc']['hic']['normalize']['activate'] else "",
         extra = config['params']['fanc']['hic']['extra']
     log:
-        "logs/fanc/{sample_group}.{enzyme}.{fragments}-{resolution}.hic.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.{resolution}.hic.log"
     threads: 40
     conda:
         "../envs/fanc.yaml"
@@ -99,12 +99,12 @@ rule fanc_to_juicer:
 
 rule fanc_to_cooler:
     input:
-        hic = "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
+        hic = "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
         ini = "results/fanc/package.done"
     output:
-        "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
+        "results/cooler/{sample_group}.{enzyme}.{fragments}.{resolution}.mcool"
     log:
-        "logs/fanc/{sample_group}.{enzyme}.{fragments}-{resolution}.to_cooler.log"
+        "logs/fanc/{sample_group}.{enzyme}.{fragments}.{resolution}.to_cooler.log"
     conda:
         "../envs/fanc.yaml"
     threads: 24

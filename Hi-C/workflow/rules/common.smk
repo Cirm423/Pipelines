@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from smart_open import open
 import yaml
+import sys
 
 #FOR TESTING ONLY
 # with open("config/config.yaml",'r') as f:
@@ -59,10 +60,32 @@ def split_coords(coords):
 #Make the name to use for enzymes and fragments files
 
 enzyme_file = "_".join(config["params"]["fanc"]["enzyme"].split(","))
-fragments_file = "_".join(config["params"]["fanc"]["chr"].split(",")) if config["params"]["fanc"]["chr"] else "all"
 bin_sizes = config["params"]["fanc"]["hic"]["bin_size"].split(",")
 analysis_resolution = config["params"]["fanc"]["analysis"]["bin_size"]
 TAD_res = bases_to_bp(analysis_resolution)
+
+#Get the fragment file name and chr for pairs files
+
+if config["params"]["fanc"]["chr"]:
+    if config["params"]["fanc"]["chr"] == "chr":
+        fragments_file = "chr-only"
+        assembly_H = ["GRCh38","GRCh37","hg38","hg19"]
+        assembly_M = ["GRCm39","GRCm38","mm10","mm39"]
+        assembly_R = ["rn6"]
+        if assembly in assembly_H:
+            fragment_chr = ",".join([f"chr{x}" for x in range(1,23)] + ["chrX","chrY","chrM"])
+        elif assembly in assembly_M:
+            fragment_chr = ",".join([f"chr{x}" for x in range(1,20)] + ["chrX","chrY","chrM"])
+        elif assembly in assembly_R:
+            fragment_chr = ",".join([f"chr{x}" for x in range(1,21)] + ["chrX","chrY","chrM"])
+        else:
+            sys.exit(f"Your assembly {assembly} is not supported for use with 'chr' keyword for the chromosomes to include in the fragments bed file setting. Please input your chromosome list manually.")
+    else:    
+        fragments_file = "_".join(config["params"]["fanc"]["chr"].split(","))
+        fragment_chr = config["params"]["fanc"]["chr"]
+else:
+    fragments_file = "all"
+    fragment_chr = False
 
 # Get list of regions for the matrix analysis
 if config["params"]["fanc"]["regions"]:
@@ -212,7 +235,7 @@ def exists_replicates(group):
 
 def get_tadlib_input(wildcards):
     sample_g = samples[samples['group'] == wildcards.group]
-    return expand(["results/cooler/{sample}.{enzyme}.{fragments}-{resolution}.mcool"],
+    return expand(["results/cooler/{sample}.{enzyme}.{fragments}.{resolution}.mcool"],
         sample = sample_g["sample"].index,
         enzyme = enzyme_file,
         fragments = fragments_file,
@@ -247,7 +270,7 @@ def get_coord_params(wildcards):
 #Get the group of the sample and return the hitad file for the group
 def get_hitad_output(wildcards):
     group_s = samples.loc[wildcards.sample]["group"]
-    return expand(["results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad.txt"],
+    return expand(["results/hitad/{group}.{enzyme}.{fragments}.{resolution}.hitad.txt"],
         group = group_s,
         enzyme = enzyme_file,
         fragments = fragments_file,
@@ -422,8 +445,8 @@ def all_input(wildcards):
         if not merge_groups:
             wanted_input.extend(expand(
                 [
-                    "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-                    "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
+                    "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
+                    "results/cooler/{sample_group}.{enzyme}.{fragments}.{resolution}.mcool"
                 ],
                 sample_group = sample,
                 enzyme = enzyme_file,
@@ -445,8 +468,8 @@ def all_input(wildcards):
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/pca/matrix.{enzyme}.{fragments}-{resolution}.pca_plot.pdf",
-                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf"
+                        "results/pca/matrix.{enzyme}.{fragments}.{resolution}.pca_plot.pdf",
+                        "results/matrix_analysis/{sample_group}_{chr}.{enzyme}.{fragments}.{resolution}.distance_decay.pdf"
                     ],
                     sample_group = sample,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -459,7 +482,7 @@ def all_input(wildcards):
             if do_analysis and multi_TADs:
                 wanted_input.extend(expand(
                     [
-                        "results/hitad/{sample}.{enzyme}.{fragments}-{resolution}.hitad.DIs.BedGraph"
+                        "results/hitad/{sample}.{enzyme}.{fragments}.{resolution}.hitad.DIs.BedGraph"
                     ],
                     sample = sample,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -473,7 +496,7 @@ def all_input(wildcards):
                         if len(split_coords(region)) > 1:
                             wanted_input.extend(expand(
                                 [
-                                    "results/hitad/{sample}.{enzyme}.{fragments}.{region}-{resolution}.hitad.png"
+                                    "results/hitad/{sample}.{enzyme}.{fragments}.{region}.{resolution}.hitad.png"
                                 ],
                                 sample = sample,
                                 region = region,
@@ -486,8 +509,8 @@ def all_input(wildcards):
         for group in groups:
             wanted_input.extend(expand(
                     [
-                        "results/hic/{sample_group}.{enzyme}.{fragments}-{resolution}.hic",
-                        "results/cooler/{sample_group}.{enzyme}.{fragments}-{resolution}.mcool"
+                        "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
+                        "results/cooler/{sample_group}.{enzyme}.{fragments}.{resolution}.mcool"
                     ],
                     sample_group = group,
                     enzyme = enzyme_file,
@@ -510,8 +533,8 @@ def all_input(wildcards):
             if do_analysis:
                 wanted_input.extend(expand(
                     [
-                        "results/matrix_analysis/{group}_{chr}.{enzyme}.{fragments}-{resolution}.distance_decay.pdf",
-                        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}-{resolution}.merged.bedpe",
+                        "results/matrix_analysis/{group}_{chr}.{enzyme}.{fragments}.{resolution}.distance_decay.pdf",
+                        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged.bedpe",
                     ],
                     group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -523,8 +546,8 @@ def all_input(wildcards):
                 if not multi_TADs:
                     wanted_input.extend(expand(
                         [
-                            "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.tad.bed",
-                            "results/domaincaller/{group}.{enzyme}.{fragments}-{resolution}.DIs.bedgraph"
+                            "results/domaincaller/{group}.{enzyme}.{fragments}.{resolution}.tad.bed",
+                            "results/domaincaller/{group}.{enzyme}.{fragments}.{resolution}.DIs.bedgraph"
                         ],
                         group = group,
                         chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -535,7 +558,7 @@ def all_input(wildcards):
                 else:
                     wanted_input.extend(expand(
                         [
-                            "results/hitad/{group}.{enzyme}.{fragments}-{resolution}.hitad.txt",
+                            "results/hitad/{group}.{enzyme}.{fragments}.{resolution}.hitad.txt",
                         ],
                         group = group,
                         chr = config["params"]["fanc"]["analysis"]["expected_params"],
@@ -548,7 +571,7 @@ def all_input(wildcards):
                     for region in regions:
                         wanted_input.extend(expand(
                             [
-                                "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{region}-{resolution}.compartments.png",
+                                "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{region}.{resolution}.compartments.png",
                             ],
                             group = group,
                             region = region,
@@ -562,7 +585,7 @@ def all_input(wildcards):
                             if len(split_coords(region)) > 1:
                                 wanted_input.extend(expand(
                                     [
-                                        "results/domaincaller/{group}.{enzyme}.{fragments}.{region}-{resolution}.tad.png"
+                                        "results/domaincaller/{group}.{enzyme}.{fragments}.{region}.{resolution}.tad.png"
                                     ],
                                     group = group,
                                     region = region,

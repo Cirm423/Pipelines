@@ -22,6 +22,8 @@ params:
     #It can be any enzyme supported by REBASE, case sensitive (http://rebase.neb.com/rebase/rebase.html)
     enzyme: "HinfI,DpnII"
     # Comma-separated list of chromosomes to include in fragments BED file (used to create pairs files). Chromosomes in the list will be included. If empty all will be included.
+    # When empty, the scaffolds will also be included. For the human, mouse and rat assemblies you can set this setting to 'chr'.
+    # When chr is set, the pipeline will automatically only include chromosomes, excluding scaffolds.
     chr: ""
     #Should the pairs files of samples in the same group be merged before creating hic objects?
     #It also changes the behavior of the analysis.
