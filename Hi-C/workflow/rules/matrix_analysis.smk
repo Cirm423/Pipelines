@@ -40,7 +40,7 @@ rule fanc_compartments:
         fa = f"{assembly_path}{assembly}.fa",
         ini = "results/fanc/package.done"
     output:
-        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}._compartments.ab",
+        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.compartments.ab",
         eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.ev.txt",
         domains = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.domains.bed",
         plot = report("results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.ab_profile.png", category="AB domains"),
@@ -48,7 +48,7 @@ rule fanc_compartments:
     params:
         extra = config["params"]["fanc"]["analysis"]["AB_params"]
     log:
-        "logs/analysis/{group}.{enzyme}.{fragments}.{resolution}_compartments.log"
+        "logs/analysis/{group}.{enzyme}.{fragments}.{resolution}.compartments.log"
     threads: 40
     conda:
         "../envs/fanc.yaml"
@@ -57,7 +57,7 @@ rule fanc_compartments:
 
 rule plot_compartments:
     input:
-        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}._compartments.ab",
+        AB = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.compartments.ab",
         eigen = "results/matrix_analysis/compartments/{group}.{enzyme}.{fragments}.{resolution}.ev.txt",
         ini = "results/fanc/package.done"
     output:
