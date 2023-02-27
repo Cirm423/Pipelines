@@ -44,14 +44,28 @@ rule fanc_pairs:
         {params.distance} {params.ligation} {params.pcr} {params.extra} \
         --statistics-plot {output.stats} --re-dist-plot {output.dist_plot} --ligation-error-plot {output.l_error} -t {threads} 2>{log}"""
 
-rule fanc_hic:
+rule fanc_hic_sample:
     input:
-        hic = get_pairs_files,
+        hic = "results/pairs/{sample}.{enzyme}.{fragments}.pairs",
         ini = "results/fanc/package.done"
     output:
-        "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
+        "results/hic/{sample}.{enzyme}.{fragments}.fragment_level.hic",
     log:
-        "logs/fanc/{sample_group}.{enzyme}.{fragments}.fragment_level.hic.log"
+        "logs/fanc/{sample}.{enzyme}.{fragments}.fragment_level.hic.log"
+    threads: 24
+    conda:
+        "../envs/fanc.yaml"
+    shell:
+        "fanc hic {input.hic} {output} -t {threads} 2>{log}"
+
+rule fanc_hic_group:
+    input:
+        hic = lambda wildcards: expand("results/pairs/{sample}.{enzyme}.{fragments}.pairs",sample = get_samples_of_group(wildcards.group), enzyme = enzyme_file, fragments=fragments_file),
+        ini = "results/fanc/package.done"
+    output:
+        "results/hic/{group}.{enzyme}.{fragments}.fragment_level.hic",
+    log:
+        "logs/fanc/{group}.{enzyme}.{fragments}.fragment_level.hic.log"
     threads: 24
     conda:
         "../envs/fanc.yaml"

@@ -103,7 +103,8 @@ wildcard_constraints:
     sample = "|".join(samples.index),
     unit = "|".join(units["unit"]),
     group = "|".join(groups),
-    sample_group = "|".join(samples.index) + "|" + "|".join(groups)
+    sample_group = "|".join(samples.index) + "|" + "|".join(groups),
+    resolution = "|".join(bin_sizes)
 
 #Check that settings that allow strings have valid values
 if config["params"]["fanc"]["filter"]["multimap"]:
@@ -218,6 +219,11 @@ def get_fastqs(wildcards):
 #Not tested
 def exists_replicates(group):
     return len(samples[samples["group"] == group]["sample"].unique()) > 1
+
+#Get samples of group for pairs.
+def get_samples_of_group(group):
+    sample_g = samples[samples['group'] == group]
+    return sample_g["sample"].index
 
 #No controls in Hi-C
 # #Changed this to allow controls to be in a different group as the samples, i.e. in the case of an input
@@ -445,9 +451,11 @@ def all_input(wildcards):
         if not merge_groups:
             wanted_input.extend(expand(
                 [
+                    "results/hic/{sample}.{enzyme}.{fragments}.fragment_level.hic",
                     "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
                     "results/cooler/{sample_group}.{enzyme}.{fragments}.{resolution}.mcool"
                 ],
+                sample = sample,
                 sample_group = sample,
                 enzyme = enzyme_file,
                 fragments = fragments_file,
@@ -477,14 +485,19 @@ def all_input(wildcards):
                     fragments = fragments_file,
                     resolution = analysis_resolution
                 ))
+
+
         else:
             #Account for TADlib output that needs single sample files
             if do_analysis and multi_TADs:
                 wanted_input.extend(expand(
                     [
+                        "results/hic/{sample}.{enzyme}.{fragments}.fragment_level.hic",
+                        "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
                         "results/hitad/{sample}.{enzyme}.{fragments}.{resolution}.hitad.DIs.BedGraph"
                     ],
                     sample = sample,
+                    sample_group = sample,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],
                     enzyme = enzyme_file,
                     fragments = fragments_file,
@@ -509,6 +522,7 @@ def all_input(wildcards):
         for group in groups:
             wanted_input.extend(expand(
                     [
+                        "results/hic/{sample_group}.{enzyme}.{fragments}.fragment_level.hic",
                         "results/hic/{sample_group}.{enzyme}.{fragments}.{resolution}.hic",
                         "results/cooler/{sample_group}.{enzyme}.{fragments}.{resolution}.mcool"
                     ],
