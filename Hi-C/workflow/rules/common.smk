@@ -548,7 +548,7 @@ def all_input(wildcards):
                 wanted_input.extend(expand(
                     [
                         "results/matrix_analysis/{group}_{chr}.{enzyme}.{fragments}.{resolution}.distance_decay.pdf",
-                        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged.bedpe",
+                        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged_loops.bedpe",
                     ],
                     group = group,
                     chr = config["params"]["fanc"]["analysis"]["expected_params"],

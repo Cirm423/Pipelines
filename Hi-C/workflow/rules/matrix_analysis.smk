@@ -176,7 +176,7 @@ rule fanc_loops_export:
         loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged_loops",
         ini = "results/fanc/package.done"
     output:
-        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged.bedpe",
+        "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged_loops.bedpe",
     log:
         "logs/analysis/{group}.{enzyme}.{fragments}.{resolution}.loop_export.log"
     threads: 4
