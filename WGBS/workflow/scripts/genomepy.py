@@ -32,4 +32,4 @@ shell(
     """
 )
 
-shell("chmod -R g+w {genome_dir}/{assembly}")
+shell("chmod -R g+w {genome_dir}/{assembly} || true")
