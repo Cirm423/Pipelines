@@ -33,11 +33,12 @@ rule genrich:
         excl = "" if not config["params"]["callpeak"]["chromosome"] else f"-e {config['params']['callpeak']['chromosome']}",
         p_value = "-p {}".format(config["params"]["callpeak"]["p-value"]) if config["params"]["callpeak"]["p-value"] else "",
         q_value = "-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
+        extra = config["params"]["callpeak"]["extra"]
     conda:
         "../envs/genrich.yaml"
     threads: 12
     shell:
-        "Genrich {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} -t {params.samples} {params.controls} -o {output.peak} 2>{log}"
+        "Genrich {params.base} {params.single} {params.excl} {params.p_value} {params.q_value} {params.extra} -t {params.samples} {params.controls} -o {output.peak} 2>{log}"
 
  #The bedgraph output above has to be processed into 4 columns (first 3 + a datavalue of choice) for visualization  
 
