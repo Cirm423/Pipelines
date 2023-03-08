@@ -28,7 +28,8 @@ params:
     q-value: 1
     #Comma-separated list of chromosomes to exclude, Mithochondrial is recommended for ATAC
     chromosome: chrM
-    #Extra parameters for Genrich, like -a 200.0 (for minimum AUC to call a peak).
+    #Extra parameters for Genrich, look here https://github.com/jsh58/Genrich for possible options.
+    #Generally the other options that are interesting for the peak calling are -a and -l.
     extra: ""
   lc_extrap:
     # computes the expected future yield of distinct reads and bounds on the number of total distinct reads in the library and the associated confidence intervals.
