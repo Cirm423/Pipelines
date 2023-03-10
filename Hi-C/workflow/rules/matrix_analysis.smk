@@ -207,7 +207,7 @@ rule plot_single_TADs:
     input:
         hic = "results/cooler/{group}.{enzyme}.{fragments}.{resolution}.mcool",
         tad = "results/domaincaller/{group}.{enzyme}.{fragments}.{resolution}.tad.bed",
-        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged.bedpe",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged_loops.bedpe",
         ini = "results/tadlib/package.done"
     output:
         report("results/domaincaller/{group}.{enzyme}.{fragments}.{region}.{resolution}.tad.png",category="TAD calling"),
@@ -273,6 +273,26 @@ rule plot_hierarchical_TADs:
         "../envs/tadlib.yaml"
     shell:
         "tad-plot -p {params.uri} -T {input.hitad} -O {output} {params.coords} {params.extra} 2>{log}"
+
+rule plot_2D_hier_TADs:
+    input:
+        hic = "results/cooler/{group}.{enzyme}.{fragments}.{resolution}.mcool",
+        tad = "results/hitad/{group}.{enzyme}.{fragments}.{resolution}.hitad.txt",
+        loops = "results/matrix_analysis/loops/{group}.{enzyme}.{fragments}.{resolution}.merged_loops.bedpe",
+        ini = "results/tadlib/package.done"
+    output:
+        report("results/hitad/{group}.{enzyme}.{fragments}.{region}.{resolution}.2d_tad.png",category="TAD calling"),
+    params:
+        uri = lambda wildcards, input: input.hic + "::/resolutions/" + TAD_res,
+        coords = lambda wildcards: split_coords(wildcards.region),
+        extra = config["params"]["fanc"]["analysis"]["TAD_plot"]
+    log:
+        "logs/hitad/{group}.{enzyme}.{fragments}.{resolution}.{region}_TAD-plot.log"     
+    threads: 1
+    conda:
+        "../envs/tadlib.yaml"
+    script:
+        "../scripts/plot_TADs.py"
 
 rule multi_TAD_browser:
     input:

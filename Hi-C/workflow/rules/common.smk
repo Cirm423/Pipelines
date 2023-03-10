@@ -607,5 +607,21 @@ def all_input(wildcards):
                                     fragments = fragments_file,
                                     resolution = analysis_resolution
                                 ))
+                        
+                        else:
+                            #HiTAD plots only work for specific region coordinates, so only use regions that have coords.
+                            #The 2d TAD plots are done on group basis.
+                            if len(split_coords(region)) > 1:
+                                wanted_input.extend(expand(
+                                    [
+                                        "results/hitad/{group}.{enzyme}.{fragments}.{region}.{resolution}.2d_tad.png"
+                                    ],
+                                    group = group,
+                                    region = region,
+                                    enzyme = enzyme_file,
+                                    fragments = fragments_file,
+                                    resolution = analysis_resolution
+                                ))
+                                
 
     return wanted_input
