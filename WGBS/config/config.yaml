@@ -43,9 +43,7 @@ params:
     extract:
       #Params for methylation extraction. Used for both PE and SE. There are some default parameters already set:
       #SE: --gzip --bedGraph --counts 
-      #PE: --no-overlap --gzip --bedGraph --counts 
-      #Specifying this option will merge all four possible strand-specific methylation info into context-dependent output files: CpG, CHG, CHH
-      comprehensive: True
+      #PE: --no-overlap --gzip --bedGraph --counts
       #Produces a genome-wide methylation report for all cytosines in the genome
       cytosine_report: False
       #The minimum number of times any methylation state (methylated or unmethylated) has to be seen for a nucleotide before its methylation percentage is reported
