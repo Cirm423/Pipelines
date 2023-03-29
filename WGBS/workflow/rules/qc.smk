@@ -53,7 +53,7 @@ rule qualimap:
     conda:
         "../envs/qualimap.yaml"
     shell:
-        "qualimap bamqc {params.gcref} -bam {input} -outdir {output} --collect-overlap-pairs -nt {threads} --java-mem-size=16G"
+        "JAVA_OPTS='-Djava.awt.headless=true' qualimap bamqc {params.gcref} -bam {input} -outdir {output} --collect-overlap-pairs -nt {threads} --java-mem-size=16G"
 
 rule multiqc:
     input:
