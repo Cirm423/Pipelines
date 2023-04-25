@@ -12,7 +12,8 @@ rule samtools_index:
 
 rule fanc_fragments:
     input:
-        f"{assembly_path}{assembly}.fa"
+        fasta = f"{assembly_path}{assembly}.fa",
+        ini = "results/fanc/package.done"
     output:
         "resources/{assembly}.{enzyme}.{fragments}.fragments.bed"
     params:
@@ -24,4 +25,4 @@ rule fanc_fragments:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "fanc fragments {params.chr} {input} {params.enzyme} {output} 2>{log}"
+        "fanc fragments {params.chr} {input.fasta} {params.enzyme} {output} 2>{log}"
