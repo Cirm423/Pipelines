@@ -27,6 +27,10 @@ export SNAKEMAKE_OUTPUT_CACHE=/data1/share/dcyleung/Pipeline/resources
 
 mkdir -p logs/slurm
 
+# Disable HDF5 file locking feature, specific for Hi-C pipeline. Files getting locked can stop them from being read by snakemake.
+
+export HDF5_USE_FILE_LOCKING='FALSE'
+
 #Running snakemake
 
 #snakemake --cluster 'sbatch -c {threads} -o logs/slurm/{rule}.{wildcards}.out -e logs/slurm/{rule}.{wildcards}.out' -j 10 --latency-wait 60 --use-conda --cache --rerun-incomplete
