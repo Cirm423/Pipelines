@@ -204,7 +204,7 @@ rule rsem_pe:
         #         sample=units["sample_name"],
         #     ),
         # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
-        bai=get_star_bam_bai,
+        #bai=get_star_bam_bai,
         reference=f"{assembly_path}rsem_reference/{assembly}.seq",
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
@@ -239,7 +239,7 @@ rule rsem_se:
         #         sample=samples["sample_name"],
         #     ),
         # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
-        bai=get_star_bam_bai,
+        #bai=get_star_bam_bai,
         reference=f"{assembly_path}rsem_reference/{assembly}.seq",
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
