@@ -16,7 +16,7 @@ alternative_types = ["greater","less","two.sided"]
 assert  config["single"]["alternative"] in alternative_types and config["TE_single"]["alternative"] in alternative_types, "The single mode alternative must be either greater, less or two.sided"
 
 samples = (
-    pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str})
+    pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str, "condition": str})
     .set_index("sample_name", drop=False)
     .sort_index()
 )
