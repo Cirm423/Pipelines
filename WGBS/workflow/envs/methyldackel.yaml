@@ -2,4 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - methyldackel
+  - methyldackel =0.6.1
