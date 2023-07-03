@@ -178,7 +178,7 @@ rule fanc_init:
     conda:
         "../envs/fanc.yaml"
     shell:
-        "pip install fanc 2>{log}"
+        "pip install fanc==0.9.25 2>{log}"
 
 # Juicer jar file
 
@@ -203,4 +203,4 @@ rule tadlib_init:
     conda:
         "../envs/tadlib.yaml"
     shell:
-        "pip install TADlib 2>{log}"
+        "pip install TADlib==0.4.5.post1 2>{log}"
