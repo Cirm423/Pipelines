@@ -2,4 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - qualimap
+  - qualimap =2.2.2d
