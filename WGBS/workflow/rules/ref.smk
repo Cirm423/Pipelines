@@ -81,6 +81,15 @@ else:
     #     shell:
     #         "mv {input.gtf} {output[0]} 2>{log} && mv {input.bed} {output[1]} 2>>{log} && mv {input.sizes} {output[2]} && mv {input.fai} {output[3]} && mv {input.fa} {output[4]} && rm -r {params.folder}"
 
+rule get_lambda_genome:
+    output:
+        f"{lambda_path}phage_lambda.fa"
+    cache: True
+    log:
+        "get_lamda_genome.log"
+    shell:
+        "wget https://www.ebi.ac.uk/ena/browser/api/fasta/J02459.1 -O {output}"
+
 rule bwa_index_meth:
     input:
         f"{assembly_path}{assembly}.fa",
