@@ -25,7 +25,7 @@ validate(units, schema="../schemas/units.schema.yaml")
 
 assembly = config["resources"]["ref"]["assembly"]
 assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
-lambda_path = config['resources']['path'] + "phage_lambda/"
+phage_path = config['resources']['path'] + "phage_lambda/"
 
 # Check that the mode is correct
 
