@@ -204,6 +204,12 @@ def get_sample_splitting_reports_ln(wildcards):
     else:
         return expand("results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt", sample = samples.index)
 
+def get_sample_reports_phage(wildcards):
+    if config["single_end"]:
+        return expand("results/bismark_mapped/{sample}-phage_SE_report.txt", sample = samples.index)
+    else:
+        return expand("results/bismark_mapped/{sample}-phage_PE_report.txt", sample = samples.index)
+
 def get_methylkit_input(wildcards):
     if config["params"]["mode"] == "bwameth":
         return expand(
@@ -344,7 +350,8 @@ def all_input(wildcards):
 
     # QC with fastQC and multiQC
     wanted_input.extend([
-        "results/qc/multiqc/multiqc.html"
+        "results/qc/multiqc/multiqc.html",
+        "results/qc/bisulfite_conversion_rate.csv"
     ])
 
     # trimming reads

@@ -192,3 +192,22 @@ rule bedGraphToBigWig_diffmeth:
         ""
     wrapper:
         "v1.3.1/bio/ucsc/bedGraphToBigWig"
+
+rule bisulfite_conversion_rate:
+    input:
+        get_sample_reports_phage
+    output:
+        report("results/qc/bisulfite_conversion_rate.csv", caption = "../report/bisulfite_conversion_rate.rst" , category = "Bisulfite Conversion Rate")
+    log:
+        "logs/bisulfite_conversion_rate.log"
+    run:
+        import re
+        with open(output[1],"w") as f_out:
+            for fil in input:
+                samp = re.split("_PE|_SE",fil.split("/")[-1])[0]
+                with open(fil,"r") as f_in:
+                    for line in f_in:
+                        if line.startswith("C methylated in CpG context:"):
+                            bcr = float(line.split("\t")[1].strip().strip('%'))
+                            f_out.write(f"{samp},{(100.00 - bcr):.2f}%\n")
+
