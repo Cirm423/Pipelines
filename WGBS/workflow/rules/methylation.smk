@@ -38,7 +38,7 @@ rule bismark_methylation_extractor_pe:
         mbias_r2="results/qc/bismark/{sample}-pe.M-bias_R2.png",
 
         mbias_report="results/bismark/meth/{sample}-pe.M-bias.txt",
-        splitting_report="results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
+        splitting_report=report("results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt", category = "Methylation"),
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
         methylome_CpG_cov="results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
@@ -77,7 +77,7 @@ rule bismark_methylation_extractor_se:
         # mbias_r2="qc/meth/{sample}.M-bias_R2.png",
 
         mbias_report="results/bismark/meth/{sample}-se.M-bias.txt",
-        splitting_report="results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
+        splitting_report=report("results/bismark/meth/{sample}.deduplicated_splitting_report.txt", category = "Methylation"),
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
         methylome_CpG_cov="results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",

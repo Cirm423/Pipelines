@@ -142,29 +142,6 @@ rule bismark_genome_preparation_fa:
         "v2.2.0/bio/bismark/bismark_genome_preparation"
 
 
-rule bwa_index_meth_phage:
-    input:
-        f"{phage_path}phage_lambda.fa",
-    output:
-        idx=multiext(
-            (f"{phage_path}phage_lambda.fa.bwameth"),
-            ".c2t",
-            ".c2t.amb",
-            ".c2t.ann",
-            ".c2t.bwt",
-            ".c2t.pac",
-            ".c2t.sa",
-        ),
-    log:
-        f"logs/bwa_meth_index_phage.log",
-    threads: 1
-    cache: True
-    conda:
-        "../envs/bwa_meth.yaml"
-    shell:
-        "bwameth.py index {input} 2>{log}"
-
-
 rule bismark_genome_preparation_phage:
     input:
         f"{phage_path}phage_lambda.fa",
