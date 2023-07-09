@@ -139,7 +139,7 @@ rule bismark_genome_preparation_fa:
     threads: 24
     cache: True
     wrapper:
-        "v1.7.0/bio/bismark/bismark_genome_preparation"
+        "v2.2.0/bio/bismark/bismark_genome_preparation"
 
 
 rule bwa_index_meth_phage:
@@ -177,7 +177,7 @@ rule bismark_genome_preparation_phage:
     threads: 1
     cache: True
     wrapper:
-        "v1.7.0/bio/bismark/bismark_genome_preparation"
+        "v2.2.0/bio/bismark/bismark_genome_preparation"
 
 
 if genecode_assembly:

@@ -28,7 +28,7 @@ rule bismark2report_pe:
     params:
         skip_optional_reports=True
     wrapper:
-        "v1.7.0/bio/bismark/bismark2report"
+        "v2.2.0/bio/bismark/bismark2report"
 
 rule bismark2report_se:
     input:
@@ -43,7 +43,7 @@ rule bismark2report_se:
     params:
         skip_optional_reports=True
     wrapper:
-        "v1.7.0/bio/bismark/bismark2report"
+        "v2.2.0/bio/bismark/bismark2report"
 
 rule bismark2summary_prepare_symlinks:
     input:
@@ -86,7 +86,7 @@ rule bismark2summary:
     log:
         "logs/qc/bismark/bismark2summary.log"
     wrapper:
-        "v1.7.0/bio/bismark/bismark2summary"
+        "v2.2.0/bio/bismark/bismark2summary"
 
 rule methylkit_bedgraphs:
     input:

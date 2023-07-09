@@ -87,11 +87,11 @@ rule bismark_map_pe:
     log:
         "logs/bismark/map/{sample}.log"
     params:
-        extra=f" {config['params']['bismark']['map']['extra']}", # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4", # add --multicore 4 when fixed by bismark
         basename='{sample}'
     threads: 24
     wrapper:
-        "v1.7.0/bio/bismark/bismark"
+        "v2.2.0/bio/bismark/bismark"
 
 rule bismark_map_se:
     input:
@@ -106,11 +106,11 @@ rule bismark_map_se:
         "logs/bismark/map/{sample}.log",
     params:
         # optional params string
-        extra=f" {config['params']['bismark']['map']['extra']}", # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4", # add --multicore 4 when fixed by bismark
         basename='{sample}'
     threads: 24
     wrapper:
-        "v1.7.0/bio/bismark/bismark"
+        "v2.2.0/bio/bismark/bismark"
 
 rule deduplicate_bismark_pe:
     input: 
@@ -124,7 +124,7 @@ rule deduplicate_bismark_pe:
         extra= "-p"  # optional params string
     threads: 24
     wrapper:
-        "v1.7.0/bio/bismark/deduplicate_bismark"
+        "v2.2.0/bio/bismark/deduplicate_bismark"
 
 rule deduplicate_bismark_se:
     input: 
@@ -138,4 +138,4 @@ rule deduplicate_bismark_se:
         extra= "-s"  # optional params string
     threads: 24
     wrapper:
-        "v1.7.0/bio/bismark/deduplicate_bismark"
+        "v2.2.0/bio/bismark/deduplicate_bismark"
