@@ -202,7 +202,7 @@ rule bisulfite_conversion_rate:
         "logs/bisulfite_conversion_rate.log"
     run:
         import re
-        with open(output[1],"w") as f_out:
+        with open(output[0],"w") as f_out:
             for fil in input:
                 samp = re.split("_PE|_SE",fil.split("/")[-1])[0]
                 with open(fil,"r") as f_in:
