@@ -155,3 +155,43 @@ rule deduplicate_bismark_se:
     threads: 24
     wrapper:
         "v2.2.0/bio/bismark/deduplicate_bismark"
+
+
+rule bismark_map_phage_pe:
+    input:
+        fq_1="results/merged_units/{sample}_R1.fastq.gz",
+        fq_2="results/merged_units/{sample}_R2.fastq.gz",
+        genome=f"{phage_path}phage_lambda.fa",
+        bismark_indexes_dir=f"{phage_path}Bisulfite_Genome",
+        #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
+    output:
+        bam=temp("results/bismark_mapped/{sample}-phage_pe.bam"),
+        report="results/bismark_mapped/{sample}-phage_PE_report.txt",
+    log:
+        "logs/bismark/map/{sample}-phage_pe.log",
+    params:
+        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        basename="{sample}",
+    threads: 24
+    wrapper:
+        "v2.2.0/bio/bismark/deduplicate_bismark"
+
+
+rule bismark_map_phage_se:
+    input:
+        fq="results/merged_units/{sample}_R1.fastq.gz",
+        genome=f"{phage_path}phage_lambda.fa",
+        bismark_indexes_dir=f"{phage_path}Bisulfite_Genome",
+        #genomic_freq="indexes/{genome}/genomic_nucleotide_frequencies.txt"
+    output:
+        bam=temp("results/bismark_mapped/{sample}-phage_se.bam"),
+        report="results/bismark_mapped/{sample}-phage_SE_report.txt",
+    log:
+        "logs/bismark/map/{sample}-phage_se.log",
+    params:
+        # optional params string
+        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        basename="{sample}",
+    threads: 24
+    wrapper:
+        "v2.2.0/bio/bismark/deduplicate_bismark"
