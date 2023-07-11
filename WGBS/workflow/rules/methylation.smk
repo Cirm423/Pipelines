@@ -59,7 +59,7 @@ rule bismark_methylation_extractor_pe:
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes
         extra=f"""--paired-end --no_overlap --gzip --multicore 8 --bedGraph --counts \\
-        '--comprehensive ' \\
+        --comprehensive  \\
         --cutoff {config['params']['bismark']['extract']['cutoff']} \\
         {'--cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
         {config['params']['bismark']['extract']['extra']}"""
