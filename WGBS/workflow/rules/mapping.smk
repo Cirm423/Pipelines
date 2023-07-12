@@ -174,7 +174,7 @@ rule bismark_map_phage_pe:
         #basename="{sample}",
     threads: 24
     wrapper:
-        "v2.2.0/bio/bismark/deduplicate_bismark"
+        "v2.2.0/bio/bismark/bismark"
 
 
 rule bismark_map_phage_se:
@@ -194,4 +194,4 @@ rule bismark_map_phage_se:
         basename="{sample}",
     threads: 24
     wrapper:
-        "v2.2.0/bio/bismark/deduplicate_bismark"
+        "v2.2.0/bio/bismark/bismark"
