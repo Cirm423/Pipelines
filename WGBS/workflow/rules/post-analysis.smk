@@ -51,7 +51,7 @@ rule bismark2summary_prepare_symlinks:
     output:
         temp(["results/bismark_mapped/{sample}.deduplicated_splitting_report.txt","results/bismark_mapped/{sample}_se_SE_report.txt"] if config["single_end"] else "results/bismark_mapped/{sample}_pe.deduplicated_splitting_report.txt"),
     log:
-        "qc/bismark/{sample}_prepare_symlinks.symlinks.log"
+        "logs/qc/bismark/{sample}_prepare_symlinks.symlinks.log"
     run:
         wd = os.getcwd()
         shell("echo 'Making symlinks' > {log}")
@@ -210,4 +210,5 @@ rule bisulfite_conversion_rate:
                         if line.startswith("C methylated in CpG context:"):
                             bcr = float(line.split("\t")[1].strip().strip('%'))
                             f_out.write(f"{samp},{(100.00 - bcr):.2f}%\n")
-
+                        elif line.startswith("Can't determine percentage of methylated Cs in CpG"):
+                            f_out.write(f"{samp},100%\n")

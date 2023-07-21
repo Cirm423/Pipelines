@@ -85,17 +85,17 @@ rule bismark_methylation_extractor_se:
         methylome_CpG_mlevel_bedGraph="results/bismark/meth_cpg/{sample}-se.bedGraph.gz",
 
         # Primary output files: methylation status at each read cytosine position: (extremely large)
-        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}-se.txt.gz" if config["params"]["bismark"]["extract"]["comprehensive"] else "",
+        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}-se.txt.gz",
         # * You could merge CHG, CHH using: --merge_non_CpG
-        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}-se.txt.gz" if config["params"]["bismark"]["extract"]["comprehensive"] else "",
-        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}-se.txt.gz" if config["params"]["bismark"]["extract"]["comprehensive"] else ""
+        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}-se.txt.gz",
+        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}-se.txt.gz"
     log:
         "logs/bismark/{sample}-se_methylaction_extraction.log"
     params:
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes
         extra=f"""--single-end --gzip --multicore 8 --bedGraph --counts \\
-        {' --comprehensive ' if config['params']['bismark']['extract']['comprehensive'] else ''} \\
+         --comprehensive  \\
         --cutoff {config['params']['bismark']['extract']['cutoff']} \\
         {' --cytosine_report --genome_folder {} '.format(assembly_path) if config['params']['bismark']['extract']['cytosine_report'] else ''} \\
         {config['params']['bismark']['extract']['extra']}"""
