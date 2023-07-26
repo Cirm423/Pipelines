@@ -38,12 +38,7 @@ rule merge_units_R2:
 
 rule bwa_meth:
     input:
-        reads=["results/merged_units/{sample}_R1.fastq.gz"]
-        if config["single_end"]
-        else [
-            "results/merged_units/{sample}_R1.fastq.gz",
-            "results/merged_units/{sample}_R2.fastq.gz",
-        ],
+        reads=["results/merged_units/{sample}_R1.fastq.gz"] if config["single_end"] else ["results/merged_units/{sample}_R1.fastq.gz","results/merged_units/{sample}_R2.fastq.gz"],
         idx=rules.bwa_index_meth.output,
     output:
         temp("results/mapped/{sample}.sam"),
@@ -97,10 +92,11 @@ rule bismark_map_pe:
     output:
         bam=temp("results/bismark_mapped/{sample}_pe.bam"),
         report="results/bismark_mapped/{sample}_PE_report.txt",
+        tmp_dir=temp(directory("tmp/{sample}_bmap/"))
     log:
         "logs/bismark/map/{sample}_pe.log",
     params:
-        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --temp_dir tmp/{{sample}}_bmap/",
         #basename='{sample}'
     threads: 24
     wrapper:
@@ -116,11 +112,12 @@ rule bismark_map_se:
     output:
         bam=temp("results/bismark_mapped/{sample}_se.bam"),
         report="results/bismark_mapped/{sample}_SE_report.txt",
+        tmp_dir=temp(directory("tmp/{sample}_bmap/"))
     log:
         "logs/bismark/map/{sample}_se.log",
     params:
         # optional params string
-        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --temp_dir tmp/{{sample}}_bmap/",
         #basename='{sample}'
     threads: 24
     wrapper:
@@ -129,12 +126,12 @@ rule bismark_map_se:
 
 rule deduplicate_bismark_pe:
     input:
-        "results/bismark_mapped/{sample}_pe.bam",
+        "results/bismark_mapped/{sample}{phage}_pe.bam",
     output:
-        bam="results/bismark_mapped/{sample}_pe.deduplicated.bam",
-        report="results/bismark_mapped/{sample}_pe.deduplication_report.txt",
+        bam="results/bismark_mapped/{sample}{phage}_pe.deduplicated.bam",
+        report="results/bismark_mapped/{sample}{phage}_pe.deduplication_report.txt",
     log:
-        "logs/bismark/{sample}_pe.deduplicated.log",
+        "logs/bismark/{sample}{phage}_pe.deduplicated.log",
     params:
         extra="-p",  # optional params string
     threads: 24
@@ -144,12 +141,12 @@ rule deduplicate_bismark_pe:
 
 rule deduplicate_bismark_se:
     input:
-        "results/bismark_mapped/{sample}_se.bam",
+        "results/bismark_mapped/{sample}{phage}_se.bam",
     output:
-        bam="results/bismark_mapped/{sample}_se.deduplicated.bam",
-        report="results/bismark_mapped/{sample}.deduplication_report.txt",
+        bam="results/bismark_mapped/{sample}{phage}_se.deduplicated.bam",
+        report="results/bismark_mapped/{sample}{phage}.deduplication_report.txt",
     log:
-        "logs/bismark/{sample}_se.deduplicated.log",
+        "logs/bismark/{sample}{phage}_se.deduplicated.log",
     params:
         extra="-s",  # optional params string
     threads: 24
@@ -167,10 +164,11 @@ rule bismark_map_phage_pe:
     output:
         bam=temp("results/bismark_mapped/{sample}-phage_pe.bam"),
         report="results/bismark_mapped/{sample}-phage_PE_report.txt",
+        tmp_dir=temp(directory("tmp/{sample}_bmap_phage/"))
     log:
         "logs/bismark/map/{sample}-phage_pe.log",
     params:
-        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --temp_dir tmp/{{sample}}_bmap_phage/",
         #basename="{sample}",
     threads: 24
     wrapper:
@@ -186,11 +184,12 @@ rule bismark_map_phage_se:
     output:
         bam=temp("results/bismark_mapped/{sample}-phage_se.bam"),
         report="results/bismark_mapped/{sample}-phage_SE_report.txt",
+        tmp_dir=temp(directory("tmp/{sample}_bmap_phage/"))
     log:
         "logs/bismark/map/{sample}-phage_se.log",
     params:
         # optional params string
-        extra=f" {config['params']['bismark']['map']['extra']} --multicore 4",  # add --multicore 4 when fixed by bismark
+        extra=f" {config['params']['bismark']['map']['extra']} --temp_dir tmp/{{sample}}_bmap_phage/",
         basename="{sample}",
     threads: 24
     wrapper:

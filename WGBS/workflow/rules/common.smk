@@ -40,7 +40,8 @@ if config["params"]["diff_meth"]["activate"]:
 
 wildcard_constraints:
     sample = "|".join(samples.index),
-    unit = "|".join(units["unit"])
+    unit = "|".join(units["unit"]),
+    phage = "|".join(["","-phage"])
 
 ####### helpers ###########
 
@@ -206,9 +207,9 @@ def get_sample_splitting_reports_ln(wildcards):
 
 def get_sample_reports_phage(wildcards):
     if config["single_end"]:
-        return expand("results/bismark_mapped/{sample}-phage_SE_report.txt", sample = samples.index)
+        return expand("results/bismark/meth/{sample}{phage}.deduplicated_splitting_report.txt", sample = samples.index, phage = "-phage")
     else:
-        return expand("results/bismark_mapped/{sample}-phage_PE_report.txt", sample = samples.index)
+        return expand("results/bismark/meth/{sample}{phage}_pe.deduplicated_splitting_report.txt", sample = samples.index, phage = "-phage")
 
 def get_methylkit_input(wildcards):
     if config["params"]["mode"] == "bwameth":
@@ -317,26 +318,28 @@ def get_multiqc_input(wildcards):
                 multiqc_input.extend(
                     expand(
                         [                            
-                            "results/bismark_mapped/{sample}_SE_report.txt",
-                            "results/bismark_mapped/{sample}.deduplication_report.txt",
-                            "results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
-                            "results/bismark/meth/{sample}-se.M-bias.txt",
-                            "results/qc/bismark/{sample}_se.bismark2report.html",
+                            "results/bismark_mapped/{sample}{phage}_SE_report.txt",
+                            "results/bismark_mapped/{sample}{phage}.deduplication_report.txt",
+                            "results/bismark/meth/{sample}{phage}.deduplicated_splitting_report.txt",
+                            "results/bismark/meth/{sample}{phage}-se.M-bias.txt",
+                            "results/qc/bismark/{sample}{phage}_se.bismark2report.html",
                         ],
-                        sample=sample
+                        sample=sample,
+                        phage = ""
                     )
                 )
             else:
                 multiqc_input.extend(
                     expand(
                         [
-                            "results/bismark_mapped/{sample}_PE_report.txt",
-                            "results/bismark_mapped/{sample}_pe.deduplication_report.txt",
-                            "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
-                            "results/bismark/meth/{sample}-pe.M-bias.txt",
-                            "results/qc/bismark/{sample}_pe.bismark2report.html",
+                            "results/bismark_mapped/{sample}{phage}_PE_report.txt",
+                            "results/bismark_mapped/{sample}{phage}_pe.deduplication_report.txt",
+                            "results/bismark/meth/{sample}{phage}_pe.deduplicated_splitting_report.txt",
+                            "results/bismark/meth/{sample}{phage}-pe.M-bias.txt",
+                            "results/qc/bismark/{sample}{phage}_pe.bismark2report.html",
                         ],
-                        sample=sample
+                        sample=sample,
+                        phage=""
                     )
                 )            
         if config["params"]["lc_extrap"]["activate"]:
@@ -350,9 +353,13 @@ def all_input(wildcards):
 
     # QC with fastQC and multiQC
     wanted_input.extend([
-        "results/qc/multiqc/multiqc.html",
-        "results/qc/bisulfite_conversion_rate.csv"
+        "results/qc/multiqc/multiqc.html"
     ])
+
+    if config["params"]["phage"]:
+        wanted_input.extend([
+            "results/qc/bisulfite_conversion_rate.csv"
+        ])    
 
     # trimming reads
     if config["params"]["trimming"]["activate"]:
@@ -414,27 +421,29 @@ def all_input(wildcards):
                 wanted_input.extend(
                     expand(
                         [
-                            "results/qc/bismark/{sample}-se.M-bias_R1.png",
-                            "results/bismark/meth/{sample}-se.M-bias.txt",
-                            "results/bismark/meth/{sample}.deduplicated_splitting_report.txt",
-                            "results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",
-                            "results/bismark/meth_cpg/{sample}-se.bedGraph.gz"
+                            "results/qc/bismark/{sample}{phage}-se.M-bias_R1.png",
+                            "results/bismark/meth/{sample}{phage}-se.M-bias.txt",
+                            "results/bismark/meth/{sample}{phage}.deduplicated_splitting_report.txt",
+                            "results/bismark/meth_cpg/{sample}{phage}-se.bismark.cov.gz",
+                            "results/bismark/meth_cpg/{sample}{phage}-se.bedGraph.gz"
                         ],
-                        sample=sample
+                        sample=sample,
+                        phage=""
                     )
                 )
             else:
                 wanted_input.extend(
                     expand(
                         [
-                            "results/qc/bismark/{sample}-pe.M-bias_R1.png",
-                            "results/qc/bismark/{sample}-pe.M-bias_R2.png",
-                            "results/bismark/meth/{sample}-pe.M-bias.txt",
-                            "results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt",
-                            "results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
-                            "results/bismark/meth_cpg/{sample}-pe.bedGraph.gz"
+                            "results/qc/bismark/{sample}{phage}-pe.M-bias_R1.png",
+                            "results/qc/bismark/{sample}{phage}-pe.M-bias_R2.png",
+                            "results/bismark/meth/{sample}{phage}-pe.M-bias.txt",
+                            "results/bismark/meth/{sample}{phage}_pe.deduplicated_splitting_report.txt",
+                            "results/bismark/meth_cpg/{sample}{phage}-pe.bismark.cov.gz",
+                            "results/bismark/meth_cpg/{sample}{phage}-pe.bedGraph.gz"
                         ],
-                        sample=sample
+                        sample=sample,
+                        phage=""
                     )
                 )
         
