@@ -9,6 +9,7 @@
     - [Bismark](#bismark)
     - [Bwa-meth](#bwa-meth)
     - [Which mode to choose](#which-mode-to-choose)
+  - [Bisulfite Conversion Rate](#bisulfite-conversion-rate)
   - [Differential Methylation Analysis](#differential-methylation-analysis)
     - [Co-variates analysis](#co-variates-analysis)
 - [Running Snakemake](#running-snakemake)
@@ -123,6 +124,10 @@ This pipeline can be run with 2 alternative mappers and methylation callers, and
 If you need to get results as soon as possible, bwa-meth will finish several times faster than bismark. Usually, a bwa-meth run takes 1 to 2 days, while a bismark run can take 4+ days (depending on your sample depth). Both provide similar accuracy so your results should be similar between the two. 
 If you want a more standardized method for publication, then you can choose to use the bismark mode instead.
 Both modes allow you to use methylkit to detect Diferentially Methylated Regions (DRMs).
+
+## Bisulfite Conversion Rate
+
+If your sample include phage alpha spike-in DNA, the pipeline can calculate the Bisulfite Conversion Rate for your samples. This step is activated by default and works in both modes, but if you use public data make sure they include phage alpha in their samples or the steps to calculate the conversion rate may fail.
 
 ## Differential Methylation Analysis
 
