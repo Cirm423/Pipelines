@@ -31,27 +31,27 @@ rule methyldackel:
         "MethylDackel mbias -@ {threads} {params.comprehensive} {params.ignore_flags} {params.extra_mbias} {input.fa} {input.bam} {params.prefix_mbias} --txt > {output.txt} 2>>{log}"
 
 rule bismark_methylation_extractor_pe:
-    input: "results/bismark_mapped/{sample}{phage}_pe.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}_pe.deduplicated.bam"
     output:
-        mbias_r1="results/qc/bismark/{sample}{phage}-pe.M-bias_R1.png",
+        mbias_r1="results/qc/bismark/{sample}-pe.M-bias_R1.png",
         # Only for PE BAMS:
-        mbias_r2="results/qc/bismark/{sample}{phage}-pe.M-bias_R2.png",
+        mbias_r2="results/qc/bismark/{sample}-pe.M-bias_R2.png",
 
-        mbias_report="results/bismark/meth/{sample}{phage}-pe.M-bias.txt",
-        splitting_report=report("results/bismark/meth/{sample}{phage}_pe.deduplicated_splitting_report.txt", category = "Methylation"),
+        mbias_report="results/bismark/meth/{sample}-pe.M-bias.txt",
+        splitting_report=report("results/bismark/meth/{sample}_pe.deduplicated_splitting_report.txt", category = "Methylation"),
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
-        methylome_CpG_cov="results/bismark/meth_cpg/{sample}{phage}-pe.bismark.cov.gz",
+        methylome_CpG_cov="results/bismark/meth_cpg/{sample}-pe.bismark.cov.gz",
         # BedGraph with methylation percentage: 0-based start, end exclusive
-        methylome_CpG_mlevel_bedGraph="results/bismark/meth_cpg/{sample}{phage}-pe.bedGraph.gz",
+        methylome_CpG_mlevel_bedGraph="results/bismark/meth_cpg/{sample}-pe.bedGraph.gz",
 
         # Primary output files: methylation status at each read cytosine position: (extremely large)
-        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}{phage}-pe.txt.gz",
+        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}-pe.txt.gz",
         # * You could merge CHG, CHH using: --merge_non_CpG
-        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}{phage}-pe.txt.gz",
-        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}{phage}-pe.txt.gz"
+        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}-pe.txt.gz",
+        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}-pe.txt.gz"
     log:
-        "logs/bismark/{sample}{phage}-pe_methylaction_extraction.log"
+        "logs/bismark/{sample}-pe_methylaction_extraction.log"
     params:
         #These 2 params bellow may be used with other protocols
         # ignore_r2=2,
@@ -70,27 +70,27 @@ rule bismark_methylation_extractor_pe:
         "../scripts/bismark_meth.py"
 
 rule bismark_methylation_extractor_se:
-    input: "results/bismark_mapped/{sample}{phage}_se.deduplicated.bam"
+    input: "results/bismark_mapped/{sample}_se.deduplicated.bam"
     output:
-        mbias_r1="results/qc/bismark/{sample}{phage}-se.M-bias_R1.png",
+        mbias_r1="results/qc/bismark/{sample}-se.M-bias_R1.png",
         # Only for PE BAMS:
-        # mbias_r2="qc/meth/{sample}{phage}.M-bias_R2.png",
+        # mbias_r2="qc/meth/{sample}.M-bias_R2.png",
 
-        mbias_report="results/bismark/meth/{sample}{phage}-se.M-bias.txt",
-        splitting_report=report("results/bismark/meth/{sample}{phage}.deduplicated_splitting_report.txt", category = "Methylation"),
+        mbias_report="results/bismark/meth/{sample}-se.M-bias.txt",
+        splitting_report=report("results/bismark/meth/{sample}.deduplicated_splitting_report.txt", category = "Methylation"),
 
         # 1-based start, 1-based end ('inclusive') methylation info: % and counts
-        methylome_CpG_cov="results/bismark/meth_cpg/{sample}{phage}-se.bismark.cov.gz",
+        methylome_CpG_cov="results/bismark/meth_cpg/{sample}-se.bismark.cov.gz",
         # BedGraph with methylation percentage: 0-based start, end exclusive
-        methylome_CpG_mlevel_bedGraph="results/bismark/meth_cpg/{sample}{phage}-se.bedGraph.gz",
+        methylome_CpG_mlevel_bedGraph="results/bismark/meth_cpg/{sample}-se.bedGraph.gz",
 
         # Primary output files: methylation status at each read cytosine position: (extremely large)
-        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}{phage}-se.txt.gz",
+        read_base_meth_state_cpg="results/bismark/meth/CpG_context_{sample}-se.txt.gz",
         # * You could merge CHG, CHH using: --merge_non_CpG
-        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}{phage}-se.txt.gz",
-        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}{phage}-se.txt.gz"
+        read_base_meth_state_chg="results/bismark/meth/CHG_context_{sample}-se.txt.gz",
+        read_base_meth_state_chh="results/bismark/meth/CHH_context_{sample}-se.txt.gz"
     log:
-        "logs/bismark/{sample}{phage}-se_methylaction_extraction.log"
+        "logs/bismark/{sample}-se_methylaction_extraction.log"
     params:
         output_dir="results/bismark/meth",  # optional output dir
         # optional params string, 8 threads only because bismark uses 3 * core processes

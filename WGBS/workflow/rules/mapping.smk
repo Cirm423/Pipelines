@@ -126,12 +126,12 @@ rule bismark_map_se:
 
 rule deduplicate_bismark_pe:
     input:
-        "results/bismark_mapped/{sample}{phage}_pe.bam",
+        "results/bismark_mapped/{sample}_pe.bam",
     output:
-        bam="results/bismark_mapped/{sample}{phage}_pe.deduplicated.bam",
-        report="results/bismark_mapped/{sample}{phage}_pe.deduplication_report.txt",
+        bam="results/bismark_mapped/{sample}_pe.deduplicated.bam",
+        report="results/bismark_mapped/{sample}_pe.deduplication_report.txt",
     log:
-        "logs/bismark/{sample}{phage}_pe.deduplicated.log",
+        "logs/bismark/{sample}_pe.deduplicated.log",
     params:
         extra="-p",  # optional params string
     threads: 24
@@ -141,12 +141,12 @@ rule deduplicate_bismark_pe:
 
 rule deduplicate_bismark_se:
     input:
-        "results/bismark_mapped/{sample}{phage}_se.bam",
+        "results/bismark_mapped/{sample}_se.bam",
     output:
-        bam="results/bismark_mapped/{sample}{phage}_se.deduplicated.bam",
-        report="results/bismark_mapped/{sample}{phage}.deduplication_report.txt",
+        bam="results/bismark_mapped/{sample}_se.deduplicated.bam",
+        report="results/bismark_mapped/{sample}.deduplication_report.txt",
     log:
-        "logs/bismark/{sample}{phage}_se.deduplicated.log",
+        "logs/bismark/{sample}_se.deduplicated.log",
     params:
         extra="-s",  # optional params string
     threads: 24
