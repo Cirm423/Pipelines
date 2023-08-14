@@ -64,7 +64,7 @@ You need to modify this file to include any samples you want to analyze in the p
 If you need to analyze more conditions in Deseq2, you can add more columns to the right of *condition* column and set each sample treatment in that column.
 
 
-The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit_name columns refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:
+The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit_name columns refer to technical replicates of a sample, e.g. lanes in sequencing. Different units from the same sample will be merged together (eg. Sample A1 lane1 and lane2 fq files will be merged). If your samples don't have technical replicates, give the same unit_name to all samples. This file looks like this:
 
 > | sample_name |	unit_name | fq1 | fq2 | sra | adapters | strandedness |
 > ------------|---------------|-----|-----|-----|----------|--------------|
