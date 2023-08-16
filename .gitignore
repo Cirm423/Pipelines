@@ -147,3 +147,5 @@ results/*
 !README.md
 
 .test
+
+*.sif
