@@ -1,0 +1,462 @@
+FROM condaforge/mambaforge:latest
+LABEL io.github.snakemake.containerized="true"
+LABEL io.github.snakemake.conda_env_hash="18ba89e266dff636c52378cd281e9f388a1ac21ac2ed598f1aebd7e434bd6cae"
+
+# Step 1: Retrieve conda environments
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/0.68.0/bio/bedtools/complement/environment.yaml
+#   prefix: /conda-envs/fdb4ad7290e35ddd42c03fe1b5daf785
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - bedtools =2.29
+RUN mkdir -p /conda-envs/fdb4ad7290e35ddd42c03fe1b5daf785
+ADD https://github.com/snakemake/snakemake-wrappers/raw/0.68.0/bio/bedtools/complement/environment.yaml /conda-envs/fdb4ad7290e35ddd42c03fe1b5daf785/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v0.87.0/bio/picard/markduplicates/environment.yaml
+#   prefix: /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - picard ==2.22.1
+#     - snakemake-wrapper-utils ==0.1.3
+RUN mkdir -p /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v0.87.0/bio/picard/markduplicates/environment.yaml /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.1.0/bio/subread/featurecounts/environment.yaml
+#   prefix: /conda-envs/d4a8e62782e6d0fd8b849811a698b9d8
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - subread =2.0
+RUN mkdir -p /conda-envs/d4a8e62782e6d0fd8b849811a698b9d8
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.1.0/bio/subread/featurecounts/environment.yaml /conda-envs/d4a8e62782e6d0fd8b849811a698b9d8/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bamtools/filter_json/environment.yaml
+#   prefix: /conda-envs/572bb9f42ee807d1069393149389a8c0
+#   channels:
+#     - bioconda
+#     - conda-forge
+#   dependencies:
+#     - bamtools ==2.5.1
+RUN mkdir -p /conda-envs/572bb9f42ee807d1069393149389a8c0
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bamtools/filter_json/environment.yaml /conda-envs/572bb9f42ee807d1069393149389a8c0/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/genomecov/environment.yaml
+#   prefix: /conda-envs/dc07c4164d0623cc82e2794aa5258c53
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - bedtools ==2.29.2
+RUN mkdir -p /conda-envs/dc07c4164d0623cc82e2794aa5258c53
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/genomecov/environment.yaml /conda-envs/dc07c4164d0623cc82e2794aa5258c53/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/intersect/environment.yaml
+#   prefix: /conda-envs/c1d23725315571632c6ca02ead65922b
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - bedtools =2.29.0
+RUN mkdir -p /conda-envs/c1d23725315571632c6ca02ead65922b
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/intersect/environment.yaml /conda-envs/c1d23725315571632c6ca02ead65922b/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml
+#   prefix: /conda-envs/1af413f13966c4e46ba99bd1cae299a6
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - cutadapt ==3.4
+RUN mkdir -p /conda-envs/1af413f13966c4e46ba99bd1cae299a6
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/fastqc/environment.yaml
+#   prefix: /conda-envs/08d4368302a4bdf7eda6b536495efe7d
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - fastqc ==0.11.9
+RUN mkdir -p /conda-envs/08d4368302a4bdf7eda6b536495efe7d
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/fastqc/environment.yaml /conda-envs/08d4368302a4bdf7eda6b536495efe7d/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/homer/annotatePeaks/environment.yaml
+#   prefix: /conda-envs/9c6b00325e7e64cbd904aed7250c8efb
+#   channels:
+#     - bioconda
+#     - conda-forge
+#   dependencies:
+#     - homer ==4.11
+RUN mkdir -p /conda-envs/9c6b00325e7e64cbd904aed7250c8efb
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/homer/annotatePeaks/environment.yaml /conda-envs/9c6b00325e7e64cbd904aed7250c8efb/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/faidx/environment.yaml
+#   prefix: /conda-envs/265eab4214d17755ca1d6a2f9bd70ebb
+#   channels:
+#     - bioconda
+#     - conda-forge
+#   dependencies:
+#     - samtools =1.14
+#     - snakemake-wrapper-utils =0.3
+RUN mkdir -p /conda-envs/265eab4214d17755ca1d6a2f9bd70ebb
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/faidx/environment.yaml /conda-envs/265eab4214d17755ca1d6a2f9bd70ebb/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/index/environment.yaml
+#   prefix: /conda-envs/d9c813a8da591f3c7fb1c11c631af04c
+#   channels:
+#     - bioconda
+#     - conda-forge
+#   dependencies:
+#     - samtools =1.14
+RUN mkdir -p /conda-envs/d9c813a8da591f3c7fb1c11c631af04c
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/index/environment.yaml /conda-envs/d9c813a8da591f3c7fb1c11c631af04c/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/sra-tools/fasterq-dump/environment.yaml
+#   prefix: /conda-envs/75d073ef3cf1192693231395707deb44
+#   channels:
+#     - bioconda
+#     - conda-forge
+#   dependencies:
+#     - sra-tools >2.9.1
+#     - pigz >=2.6
+#     - pbzip2 >=1.1
+#     - snakemake-wrapper-utils =0.3
+RUN mkdir -p /conda-envs/75d073ef3cf1192693231395707deb44
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/sra-tools/fasterq-dump/environment.yaml /conda-envs/75d073ef3cf1192693231395707deb44/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/bedGraphToBigWig/environment.yaml
+#   prefix: /conda-envs/8e2334df30546017876bf52a31dbcb78
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - ucsc-bedgraphtobigwig == 377
+RUN mkdir -p /conda-envs/8e2334df30546017876bf52a31dbcb78
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/bedGraphToBigWig/environment.yaml /conda-envs/8e2334df30546017876bf52a31dbcb78/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/faToTwoBit/environment.yaml
+#   prefix: /conda-envs/03c1df5661a8c399d6550c4afb961ef5
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - ucsc-fatotwobit == 377
+RUN mkdir -p /conda-envs/03c1df5661a8c399d6550c4afb961ef5
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/faToTwoBit/environment.yaml /conda-envs/03c1df5661a8c399d6550c4afb961ef5/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/twoBitInfo/environment.yaml
+#   prefix: /conda-envs/41f3220db4f3a068edb01725cbb4fb0e
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - ucsc-twobitinfo == 377
+RUN mkdir -p /conda-envs/41f3220db4f3a068edb01725cbb4fb0e
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/twoBitInfo/environment.yaml /conda-envs/41f3220db4f3a068edb01725cbb4fb0e/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.5.0/bio/bowtie2/align/environment.yaml
+#   prefix: /conda-envs/a8f18ea974560cf874177b7e869de8e0
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - bowtie2 =2.4  # Keep consistent with version specified in bowtie2/build
+#     - samtools =1.14
+#     - snakemake-wrapper-utils =0.3
+RUN mkdir -p /conda-envs/a8f18ea974560cf874177b7e869de8e0
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.5.0/bio/bowtie2/align/environment.yaml /conda-envs/a8f18ea974560cf874177b7e869de8e0/environment.yaml
+
+# Conda environment:
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.5.0/bio/bowtie2/build/environment.yaml
+#   prefix: /conda-envs/5ad2abfff02d5d48dcefec2bbb51292c
+#   channels:
+#     - bioconda
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - bowtie2 =2.4  # Keep consistent with version specified in bowtie2/align
+RUN mkdir -p /conda-envs/5ad2abfff02d5d48dcefec2bbb51292c
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.5.0/bio/bowtie2/build/environment.yaml /conda-envs/5ad2abfff02d5d48dcefec2bbb51292c/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/bedops.yaml
+#   prefix: /conda-envs/0dbc32127caee16a9b972f61368a75a8
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - bedops =2.4.39
+RUN mkdir -p /conda-envs/0dbc32127caee16a9b972f61368a75a8
+COPY workflow/envs/bedops.yaml /conda-envs/0dbc32127caee16a9b972f61368a75a8/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/bedsort.yaml
+#   prefix: /conda-envs/b3c8f3e3116350b5cd5b2c0c4c3cb25c
+#   channels:
+#     - conda-forge
+#     - bioconda
+#     - defaults
+#   dependencies:
+#     - ucsc-bedsort ==377
+RUN mkdir -p /conda-envs/b3c8f3e3116350b5cd5b2c0c4c3cb25c
+COPY workflow/envs/bedsort.yaml /conda-envs/b3c8f3e3116350b5cd5b2c0c4c3cb25c/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/bedtools.yaml
+#   prefix: /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - bedtools =2.30.0
+RUN mkdir -p /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840
+COPY workflow/envs/bedtools.yaml /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/bowtie2.yaml
+#   prefix: /conda-envs/088b0e32176995d43b7f9b643040bf18
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - bowtie2 =2.4
+#     - samtools =1.14
+#     - snakemake-wrapper-utils
+RUN mkdir -p /conda-envs/088b0e32176995d43b7f9b643040bf18
+COPY workflow/envs/bowtie2.yaml /conda-envs/088b0e32176995d43b7f9b643040bf18/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/consensus_plot.yaml
+#   prefix: /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73464
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - numpy
+#     - pandas
+#     - matplotlib =3.5.2
+#     - upsetplot
+RUN mkdir -p /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73464
+COPY workflow/envs/consensus_plot.yaml /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73464/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/deeptools.yaml
+#   prefix: /conda-envs/672d293dafd21f0b2800c51483e3e484
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - deeptools =3.5.1
+RUN mkdir -p /conda-envs/672d293dafd21f0b2800c51483e3e484
+COPY workflow/envs/deeptools.yaml /conda-envs/672d293dafd21f0b2800c51483e3e484/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/featurecounts_deseq2.yaml
+#   prefix: /conda-envs/45a64edc807e1a2e88310b4c27680519
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - r-base =3.5
+#     - bioconductor-deseq2 =1.20
+#     - bioconductor-vsn
+#     - r-ggplot2
+#     - r-rcolorbrewer
+#     - r-pheatmap
+#     - r-lattice
+#     - bioconductor-biocparallel
+RUN mkdir -p /conda-envs/45a64edc807e1a2e88310b4c27680519
+COPY workflow/envs/featurecounts_deseq2.yaml /conda-envs/45a64edc807e1a2e88310b4c27680519/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/gawk.yaml
+#   prefix: /conda-envs/c249f5f8b9ebbebf9a484b1ef73164bb
+#   channels:
+#     - conda-forge
+#     - defaults
+#   dependencies:
+#     - gawk ==5.1.0
+RUN mkdir -p /conda-envs/c249f5f8b9ebbebf9a484b1ef73164bb
+COPY workflow/envs/gawk.yaml /conda-envs/c249f5f8b9ebbebf9a484b1ef73164bb/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/genomepy.yaml
+#   prefix: /conda-envs/f273d149f1976d9b4f463afeb20b15bd
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - genomepy =0.15.0
+#     - packaging
+RUN mkdir -p /conda-envs/f273d149f1976d9b4f463afeb20b15bd
+COPY workflow/envs/genomepy.yaml /conda-envs/f273d149f1976d9b4f463afeb20b15bd/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/multiqc.yaml
+#   prefix: /conda-envs/a625e50a2bb741298a47b6f0b3761e5b
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - multiqc =1.12
+RUN mkdir -p /conda-envs/a625e50a2bb741298a47b6f0b3761e5b
+COPY workflow/envs/multiqc.yaml /conda-envs/a625e50a2bb741298a47b6f0b3761e5b/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/phantom_corr.yaml
+#   prefix: /conda-envs/84ccf0b2d7fdfe6661814ca1c55c5a80
+#   channels:
+#     - conda-forge
+#   dependencies:
+#     - r-base ==4.0
+RUN mkdir -p /conda-envs/84ccf0b2d7fdfe6661814ca1c55c5a80
+COPY workflow/envs/phantom_corr.yaml /conda-envs/84ccf0b2d7fdfe6661814ca1c55c5a80/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/phantompeakqualtools.yaml
+#   prefix: /conda-envs/73cae5f835e3031216e7b10104091933
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - phantompeakqualtools ==1.2.2
+#     - samtools ==1.10
+#     - r-snow ==0.4_3
+#     - r-snowfall ==1.84_6.1
+#     - r-bitops ==1.0_6
+#     - r-catools ==1.18.0
+#     - bioconductor-rsamtools ==2.4.0
+RUN mkdir -p /conda-envs/73cae5f835e3031216e7b10104091933
+COPY workflow/envs/phantompeakqualtools.yaml /conda-envs/73cae5f835e3031216e7b10104091933/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/picard.yaml
+#   prefix: /conda-envs/921a3733a34840907148586a5a126f4c
+#   channels:
+#     - conda-forge
+#     - bioconda
+#     - defaults
+#   dependencies:
+#     - picard =2.26.3
+#     - snakemake-wrapper-utils =0.2.0
+RUN mkdir -p /conda-envs/921a3733a34840907148586a5a126f4c
+COPY workflow/envs/picard.yaml /conda-envs/921a3733a34840907148586a5a126f4c/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/plot_macs_annot.yaml
+#   prefix: /conda-envs/3101bdc9ea6a97206da178fc472945b5
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - r-base =3.5
+#     - r-optparse =1.6
+#     - r-ggplot2 =3.1
+#     - r-reshape2 =1.4
+RUN mkdir -p /conda-envs/3101bdc9ea6a97206da178fc472945b5
+COPY workflow/envs/plot_macs_annot.yaml /conda-envs/3101bdc9ea6a97206da178fc472945b5/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/preseq.yaml
+#   prefix: /conda-envs/eadeb2a30b3a1f14c7a1e55bbba74cc0
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - preseq =2.0.3
+RUN mkdir -p /conda-envs/eadeb2a30b3a1f14c7a1e55bbba74cc0
+COPY workflow/envs/preseq.yaml /conda-envs/eadeb2a30b3a1f14c7a1e55bbba74cc0/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/r_plots.yaml
+#   prefix: /conda-envs/f4be45a0231caf67d9bbb379237637d7
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - r-tidyverse =1.3
+#     - r-base =4.0
+RUN mkdir -p /conda-envs/f4be45a0231caf67d9bbb379237637d7
+COPY workflow/envs/r_plots.yaml /conda-envs/f4be45a0231caf67d9bbb379237637d7/environment.yaml
+
+# Conda environment:
+#   source: workflow/envs/seacr.yaml
+#   prefix: /conda-envs/8535516ba2a61e37275e9d3515411975
+#   channels:
+#     - conda-forge
+#     - bioconda
+#   dependencies:
+#     - seacr =1.3
+#     - bedtools =2.30.0
+RUN mkdir -p /conda-envs/8535516ba2a61e37275e9d3515411975
+COPY workflow/envs/seacr.yaml /conda-envs/8535516ba2a61e37275e9d3515411975/environment.yaml
+
+# Step 2: Generate conda environments
+
+RUN mamba env create --prefix /conda-envs/fdb4ad7290e35ddd42c03fe1b5daf785 --file /conda-envs/fdb4ad7290e35ddd42c03fe1b5daf785/environment.yaml && \
+    mamba env create --prefix /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537 --file /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537/environment.yaml && \
+    mamba env create --prefix /conda-envs/d4a8e62782e6d0fd8b849811a698b9d8 --file /conda-envs/d4a8e62782e6d0fd8b849811a698b9d8/environment.yaml && \
+    mamba env create --prefix /conda-envs/572bb9f42ee807d1069393149389a8c0 --file /conda-envs/572bb9f42ee807d1069393149389a8c0/environment.yaml && \
+    mamba env create --prefix /conda-envs/dc07c4164d0623cc82e2794aa5258c53 --file /conda-envs/dc07c4164d0623cc82e2794aa5258c53/environment.yaml && \
+    mamba env create --prefix /conda-envs/c1d23725315571632c6ca02ead65922b --file /conda-envs/c1d23725315571632c6ca02ead65922b/environment.yaml && \
+    mamba env create --prefix /conda-envs/1af413f13966c4e46ba99bd1cae299a6 --file /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml && \
+    mamba env create --prefix /conda-envs/08d4368302a4bdf7eda6b536495efe7d --file /conda-envs/08d4368302a4bdf7eda6b536495efe7d/environment.yaml && \
+    mamba env create --prefix /conda-envs/9c6b00325e7e64cbd904aed7250c8efb --file /conda-envs/9c6b00325e7e64cbd904aed7250c8efb/environment.yaml && \
+    mamba env create --prefix /conda-envs/265eab4214d17755ca1d6a2f9bd70ebb --file /conda-envs/265eab4214d17755ca1d6a2f9bd70ebb/environment.yaml && \
+    mamba env create --prefix /conda-envs/d9c813a8da591f3c7fb1c11c631af04c --file /conda-envs/d9c813a8da591f3c7fb1c11c631af04c/environment.yaml && \
+    mamba env create --prefix /conda-envs/75d073ef3cf1192693231395707deb44 --file /conda-envs/75d073ef3cf1192693231395707deb44/environment.yaml && \
+    mamba env create --prefix /conda-envs/8e2334df30546017876bf52a31dbcb78 --file /conda-envs/8e2334df30546017876bf52a31dbcb78/environment.yaml && \
+    mamba env create --prefix /conda-envs/03c1df5661a8c399d6550c4afb961ef5 --file /conda-envs/03c1df5661a8c399d6550c4afb961ef5/environment.yaml && \
+    mamba env create --prefix /conda-envs/41f3220db4f3a068edb01725cbb4fb0e --file /conda-envs/41f3220db4f3a068edb01725cbb4fb0e/environment.yaml && \
+    mamba env create --prefix /conda-envs/a8f18ea974560cf874177b7e869de8e0 --file /conda-envs/a8f18ea974560cf874177b7e869de8e0/environment.yaml && \
+    mamba env create --prefix /conda-envs/5ad2abfff02d5d48dcefec2bbb51292c --file /conda-envs/5ad2abfff02d5d48dcefec2bbb51292c/environment.yaml && \
+    mamba env create --prefix /conda-envs/0dbc32127caee16a9b972f61368a75a8 --file /conda-envs/0dbc32127caee16a9b972f61368a75a8/environment.yaml && \
+    mamba env create --prefix /conda-envs/b3c8f3e3116350b5cd5b2c0c4c3cb25c --file /conda-envs/b3c8f3e3116350b5cd5b2c0c4c3cb25c/environment.yaml && \
+    mamba env create --prefix /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840 --file /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840/environment.yaml && \
+    mamba env create --prefix /conda-envs/088b0e32176995d43b7f9b643040bf18 --file /conda-envs/088b0e32176995d43b7f9b643040bf18/environment.yaml && \
+    mamba env create --prefix /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73464 --file /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73464/environment.yaml && \
+    mamba env create --prefix /conda-envs/672d293dafd21f0b2800c51483e3e484 --file /conda-envs/672d293dafd21f0b2800c51483e3e484/environment.yaml && \
+    mamba env create --prefix /conda-envs/45a64edc807e1a2e88310b4c27680519 --file /conda-envs/45a64edc807e1a2e88310b4c27680519/environment.yaml && \
+    mamba env create --prefix /conda-envs/c249f5f8b9ebbebf9a484b1ef73164bb --file /conda-envs/c249f5f8b9ebbebf9a484b1ef73164bb/environment.yaml && \
+    mamba env create --prefix /conda-envs/f273d149f1976d9b4f463afeb20b15bd --file /conda-envs/f273d149f1976d9b4f463afeb20b15bd/environment.yaml && \
+    mamba env create --prefix /conda-envs/a625e50a2bb741298a47b6f0b3761e5b --file /conda-envs/a625e50a2bb741298a47b6f0b3761e5b/environment.yaml && \
+    mamba env create --prefix /conda-envs/84ccf0b2d7fdfe6661814ca1c55c5a80 --file /conda-envs/84ccf0b2d7fdfe6661814ca1c55c5a80/environment.yaml && \
+    mamba env create --prefix /conda-envs/73cae5f835e3031216e7b10104091933 --file /conda-envs/73cae5f835e3031216e7b10104091933/environment.yaml && \
+    mamba env create --prefix /conda-envs/921a3733a34840907148586a5a126f4c --file /conda-envs/921a3733a34840907148586a5a126f4c/environment.yaml && \
+    mamba env create --prefix /conda-envs/3101bdc9ea6a97206da178fc472945b5 --file /conda-envs/3101bdc9ea6a97206da178fc472945b5/environment.yaml && \
+    mamba env create --prefix /conda-envs/eadeb2a30b3a1f14c7a1e55bbba74cc0 --file /conda-envs/eadeb2a30b3a1f14c7a1e55bbba74cc0/environment.yaml && \
+    mamba env create --prefix /conda-envs/f4be45a0231caf67d9bbb379237637d7 --file /conda-envs/f4be45a0231caf67d9bbb379237637d7/environment.yaml && \
+    mamba env create --prefix /conda-envs/8535516ba2a61e37275e9d3515411975 --file /conda-envs/8535516ba2a61e37275e9d3515411975/environment.yaml && \
+    mamba clean --all -y
