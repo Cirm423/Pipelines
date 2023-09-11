@@ -22,7 +22,7 @@ if genecode_assembly:
             f"logs/genome-faidx_{assembly}.log",
         cache: True
         wrapper:
-            "0.77.0/bio/samtools/faidx"
+            "v2.6.0/bio/samtools/faidx"
 
 else:
 
@@ -76,23 +76,24 @@ rule bwa_index:
     threads: 12
     cache: True
     wrapper:
-        "0.77.0/bio/bwa/index"
+        "v2.6.0/bio/bwa/index"
 
 
 rule star_index:
     input:
         fasta=f"{assembly_path}{assembly}.fa",
-        annotation=f"{assembly_path}{assembly}.annotation.gtf",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf",
     output:
         directory(f"{assembly_path}star_genome_{assembly}"),
     threads: 24
     params:
-        extra=f"--sjdbGTFfile {assembly_path}{assembly}.annotation.gtf --sjdbOverhang 100",
+        extra="",
+        sjdbOverhang="100"
     log:
         f"logs/star_index_genome_{assembly}.log",
     cache: True
     wrapper:
-        "0.77.0/bio/star/index"
+        "v2.6.0/bio/star/index"
 
 rule rsem_ref:
     input:

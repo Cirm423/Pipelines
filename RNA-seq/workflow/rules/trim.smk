@@ -2,19 +2,25 @@ rule get_sra_pe:
     output:
         "sra-pe-reads/{accession}_1.fastq.gz",
         "sra-pe-reads/{accession}_2.fastq.gz",
+    params:
+        extra="--skip-technical",
     log:
         "logs/get-sra/{accession}.log",
+    threads: 6 
     wrapper:
-        "0.77.0/bio/sra-tools/fasterq-dump"
+        "v2.6.0/bio/sra-tools/fasterq-dump"
 
 
 rule get_sra_se:
     output:
         "sra-se-reads/{accession}.fastq.gz",
+    params:
+        extra="--skip-technical",
     log:
         "logs/get-sra/{accession}.log",
+    threads: 6 
     wrapper:
-        "0.77.0/bio/sra-tools/fasterq-dump"
+        "v2.6.0/bio/sra-tools/fasterq-dump"
 
 # rule compress_sra:
 #     input:
@@ -49,11 +55,11 @@ rule cutadapt_pe:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        others=config["params"]["cutadapt-pe"],
+        extra=config["params"]["cutadapt-pe"],
         adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     threads: 8
     wrapper:
-        "0.80.0/bio/cutadapt/pe"
+        "v2.6.0/bio/cutadapt/pe"
 
 
 rule cutadapt_se:
@@ -65,11 +71,11 @@ rule cutadapt_se:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        others=config["params"]["cutadapt-se"],
+        extra=config["params"]["cutadapt-se"],
         adapters_r1=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
     threads: 8
     wrapper:
-        "0.80.0/bio/cutadapt/se"
+        "v2.6.0/bio/cutadapt/se"
 
 
 rule merge_fastqs_gz:

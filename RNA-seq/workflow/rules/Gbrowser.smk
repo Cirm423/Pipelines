@@ -12,7 +12,7 @@ if genecode_assembly:
         params:
             "" # optional params string
         wrapper:
-            "0.78.0/bio/ucsc/faToTwoBit"
+            "v2.6.0/bio/ucsc/faToTwoBit"
 
     rule twoBitInfo:
         input:
@@ -24,7 +24,7 @@ if genecode_assembly:
         params:
             "" # optional params string
         wrapper:
-            "0.78.0/bio/ucsc/twoBitInfo"
+            "v2.6.0/bio/ucsc/twoBitInfo"
 
     rule twoBitInfo_sort:
         input:

@@ -20,7 +20,7 @@ rule align_pe:
         ),
     threads: 24
     wrapper:
-        "0.77.0/bio/star/align"
+        "v2.6.0/bio/star/align"
 
 
 rule align_se:
@@ -41,7 +41,7 @@ rule align_se:
         ),
     threads: 24
     wrapper:
-        "0.77.0/bio/star/align"
+        "v2.6.0/bio/star/align"
 
 rule align_pe_2pass:
     input:
@@ -62,7 +62,7 @@ rule align_pe_2pass:
         ),
     threads: 24
     wrapper:
-        "0.77.0/bio/star/align"
+        "v2.6.0/bio/star/align"
 
 
 rule align_se_2pass:
@@ -83,7 +83,7 @@ rule align_se_2pass:
         ),
     threads: 24
     wrapper:
-        "0.77.0/bio/star/align"
+        "v2.6.0/bio/star/align"
 
 rule samtools_sort_pe:
     input:
@@ -92,11 +92,10 @@ rule samtools_sort_pe:
         path_merged_cond("results/star/pe/?/Aligned.sortedByCoord.out.bam"),
     params:
         extra = "",
-        tmp_dir = ""
     threads:  # Samtools takes additional threads through its option -@
         8     # This value - 1 will be sent to -@.
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        "v2.6.0/bio/samtools/sort"
 
 rule samtools_sort_se:
     input:
@@ -109,7 +108,7 @@ rule samtools_sort_se:
     threads:  # Samtools takes additional threads through its option -@
         8     # This value - 1 will be sent to -@.
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        "v2.6.0/bio/samtools/sort"
 
 rule samtools_sort_pe_2:
     input:
@@ -122,7 +121,7 @@ rule samtools_sort_pe_2:
     threads:  # Samtools takes additional threads through its option -@
         8     # This value - 1 will be sent to -@.
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        "v2.6.0/bio/samtools/sort"
 
 rule samtools_sort_se_2:
     input:
@@ -135,7 +134,7 @@ rule samtools_sort_se_2:
     threads:  # Samtools takes additional threads through its option -@
         8     # This value - 1 will be sent to -@.
     wrapper:
-        "0.77.0/bio/samtools/sort"
+        "v2.6.0/bio/samtools/sort"
 
 rule samtools_index_pe:
     input:
@@ -149,7 +148,7 @@ rule samtools_index_pe:
     threads:  # Samtools takes additional threads through its option -@
         4     # This value - 1 will be sent to -@
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "v2.6.0/bio/samtools/index"
 
 rule samtools_index_se:
     input:
@@ -163,7 +162,7 @@ rule samtools_index_se:
     threads:  # Samtools takes additional threads through its option -@
         4     # This value - 1 will be sent to -@
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "v2.6.0/bio/samtools/index"
 
 rule samtools_index_pe_2:
     input:
@@ -177,7 +176,7 @@ rule samtools_index_pe_2:
     threads:  # Samtools takes additional threads through its option -@
         4     # This value - 1 will be sent to -@
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "v2.6.0/bio/samtools/index"
 
 rule samtools_index_se_2:
     input:
@@ -191,7 +190,7 @@ rule samtools_index_se_2:
     threads:  # Samtools takes additional threads through its option -@
         4     # This value - 1 will be sent to -@
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "v2.6.0/bio/samtools/index"
 
 rule rsem_pe:
     input:

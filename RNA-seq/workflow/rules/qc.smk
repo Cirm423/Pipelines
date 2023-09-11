@@ -160,12 +160,12 @@ rule fastqc:
         html="results/qc/fastqc/{sample}.{unit}.{read}.html",
         zip="results/qc/fastqc/{sample}.{unit}.{read}_fastqc.zip"
     params:
-        ""
+        extra = "--quiet"
     log:
         "logs/fastqc/{sample}.{unit}.{read}.log"
     threads: 6
     wrapper:
-        "0.72.0/bio/fastqc"
+        "v2.6.0/bio/fastqc"
 
 rule fastqc_trimmed:
     input:
@@ -174,12 +174,12 @@ rule fastqc_trimmed:
         html="results/qc/fastqc/trimmed_{sample}.{unit}.{read}.html",
         zip="results/qc/fastqc/trimmed_{sample}.{unit}.{read}_fastqc.zip"
     params:
-        ""
+        extra = "--quiet"
     log:
         "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
     threads: 6
     wrapper:
-        "0.72.0/bio/fastqc"
+        "v2.6.0/bio/fastqc"
 
 rule multiqc:
     input:
