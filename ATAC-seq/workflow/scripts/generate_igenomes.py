@@ -51,3 +51,5 @@ with open(igenomes_path) as f:
     igenomes = yaml.load(add_links(parse_to_yaml(yaml.load(f, Loader=yaml.FullLoader))), Loader=yaml.FullLoader)
 with open(igenomes_path, 'w') as f:
     yaml.dump(igenomes, f)
+    
+os.chmod(igenomes_path,0o664)
