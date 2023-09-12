@@ -20,7 +20,7 @@ rule align_pe:
         ),
     threads: 24
     wrapper:
-        "v2.6.0/bio/star/align"
+        "0.77.0/bio/star/align"
 
 
 rule align_se:
@@ -41,7 +41,7 @@ rule align_se:
         ),
     threads: 24
     wrapper:
-        "v2.6.0/bio/star/align"
+        "0.77.0/bio/star/align"
 
 rule align_pe_2pass:
     input:
@@ -62,7 +62,7 @@ rule align_pe_2pass:
         ),
     threads: 24
     wrapper:
-        "v2.6.0/bio/star/align"
+        "0.77.0/bio/star/align"
 
 
 rule align_se_2pass:
@@ -83,7 +83,7 @@ rule align_se_2pass:
         ),
     threads: 24
     wrapper:
-        "v2.6.0/bio/star/align"
+        "0.77.0/bio/star/align"
 
 rule samtools_sort_pe:
     input:
