@@ -5,15 +5,16 @@ rule align_pe:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        idx=f"{assembly_path}star_genome_{assembly}",
+        index=f"{assembly_path}star_genome_{assembly}",
     output:
+        path_merged_cond("results/star/pe/?/Aligned.out.bam"),
         path_merged_cond("results/star/pe/?/Aligned.toTranscriptome.out.bam"),
-        aln=path_merged_cond("results/star/pe/?/Aligned.out.bam"),
-        sj=path_merged_cond("results/star/pe/?/SJ.out.tab"),
-        log=path_merged_cond("results/star/pe/?/Log.final.out"),
+        path_merged_cond("results/star/pe/?/SJ.out.tab"),
+        path_merged_cond("results/star/pe/?/Log.final.out"),
     log:
         path_merged_cond("logs/star-pe/?.log"),
     params:
+        index=lambda wc, input: input.index,
         extra="--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
@@ -25,15 +26,16 @@ rule align_pe:
 rule align_se:
     input:
         fq1=get_map_reads_input_R1,
-        idx=f"{assembly_path}star_genome_{assembly}",
+        index=f"{assembly_path}star_genome_{assembly}",
     output:
+        path_merged_cond("results/star/se/?/Aligned.out.bam"),
         path_merged_cond("results/star/se/?/Aligned.toTranscriptome.out.bam"),
-        aln=path_merged_cond("results/star/se/?/Aligned.out.bam"),
-        sj=path_merged_cond("results/star/se/?/SJ.out.tab"),
-        log=path_merged_cond("results/star/se/?/Log.final.out"),
+        path_merged_cond("results/star/se/?/SJ.out.tab"),
+        path_merged_cond("results/star/se/?/Log.final.out"),
     log:
         path_merged_cond("logs/star-se/?.log"),
     params:
+        index=lambda wc, input: input.index,
         extra="--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
@@ -45,15 +47,16 @@ rule align_pe_2pass:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        idx=f"{assembly_path}star_genome_{assembly}",
+        index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
+        path_merged_cond("results/star/pe2/?/Aligned.out.bam"),
         path_merged_cond("results/star/pe2/?/Aligned.toTranscriptome.out.bam"),
-        aln=path_merged_cond("results/star/pe2/?/Aligned.out.bam"),
-        log=path_merged_cond("results/star/pe2/?/Log.final.out"),
+        path_merged_cond("results/star/pe2/?/Log.final.out"),
     log:
         path_merged_cond("logs/star-pe2/?.log"),
     params:
+        index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
@@ -65,15 +68,16 @@ rule align_pe_2pass:
 rule align_se_2pass:
     input:
         fq1=get_map_reads_input_R1,
-        idx=f"{assembly_path}star_genome_{assembly}",
+        index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
+        path_merged_cond("results/star/se2/?/Aligned.out.bam"),
         path_merged_cond("results/star/se2/?/Aligned.toTranscriptome.out.bam"),
-        aln=path_merged_cond("results/star/se2/?/Aligned.out.bam"),
-        log=path_merged_cond("results/star/se2/?/Log.final.out"),
+        path_merged_cond("results/star/se2/?/Log.final.out"),
     log:
         path_merged_cond("logs/star-se2/?.log"),
     params:
+        index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),

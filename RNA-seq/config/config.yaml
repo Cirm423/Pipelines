@@ -92,7 +92,7 @@ params:
   star: "--outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04
 	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
 	--sjdbScore 1 --limitBAMsortRAM 60000000000 
-  --limitIObufferSize 330000000 500000000"
+  --limitIObufferSize 330000000"
   #If rsem has trouble remove --calc-ci and --ci-memory, it seems like an bug with rsem
   rsem: "--estimate-rspd --calc-ci --no-bam-output --ci-memory 70000"
   #You can change the normalization used to generate the bigWig files that will be used in the genome browser
