@@ -14,6 +14,6 @@ printshellcmds: true
 #Change path depending on cluster
 #conda-prefix: /home/share/dcyleung/snakemake/resources/envs
 #conda-prefix: /home4/share/dcyleung/snakemake/resources/envs
-#conda-prefix: /data1/share/dcyleung/Pipelines/snakemake/resources/envs
+#conda-prefix: /data1/share/dcyleung/Pipeline/snakemake/resources/envs
 #For clusters that allow containers
 use-singularity: true
