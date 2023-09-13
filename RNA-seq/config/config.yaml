@@ -94,7 +94,7 @@ params:
 	--sjdbScore 1 --limitBAMsortRAM 60000000000 
   --limitIObufferSize 330000000"
   #If rsem has trouble remove --calc-ci and --ci-memory, it seems like an bug with rsem
-  rsem: "--estimate-rspd --calc-ci --no-bam-output --ci-memory 70000"
+  rsem: "--estimate-rspd --no-bam-output"
   #You can change the normalization used to generate the bigWig files that will be used in the genome browser
   #Options for --normalizeUsing are:
   #RPKM = Reads Per Kilobase per Million mapped reads; 
