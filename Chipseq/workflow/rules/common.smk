@@ -173,6 +173,9 @@ def exists_multiple_groups(antibody):
 def exists_replicates(antibody):
     return len(samples[samples["antibody"] == antibody]["sample"].unique()) > 1
 
+def not_all_control(antibody):
+    return not all([is_control(sample) for sample in samples[samples["antibody"] == antibody]["sample"].unique()])
+
 def get_controls_of_antibody(antibody):
     groups = samples[samples["antibody"] == antibody]["group"]
     controls = samples[pd.isnull(samples["control"])]
@@ -421,7 +424,7 @@ def all_input(wildcards):
                             )
                     if do_consensus_peak:
                         for antibody in samples["antibody"]:
-                            if exists_multiple_groups(antibody) or exists_replicates(antibody):
+                            if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [
