@@ -273,9 +273,10 @@ def get_multiqc_input(wildcards):
             multiqc_input.extend(
                 expand(
                     [
-                        "results/deeptools/plot_profile_data.tab"
+                        "results/deeptools/plot_profile_data_{peak}.tab"
                     ],
-                    sample=sample
+                    sample=sample,
+                    peak = config["params"]["peak-analysis"]
                 )
             )
 
@@ -389,11 +390,12 @@ def all_input(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/deeptools/plot_profile.pdf",
-                        "results/deeptools/heatmap.pdf",
-                        "results/deeptools/heatmap_matrix.tab"
+                        "results/deeptools/plot_profile_{peak}.pdf",
+                        "results/deeptools/heatmap_{peak}.pdf",
+                        "results/deeptools/heatmap_matrix_{peak}.tab"
                     ],
-                    sample=sample
+                    sample=sample,
+                    peak = config["params"]["peak-analysis"]
                 )
             )
 
