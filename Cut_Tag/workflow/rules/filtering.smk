@@ -47,9 +47,36 @@ rule samtools_sort:
     wrapper:
         "v1.3.1/bio/samtools/sort"
 
+rule samtools_sort_name:
+    input:
+        "results/bamtools_filtered/{sample}.bam"
+    output:
+        temp("results/bamtools_filtered/{sample}.name_sorted.bam")
+    params:
+        extra="-n"
+    log:
+        "logs/bamtools_filtered/{sample}.name_sorted.log"
+    threads:
+        8
+    wrapper:
+        "v1.3.1/bio/samtools/sort"
+
+rule samtools_fixmate:
+    input:
+        "results/bamtools_filtered/{sample}.name_sorted.bam",
+    output:
+        "results/bamtools_filtered/{sample}.fixed.bam",
+    log:
+        "logs/bamtobed/{sample}_fixed.log",
+    threads: 8
+    params:
+        extra="",
+    wrapper:
+        "v2.6.0/bio/samtools/fixmate/"
+
 rule bamtobed:
     input:
-        "results/bamtools_filtered/{sample}.sorted.bam",
+        "results/bamtools_filtered/{sample}.fixed.bam",
     output:
         "results/bamtools_filtered/{sample}.bed",
     log:

@@ -80,3 +80,14 @@ params:
   #     of expected adapter matches by chance
   cutadapt-pe: "-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -g AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT -G AATGATACGGCGACCACCGAGATCTACACTCTTTCCCTACACGACGCTCTTCCGATCT"
   cutadapt-others: "-e 0.005 --overlap 7"
+  #You can change the normalization used to generate the input subtracted bigWig files that will be used in the genome browser
+  #This assumes that the controls you set on the samples table are inputs.
+  #Options for --normalizeUsing are:
+  #RPKM = Reads Per Kilobase per Million mapped reads; 
+  #CPM = Counts Per Million mapped reads, same as CPM in RNA-seq; 
+  #BPM = Bins Per Million mapped reads, same as TPM in RNA-seq; 
+  #RPGC = reads per genomic content (1x normalization)
+  #Remove --scaleFactorsMethod None --normalizeUsing <option> for no normalization, then the samples will be scaled by read counts (not recommended for ChIPseq)
+  #Do not remove --scaleFactorsMethod None if you are going to use normalization or the program will complain
+  #You can also change the bin size (bp), default is already set (50)
+  bamcompare: "--binSize 50 --scaleFactorsMethod None --normalizeUsing RPKM"

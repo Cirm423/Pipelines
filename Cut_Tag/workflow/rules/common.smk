@@ -155,6 +155,12 @@ def get_macs2_peaks():
         mode = config['params']['peak-analysis']
     )
 
+def get_bigwig_files(wildcards):
+    return expand(
+    "results/big_wig/{sam_contr_peak}_subtracted.bigWig",
+    sam_contr_peak = get_sample_control_peak_combinations_list(),
+    )
+
 def get_sample_control_peak_combinations_list_ab(antibody):
     sam_contr = []
     for sample in samples.index:

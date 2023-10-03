@@ -87,36 +87,54 @@ rule collect_multiple_metrics:
 #     wrapper:
 #         "v1.3.1/bio/bedtools/genomecov"
 
-rule sort_genomecov:
-    input:
-        f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else '.cpm'}.bedgraph"
-    output:
-        "results/bed_graph/{sample}_normalized.sorted.bedgraph"
-    log:
-        "logs/sort_genomecov/{sample}.log"
-    threads: 8
-    conda:
-        "../envs/bedsort.yaml"
-    shell:
-        "bedSort {input} {output} 2> {log}"
+# rule sort_genomecov:
+#     input:
+#         f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else '.cpm'}.bedgraph"
+#     output:
+#         "results/bed_graph/{sample}_normalized.sorted.bedgraph"
+#     log:
+#         "logs/sort_genomecov/{sample}.log"
+#     threads: 8
+#     conda:
+#         "../envs/bedsort.yaml"
+#     shell:
+#         "bedSort {input} {output} 2> {log}"
 
-rule bedGraphToBigWig:
+# rule bedGraphToBigWig:
+#     input:
+#         bedGraph="results/bed_graph/{sample}_normalized.sorted.bedgraph",
+#         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+#     output:
+#         "results/big_wig/{sample}.bigWig"
+#     log:
+#         "logs/big_wig/{sample}.log"
+#     params:
+#         ""
+#     wrapper:
+#         "v1.3.1/bio/ucsc/bedGraphToBigWig"
+
+rule bamCompare:
     input:
-        bedGraph="results/bed_graph/{sample}_normalized.sorted.bedgraph",
-        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+        treatment="results/bamtools_filtered/{sample}.sorted.bam",
+        control="results/bamtools_filtered/{control}.sorted.bam",
+        bam_idx=["results/bamtools_filtered/{sample}.sorted.bam.bai", "results/bamtools_filtered/{control}.sorted.bam.bai"],
     output:
-        "results/big_wig/{sample}.bigWig"
-    log:
-        "logs/big_wig/{sample}.log"
+        "results/big_wig/{sample}-{control}_subtracted.bigWig"
     params:
-        ""
-    wrapper:
-        "v1.3.1/bio/ucsc/bedGraphToBigWig"
+        norm = config["params"]["bamcompare"]
+    log: 
+        "logs/big_wig/{sample}_{control}.BamCompare.log"
+    conda:
+        "../envs/deeptools.yaml"
+    threads: 12
+    shell:
+        "bamCompare --bamfile1 {input.treatment} --bamfile2 {input.control} -o {output} -of bigwig -p {threads} {params.norm} --operation subtract 2>{log}"
+
 
 rule create_igv_bigwig:
     input:
         f"{assembly_path}{assembly}.annotation.bed",
-        expand("results/big_wig/{sample}.bigWig", sample=samples.index)
+        get_bigwig_files
     output:
         "results/IGV/big_wig/merged_library.bigWig.igv.txt"
     log:
