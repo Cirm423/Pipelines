@@ -173,6 +173,9 @@ def exists_multiple_groups(antibody):
 def exists_replicates(antibody):
     return len(samples[samples["antibody"] == antibody]["sample"].unique()) > 1
 
+def not_all_control(antibody):
+    return not all([is_control(sample) for sample in samples[samples["antibody"] == antibody]["sample"].unique()])
+
 def get_controls_of_antibody(antibody):
     groups = samples[samples["antibody"] == antibody]["group"]
     controls = samples[pd.isnull(samples["control"])]
@@ -270,9 +273,10 @@ def get_multiqc_input(wildcards):
             multiqc_input.extend(
                 expand(
                     [
-                        "results/deeptools/plot_profile_data.tab"
+                        "results/deeptools/plot_profile_data_{peak}.tab"
                     ],
-                    sample=sample
+                    sample=sample,
+                    peak = config["params"]["peak-analysis"]
                 )
             )
 
@@ -386,11 +390,12 @@ def all_input(wildcards):
             wanted_input.extend(
                 expand(
                     [
-                        "results/deeptools/plot_profile.pdf",
-                        "results/deeptools/heatmap.pdf",
-                        "results/deeptools/heatmap_matrix.tab"
+                        "results/deeptools/plot_profile_{peak}.pdf",
+                        "results/deeptools/heatmap_{peak}.pdf",
+                        "results/deeptools/heatmap_matrix_{peak}.tab"
                     ],
-                    sample=sample
+                    sample=sample,
+                    peak = config["params"]["peak-analysis"]
                 )
             )
 
@@ -421,7 +426,7 @@ def all_input(wildcards):
                             )
                     if do_consensus_peak:
                         for antibody in samples["antibody"]:
-                            if exists_multiple_groups(antibody) or exists_replicates(antibody):
+                            if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [

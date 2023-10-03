@@ -170,7 +170,7 @@ rule create_region:
     input:
         get_macs2_peaks()
     output:
-        "results/macs2_callpeak/Peak_region.bed"
+        "results/macs2_callpeak/Peak_region_{peak}.bed"
     conda:
         "../envs/bedtools.yaml"
     shell:
@@ -179,15 +179,15 @@ rule create_region:
 rule compute_matrix:
     input:
          #bed=f"{assembly_path}{assembly}.annotation.bed",
-         bed="results/macs2_callpeak/Peak_region.bed",
+         bed="results/macs2_callpeak/Peak_region_{peak}.bed",
          bigwig=get_is_bigwig
     output:
         # Usable output variables, their extensions and which option they implicitly call are listed here:
         #         https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/deeptools/computematrix.html.
-        matrix_gz="results/deeptools/matrix_files/matrix.gz",
-        matrix_tab="results/deeptools/matrix_files/matrix.tab"
+        matrix_gz="results/deeptools/matrix_files/matrix_{peak}.gz",
+        matrix_tab="results/deeptools/matrix_files/matrix_{peak}.tab"
     log:
-        "logs/deeptools/compute_matrix.log"
+        "logs/deeptools/compute_matrix_{peak}.log"
     threads: 24
     params:
         command="reference-point",
@@ -199,14 +199,14 @@ rule compute_matrix:
 
 rule plot_profile:
     input:
-         "results/deeptools/matrix_files/matrix.gz"
+         "results/deeptools/matrix_files/matrix_{peak}.gz"
     output: #ToDo: add description to report caption
         # Usable output variables, their extensions and which option they implicitly call are listed here:
         #         https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/deeptools/plotprofile.html.
-        plot_img=report("results/deeptools/plot_profile.pdf", caption="../report/plot_profile_deeptools.rst", category="GenomicRegions"),
-        data="results/deeptools/plot_profile_data.tab"
+        plot_img=report("results/deeptools/plot_profile_{peak}.pdf", caption="../report/plot_profile_deeptools.rst", category="GenomicRegions"),
+        data="results/deeptools/plot_profile_data_{peak}.tab"
     log:
-        "logs/deeptools/plot_profile.log"
+        "logs/deeptools/plot_profile_{peak}.log"
     params:
         ""
     threads: 24
@@ -217,14 +217,14 @@ rule plot_profile:
 
 rule plot_heatmap:
     input:
-         "results/deeptools/matrix_files/matrix.gz"
+         "results/deeptools/matrix_files/matrix_{peak}.gz"
     output:  #ToDo: add description to report caption
         # Usable output variables, their extensions and which option they implicitly call are listed here:
         #         https://snakemake-wrappers.readthedocs.io/en/stable/wrappers/deeptools/plotheatmap.html.
-        heatmap_img=report("results/deeptools/heatmap.pdf", caption="../report/plot_heatmap_deeptools.rst", category="Heatmaps"),
-        heatmap_matrix="results/deeptools/heatmap_matrix.tab"
+        heatmap_img=report("results/deeptools/heatmap_{peak}.pdf", caption="../report/plot_heatmap_deeptools.rst", category="Heatmaps"),
+        heatmap_matrix="results/deeptools/heatmap_matrix_{peak}.tab"
     log:
-        "logs/deeptools/heatmap.log"
+        "logs/deeptools/heatmap_{peak}.log"
     params:
         ""
     threads: 24
