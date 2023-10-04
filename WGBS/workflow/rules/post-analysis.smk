@@ -88,57 +88,123 @@ rule bismark2summary:
     wrapper:
         "v2.2.0/bio/bismark/bismark2summary"
 
-rule methylkit_bedgraphs:
+# rule methylkit_bedgraphs:
+#     input:
+#         meth = get_methylkit_input,
+#         annot = f"{assembly_path}{assembly}.annotation.bed12"
+#     output:
+#         db = temp(directory("results/bed_graph/methylDB")),
+#         bed = temp(expand("results/bed_graph/{sample}_meth-perc.bedGraph",sample = samples.index))
+#     params:
+#         mode = config["params"]["mode"],
+#         assembly = assembly,
+#         treatment = [1 if x == "treatment" else 0 for x in samples["group"]],
+#         samples = config["samples"],
+#         mincov = config["params"]["diff_meth"]["min_cov"],
+#         min_group = config["params"]["diff_meth"]["min_group"],
+#         window_s = config["params"]["diff_meth"]["tile_window"],
+#         step_s = config["params"]["diff_meth"]["step_size"],
+#         tile_cov = config["params"]["diff_meth"]["tile_cov"]
+#     log:
+#         "logs/methylkit_bg.log"
+#     threads: 24
+#     conda:
+#         "../envs/methylkit.yaml"
+#     script:
+#         "../scripts/methylkit_bg.R"
+
+# rule sort_bed_perc:
+#     input:
+#         "results/bed_graph/{sample}_meth-perc.bedGraph",
+#     output:
+#         temp("results/bed_graph/{sample}_meth-perc.sorted.bedGraph")
+#     log:
+#         "logs/sort_perc/{sample}.log"
+#     threads: 8
+#     conda:
+#         "../envs/bedsort.yaml"
+#     shell:
+#         "bedSort {input} {output} 2> {log}"
+
+# rule clip_bed_perc:
+#     input:
+#         bed="results/bed_graph/{sample}_meth-perc.sorted.bedGraph",
+#         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+#     output:
+#         "results/bed_graph/{sample}_meth-perc.clipped.sorted.bedGraph"
+#     log:
+#         "logs/clip_perc/{sample}.log"
+#     threads: 8
+#     conda:
+#         "../envs/bedsort.yaml"
+#     shell:
+#         "bedClip -truncate {input.bed} {input.chromsizes} {output} 2> {log}"
+
+rule sort_bed_meth:
     input:
-        meth = get_methylkit_input,
-        annot = f"{assembly_path}{assembly}.annotation.bed12"
+        "results/methyldackel/{sample}_CpG.bedGraph"
     output:
-        db = temp(directory("results/bed_graph/methylDB")),
-        bed = temp(expand("results/bed_graph/{sample}_meth-perc.bedGraph",sample = samples.index))
+        temp("results/methyldackel/{sample}.sorted.bedGraph")
     params:
-        mode = config["params"]["mode"],
-        assembly = assembly,
-        treatment = [1 if x == "treatment" else 0 for x in samples["group"]],
-        samples = config["samples"],
-        mincov = config["params"]["diff_meth"]["min_cov"],
-        min_group = config["params"]["diff_meth"]["min_group"],
-        window_s = config["params"]["diff_meth"]["tile_window"],
-        step_s = config["params"]["diff_meth"]["step_size"],
-        tile_cov = config["params"]["diff_meth"]["tile_cov"]
-    log:
-        "logs/methylkit_bg.log"
-    threads: 24
+        ""
+    threads: 4
     conda:
-        "../envs/methylkit.yaml"
-    script:
-        "../scripts/methylkit_bg.R"
-
-rule sort_bed_perc:
-    input:
-        "results/bed_graph/{sample}_meth-perc.bedGraph",
-    output:
-        temp("results/bed_graph/{sample}_meth-perc.sorted.bedGraph")
-    log:
-        "logs/sort_perc/{sample}.log"
-    threads: 8
-    conda:
-        "../envs/bedsort.yaml"
+        "../envs/bedops.yaml"
     shell:
-        "bedSort {input} {output} 2> {log}"
+        "sort-bed {input} > {output}"
 
-rule clip_bed_perc:
+rule sort_bed_meth_tar:
     input:
-        bed="results/bed_graph/{sample}_meth-perc.sorted.bedGraph",
+        expand("results/bismark/meth_cpg/{{sample}}-{end}.bedGraph.gz",end = "se" if config["single_end"] else "pe")
+    output:
+        temp("results/bismark/{sample}.sorted.bedGraph")
+    params:
+        ""
+    threads: 4
+    conda:
+        "../envs/bedops.yaml"
+    shell:
+        "gzip -dc {input} | sort-bed - > {output}"
+
+rule chop_chroms:
+    input:
+        f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        temp(f"results/big_wig/{assembly}.chrom.sizes.{{bin}}_bins")
+    params:
+        config["params"]["bigwig_bins"]
+    threads: 4
+    conda:
+        "../envs/bedops.yaml"
+    shell:
+        """
+        awk -vOFS="\t" '($1!~/_/){{ print $1, "0", $2 }}' {input} | sort-bed - | bedops --chop {params} - > {output}
+        """
+
+rule bin_bedgraph:
+    input:
+        bedgraph = expand("results/{pipe}/{{sample}}.sorted.bedGraph",pipe="methyldackel" if config["params"]["mode"] == "bwameth" else "bismark"),
+        chrsizes = expand(f"results/big_wig/{assembly}.chrom.sizes.{{bin}}_bins",bin=config["params"]["bigwig_bins"])
+    output:
+        temp("results/big_wig/{sample}.binned.sorted.bedGraph")
+    threads: 4
+    conda:
+        "../envs/bedops.yaml"
+    shell:
+        "bedmap --echo --mean --prec 2 --delim '\t' {input.chrsizes} {input.bedgraph} > {output}"
+
+rule bedGraphToBigWig_perc:
+    input:
+        bedGraph=get_bedgraphs,
         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
     output:
-        "results/bed_graph/{sample}_meth-perc.clipped.sorted.bedGraph"
+        "results/big_wig/{sample}_meth-perc_{bin}bp-bins.bigWig"
     log:
-        "logs/clip_perc/{sample}.log"
-    threads: 8
-    conda:
-        "../envs/bedsort.yaml"
-    shell:
-        "bedClip -truncate {input.bed} {input.chromsizes} {output} 2> {log}"
+        "logs/big_wig/{sample}_{bin}bp-bins.log"
+    params:
+        ""
+    wrapper:
+        "v1.3.1/bio/ucsc/bedGraphToBigWig"
 
 rule sort_bed_diffmeth:
     input:
@@ -166,19 +232,6 @@ rule clip_bed_diffmeth:
         "../envs/bedsort.yaml"
     shell:
         "bedClip -truncate {input.bed} {input.chromsizes} {output} 2> {log}"
-
-rule bedGraphToBigWig_perc:
-    input:
-        bedGraph="results/bed_graph/{sample}_meth-perc.clipped.sorted.bedGraph",
-        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
-    output:
-        "results/big_wig/{sample}_meth-perc.bigWig"
-    log:
-        "logs/big_wig/{sample}.log"
-    params:
-        ""
-    wrapper:
-        "v1.3.1/bio/ucsc/bedGraphToBigWig"
 
 rule bedGraphToBigWig_diffmeth:
     input:

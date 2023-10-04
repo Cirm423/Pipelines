@@ -238,6 +238,16 @@ def get_deduplicated_bams(wildcards):
             end = "se" if config["single_end"] else "pe"
         )
 
+def get_bedgraphs(wildcards):
+    if wildcards.bin == "1":
+        if config["params"]["mode"] == "bwameth":
+            return "results/methyldackel/{sample}.sorted.bedGraph"
+        else:
+            return "results/bismark/{sample}.sorted.bedGraph"
+    else:
+        return "results/big_wig/{sample}.binned.sorted.bedGraph"
+
+
 def get_multiqc_input(wildcards):
     multiqc_input = []
     for (sample, unit) in units.index:
@@ -398,8 +408,7 @@ def all_input(wildcards):
 
     # Methylation, depending on bismark or bwameth
     for sample in samples.index:
-        if config["params"]["mode"] == "bismark" or (config["params"]["mode"] == "bwameth" and config["params"]["methyldackel"]["methyl_kit"]):
-            wanted_input.extend(expand("results/big_wig/{sample}_meth-perc.bigWig",sample=sample))
+        wanted_input.extend(expand("results/big_wig/{sample}_meth-perc_{bin}bp-bins.bigWig",sample=sample,bin=config["params"]["bigwig_bins"]))
         if config["params"]["lc_extrap"]["activate"]:
             wanted_input.extend( expand(["results/preseq/{sample}.lc_extrap"], sample = sample))
         if config["params"]["mode"] == "bwameth":
@@ -410,7 +419,7 @@ def all_input(wildcards):
                     ],
                     sample = sample,
                     meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"],
-                    suffix = ".methylKit" if config["params"]["methyldackel"]["methyl_kit"] else ".bedGraph"
+                    suffix = [".methylKit",".bedGraph"] if config["params"]["diff_meth"]["activate"] else [".bedGraph"]
                 )
             ) 
         else:
@@ -455,21 +464,19 @@ def all_input(wildcards):
             
     #Differential methylation analysis
     if config["params"]["diff_meth"]["activate"]:
-        #only when bismark or bwameth with methylkit param
-        if config["params"]["mode"] == "bismark" or (config["params"]["mode"] == "bwameth" and config["params"]["methyldackel"]["methyl_kit"]):
-            wanted_input.extend([
-                "results/diff_meth/methDB.RDS",
-                "results/diff_meth/plots/Sample_correlation.pdf",
-                "results/diff_meth/plots/Sample_clustering.pdf",
-                "results/diff_meth/plots/PCA_screen.pdf",
-                "results/diff_meth/plots/PCA.pdf",
-                "results/diff_meth/CpG_hypermethylated_25p.tsv",
-                "results/diff_meth/CpG_hypomethylated_25p.tsv",
-                "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
-                "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
-                "results/diff_meth/CpG_methylated_annotation_25p.tsv",
-                "results/big_wig/CpG_all_methylated_diff.bigWig"
-            ])
+        wanted_input.extend([
+            "results/diff_meth/methDB.RDS",
+            "results/diff_meth/plots/Sample_correlation.pdf",
+            "results/diff_meth/plots/Sample_clustering.pdf",
+            "results/diff_meth/plots/PCA_screen.pdf",
+            "results/diff_meth/plots/PCA.pdf",
+            "results/diff_meth/CpG_hypermethylated_25p.tsv",
+            "results/diff_meth/CpG_hypomethylated_25p.tsv",
+            "results/diff_meth/CpG_all_methylated_diff_25p.tsv",
+            "results/diff_meth/CpG_methylated_by_chr_25p.tsv",
+            "results/diff_meth/CpG_methylated_annotation_25p.tsv",
+            "results/big_wig/CpG_all_methylated_diff.bigWig"
+        ])
             
     return wanted_input
 

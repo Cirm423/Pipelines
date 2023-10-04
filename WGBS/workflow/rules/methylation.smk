@@ -5,9 +5,8 @@ rule methyldackel:
         fa = f"{assembly_path}{assembly}.fa",
         fai = f"{assembly_path}{assembly}.fa.fai",
     output:
-        expand("results/methyldackel/{{sample}}_{meth}{suffix}",
-            meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"],
-            suffix = ".methylKit" if config["params"]["methyldackel"]["methyl_kit"] else ".bedGraph"
+        expand("results/methyldackel/{{sample}}_{meth}.bedGraph",
+            meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"]
         ),
         txt = "results/methyldackel/{sample}_methyldackel.txt",
         svg_OT = report("results/methyldackel/{sample}_meth_bias_OT.svg", category="Methylation"),
@@ -18,7 +17,7 @@ rule methyldackel:
         comprehensive = "--CHG --CHH" if config["params"]["methyldackel"]["comprehensive"] else "",
         min_depth = config["params"]["methyldackel"]["min_depth"] if config["params"]["methyldackel"]["min_depth"] > 0 else "",
         ignore_flags = "--ignoreFlags" if config["params"]["methyldackel"]["ignore_flags"] else "",
-        methyl_kit = "--methylKit" if config["params"]["methyldackel"]["methyl_kit"] else "",
+        methyl_kit = "",
         extra_extract = config["params"]["methyldackel"]["extra_extract"],
         extra_mbias = config["params"]["methyldackel"]["extra_mbias"],
     log:
@@ -29,6 +28,32 @@ rule methyldackel:
     shell:
         "MethylDackel extract -@ {threads} {params.comprehensive} {params.ignore_flags} {params.methyl_kit} {params.min_depth} {input.fa} {input.bam} {params.extra_extract} -o {params.prefix} 2>{log} && "
         "MethylDackel mbias -@ {threads} {params.comprehensive} {params.ignore_flags} {params.extra_mbias} {input.fa} {input.bam} {params.prefix_mbias} --txt > {output.txt} 2>>{log}"
+
+rule methyldackel_methylkit:
+    input:
+        bam = "results/picard_dedup/{sample}.bam",
+        bai = "results/picard_dedup/{sample}.bam.bai",
+        fa = f"{assembly_path}{assembly}.fa",
+        fai = f"{assembly_path}{assembly}.fa.fai",
+    output:
+        expand("results/methyldackel/{{sample}}_{meth}.methylKit",
+            meth = ["CpG","CHG","CHH"] if config["params"]["methyldackel"]["comprehensive"] else ["CpG"]
+        ),
+    params:
+        prefix = "results/methyldackel/{sample}",
+        comprehensive = "--CHG --CHH" if config["params"]["methyldackel"]["comprehensive"] else "",
+        min_depth = config["params"]["methyldackel"]["min_depth"] if config["params"]["methyldackel"]["min_depth"] > 0 else "",
+        ignore_flags = "--ignoreFlags" if config["params"]["methyldackel"]["ignore_flags"] else "",
+        methyl_kit = "--methylKit",
+        extra_extract = config["params"]["methyldackel"]["extra_extract"],
+    log:
+        "logs/methyldackel/{sample}_methylation.log"
+    conda:
+        "../envs/methyldackel.yaml"
+    threads: 24
+    shell:
+        "MethylDackel extract -@ {threads} {params.comprehensive} {params.ignore_flags} {params.methyl_kit} {params.min_depth} {input.fa} {input.bam} {params.extra_extract} -o {params.prefix} 2>{log} && "
+
 
 rule bismark_methylation_extractor_pe:
     input: "results/bismark_mapped/{sample}_pe.deduplicated.bam"
