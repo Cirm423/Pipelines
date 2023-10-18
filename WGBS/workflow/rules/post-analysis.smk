@@ -85,6 +85,8 @@ rule bismark2summary:
         txt="results/qc/bismark/bismark2summary.txt"
     log:
         "logs/qc/bismark/bismark2summary.log"
+    resources:
+        mem_mb = 4000
     wrapper:
         "v2.2.0/bio/bismark/bismark2summary"
 
