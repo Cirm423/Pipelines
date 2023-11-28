@@ -30,3 +30,17 @@ rule merge_bams:
         "VALIDATION_STRINGENCY=LENIENT SORT_ORDER=coordinate",
     wrapper:
         "v0.87.0/bio/picard/mergesamfiles"
+
+rule mark_merged_duplicates:
+    input:
+        "results/merged/{sample}.bam"
+    output:
+        bam=temp("results/picard_dedup/{sample}.bam"),
+        metrics="results/picard_dedup/{sample}.metrics.txt"
+    log:
+        "logs/picard/picard_dedup/{sample}.log"
+    params:
+        f"REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE={config['params']['optical_distance']}",
+    threads: 4
+    wrapper:
+        "v0.87.0/bio/picard/markduplicates"

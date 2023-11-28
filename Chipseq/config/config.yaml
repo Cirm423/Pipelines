@@ -55,6 +55,9 @@ params:
     # Should not be run unless there are at least 2 samples per control (not counting control) otherwise will not work.
     activate: True
   # samtools view parameters:
+  #The maximum offset between two duplicate clusters in order to consider them optical duplicates. 
+  #100 is appropriate for unpatterned versions of the Illumina platform. For the patterned flowcell models, 2500 is more appropriate.
+  optical_distance: 2500
   # if duplicates should be removed in this filtering, add "-F 0x0400" to the params
   # if for each read, you only want to retain a single (best) mapping, add "-q 1" to params
   # if you would like to restrict analysis to certain regions (e.g. excluding other "blacklisted" regions),

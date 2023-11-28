@@ -54,6 +54,10 @@ params:
       extra: ""
   # Params to use for methildackel. Only used when the mode is set to bwameth.
   methyldackel:
+    #optical duplicates:
+    #The maximum offset between two duplicate clusters in order to consider them optical duplicates. 
+    #100 is appropriate for unpatterned versions of the Illumina platform. For the patterned flowcell models, 2500 is more appropriate.
+    optical_distance: 2500
     # Adds CHG and CHH methylation in addition to CpG. Will produce very large files.
     comprehensive: True
     # Sets the minimum coverage for methylation calls.

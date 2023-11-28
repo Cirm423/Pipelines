@@ -296,9 +296,9 @@ def get_multiqc_input(wildcards):
                 [
                     "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
                     "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                    "results/mapped/{sample}-{unit}.mapped.flagstat",
-                    "results/mapped/{sample}-{unit}.mapped.idxstats",
-                    "results/mapped/{sample}-{unit}.mapped.stats.txt"
+                    "results/picard_dedup/{sample}-{unit}.mapped.flagstat",
+                    "results/picard_dedup/{sample}-{unit}.mapped.idxstats",
+                    "results/picard_dedup/{sample}-{unit}.mapped.stats.txt"
                 ],
                 sample = sample,
                 unit = unit,
@@ -321,6 +321,9 @@ def get_multiqc_input(wildcards):
         multiqc_input.extend(
             expand (
                 [
+                    "results/picard_dedup/{sample}.picard_dedup.flagstat",
+                    "results/picard_dedup/{sample}.picard_dedup.idxstats",
+                    "results/picard_dedup/{sample}.picard_dedup.stats.txt",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.flagstat",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.idxstats",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.stats.txt",

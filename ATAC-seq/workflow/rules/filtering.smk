@@ -1,6 +1,6 @@
 rule samtools_view_filter:
     input:
-        "results/merged/{sample}.bam", 
+        "results/picard_dedup/{sample}.bam", 
         f"{assembly_path}{assembly}.blacklist.sorted.complement"
     output:
         temp("results/sam-view/{sample}.bam")
