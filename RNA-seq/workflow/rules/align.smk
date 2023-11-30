@@ -7,12 +7,12 @@ rule align_pe:
         fq2=get_map_reads_input_R2,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        path_merged_cond("results/star/pe/?/Aligned.out.bam"),
-        path_merged_cond("results/star/pe/?/Aligned.toTranscriptome.out.bam"),
-        path_merged_cond("results/star/pe/?/SJ.out.tab"),
-        path_merged_cond("results/star/pe/?/Log.final.out"),
+        "results/star/pe/{samples_units}/Aligned.out.bam",
+        "results/star/pe/{samples_units}/Aligned.toTranscriptome.out.bam",
+        "results/star/pe/{samples_units}/SJ.out.tab",
+        "results/star/pe/{samples_units}/Log.final.out",
     log:
-        path_merged_cond("logs/star-pe/?.log"),
+        "logs/star-pe/{samples_units}.log",
     params:
         index=lambda wc, input: input.index,
         extra="--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
@@ -28,12 +28,12 @@ rule align_se:
         fq1=get_map_reads_input_R1,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        path_merged_cond("results/star/se/?/Aligned.out.bam"),
-        path_merged_cond("results/star/se/?/Aligned.toTranscriptome.out.bam"),
-        path_merged_cond("results/star/se/?/SJ.out.tab"),
-        path_merged_cond("results/star/se/?/Log.final.out"),
+        "results/star/se/{samples_units}/Aligned.out.bam",
+        "results/star/se/{samples_units}/Aligned.toTranscriptome.out.bam",
+        "results/star/se/{samples_units}/SJ.out.tab",
+        "results/star/se/{samples_units}/Log.final.out",
     log:
-        path_merged_cond("logs/star-se/?.log"),
+        "logs/star-se/{samples_units}.log",
     params:
         index=lambda wc, input: input.index,
         extra="--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
@@ -50,11 +50,11 @@ rule align_pe_2pass:
         index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
-        path_merged_cond("results/star/pe2/?/Aligned.out.bam"),
-        path_merged_cond("results/star/pe2/?/Aligned.toTranscriptome.out.bam"),
-        path_merged_cond("results/star/pe2/?/Log.final.out"),
+        "results/star/pe2/{samples_units}/Aligned.out.bam",
+        "results/star/pe2/{samples_units}/Aligned.toTranscriptome.out.bam",
+        "results/star/pe2/{samples_units}/Log.final.out",
     log:
-        path_merged_cond("logs/star-pe2/?.log"),
+        "logs/star-pe2/{samples_units}.log",
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
@@ -71,11 +71,11 @@ rule align_se_2pass:
         index=f"{assembly_path}star_genome_{assembly}",
         sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
     output:
-        path_merged_cond("results/star/se2/?/Aligned.out.bam"),
-        path_merged_cond("results/star/se2/?/Aligned.toTranscriptome.out.bam"),
-        path_merged_cond("results/star/se2/?/Log.final.out"),
+        "results/star/se2/{samples_units}/Aligned.out.bam",
+        "results/star/se2/{samples_units}/Aligned.toTranscriptome.out.bam",
+        "results/star/se2/{samples_units}/Log.final.out",
     log:
-        path_merged_cond("logs/star-se2/?.log"),
+        "logs/star-se2/{samples_units}.log",
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
@@ -89,7 +89,7 @@ rule samtools_sort_pe:
     input:
         lambda wc: get_star_bam_uns(wc,original=True),
     output:
-        path_merged_cond("results/star/pe/?/Aligned.sortedByCoord.out.bam"),
+        "results/star/pe/{samples_units}/Aligned.sortedByCoord.out.bam",
     params:
         extra = "",
     threads:  # Samtools takes additional threads through its option -@
@@ -101,7 +101,7 @@ rule samtools_sort_se:
     input:
         lambda wc: get_star_bam_uns(wc,original=True),
     output:
-        path_merged_cond("results/star/se/?/Aligned.sortedByCoord.out.bam"),
+        "results/star/se/{samples_units}/Aligned.sortedByCoord.out.bam",
     params:
         extra = "",
         tmp_dir = ""
@@ -114,7 +114,7 @@ rule samtools_sort_pe_2:
     input:
         get_star_bam_uns,
     output:
-        path_merged_cond("results/star/pe2/?/Aligned.sortedByCoord.out.bam"),
+        "results/star/pe2/{samples_units}/Aligned.sortedByCoord.out.bam",
     params:
         extra = "",
         tmp_dir = ""
@@ -127,7 +127,7 @@ rule samtools_sort_se_2:
     input:
         get_star_bam_uns,
     output:
-        path_merged_cond("results/star/se2/?/Aligned.sortedByCoord.out.bam"),
+        "results/star/se2/{samples_units}/Aligned.sortedByCoord.out.bam",
     params:
         extra = "",
         tmp_dir = ""
@@ -140,9 +140,9 @@ rule samtools_index_pe:
     input:
         lambda wc: get_star_bam(wc, original=True)
     output:
-        path_merged_cond("results/star/pe/?/Aligned.sortedByCoord.out.bam.bai"),
+        "results/star/pe/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
     log:
-        path_merged_cond("logs/samtools_index/pe/?.log"),
+        "logs/samtools_index/pe/{samples_units}.log",
     params:
         "" # optional params string
     threads:  # Samtools takes additional threads through its option -@
@@ -154,9 +154,9 @@ rule samtools_index_se:
     input:
         lambda wc: get_star_bam(wc, original=True)
     output:
-        path_merged_cond("results/star/se/?/Aligned.sortedByCoord.out.bam.bai"),
+        "results/star/se/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
     log:
-        path_merged_cond("logs/samtools_index/se/?.log"),
+        "logs/samtools_index/se/{samples_units}.log",
     params:
         "" # optional params string
     threads:  # Samtools takes additional threads through its option -@
@@ -168,9 +168,9 @@ rule samtools_index_pe_2:
     input:
         get_star_bam
     output:
-        path_merged_cond("results/star/pe2/?/Aligned.sortedByCoord.out.bam.bai"),
+        "results/star/pe2/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
     log:
-        path_merged_cond("logs/samtools_index/pe2/?.log")
+        "logs/samtools_index/pe2/{samples_units}.log"
     params:
         "" # optional params string
     threads:  # Samtools takes additional threads through its option -@
@@ -182,9 +182,9 @@ rule samtools_index_se_2:
     input:
         get_star_bam
     output:
-        path_merged_cond("results/star/se2/?/Aligned.sortedByCoord.out.bam.bai"),
+        "results/star/se2/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
     log:
-        path_merged_cond("logs/samtools_index/se2/?.log")
+        "logs/samtools_index/se2/{samples_units}.log"
     params:
         "" # optional params string
     threads:  # Samtools takes additional threads through its option -@
@@ -208,10 +208,10 @@ rule rsem_pe:
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
         # this file contains per-gene quantification data for the sample
-        genes_results=path_merged_cond("results/rsem/pe¿/?/mapped.genes.results"),
+        genes_results="results/rsem/pe¿/{samples_units}/mapped.genes.results",
         # isoforms_results must end in .isoforms.results and otherwise have the same prefix as genes_results
         # this file contains per-transcript quantification data for the sample
-        isoforms_results=path_merged_cond("results/rsem/pe¿/?/mapped.isoforms.results"),
+        isoforms_results="results/rsem/pe¿/{samples_units}/mapped.isoforms.results",
     params:
         # optional, specify if sequencing is paired-end
         paired_end=True,
@@ -221,7 +221,7 @@ rule rsem_pe:
         extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
-        path_merged_cond("logs/rsem/calculate_expression/?.log"),
+        "logs/rsem/calculate_expression/{samples_units}.log",
     conda:
         "../envs/rsem.yaml"
     shell:
@@ -243,10 +243,10 @@ rule rsem_se:
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
         # this file contains per-gene quantification data for the sample
-        genes_results=path_merged_cond("results/rsem/se¿/?/mapped.genes.results"),
+        genes_results="results/rsem/se¿/{samples_units}/mapped.genes.results",
         # isoforms_results must end in .isoforms.results and otherwise have the same prefix as genes_results
         # this file contains per-transcript quantification data for the sample
-        isoforms_results=path_merged_cond("results/rsem/se¿/?/mapped.isoforms.results"),
+        isoforms_results="results/rsem/se¿/{samples_units}/mapped.isoforms.results",
     params:
         # optional, specify if sequencing is paired-end
         paired_end=False,
@@ -256,7 +256,7 @@ rule rsem_se:
         extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
-        path_merged_cond("logs/rsem/calculate_expression/?.log"),
+        "logs/rsem/calculate_expression/{samples_units}.log",
     conda:
         "../envs/rsem.yaml"
     shell: 
