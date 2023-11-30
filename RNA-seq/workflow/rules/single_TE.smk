@@ -36,7 +36,7 @@ rule filter_single_TE:
     output:
         "results/TE_single/{sample}/uniq-TE-individual.signal.filtered",
     params:
-        filt=config["TE_single"]["filter"],
+        filt=config["params"]["TE_single"]["filter"],
     shell:
         r"""awk -F"\t" 'BEGIN{{OFS="\t"}} {{if ($7>{params.filt}) print }}' {input} > {output}"""
 
@@ -51,7 +51,7 @@ rule TE_single_diff:
     log:
         "logs/TE_single/TE_diff.log"
     params:
-        config["TE_single"]["alternative"]
+        config["params"]["TE_single"]["alternative"]
     run:
         for file in input.treat:
             file_name = os.path.basename(os.path.dirname(file))

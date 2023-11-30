@@ -38,7 +38,7 @@ rule counts_single:
         temp("results/single/counts.temp"),
         temp("results/single/counts_diff.temp"),
     params:
-        config["single"]["alternative"]
+        config["params"]["single"]["alternative"]
     run:
         for file in input.treat:
             file_name = os.path.basename(file).split(".")[0]

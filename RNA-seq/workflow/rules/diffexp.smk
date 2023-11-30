@@ -6,7 +6,7 @@ rule deseq2_init:
         "results/deseq2/normcounts.tsv",
     params:
         samples=config["samples"],
-        model=config["diffexp"]["model"],
+        model=config["params"]["diffexp"]["model"],
     conda:
         "../envs/deseq2.yaml"
     log:
@@ -22,7 +22,7 @@ rule pca:
     output:
         report("results/pca.svg", caption = "../report/pca.rst", category = "PCA"),
     params:
-        pca_labels=config["pca"]["labels"],
+        pca_labels=config["params"]["pca"]["labels"],
     conda:
         "../envs/deseq2.yaml"
     log:
@@ -59,9 +59,9 @@ rule deseq2_init_TE:
         "results/deseq2/TE_normcounts.tsv",
     params:
         samples=config["samples"],
-        model=config["diffexp"]["model"],
+        model=config["params"]["diffexp"]["model"],
         end=get_deseq2_end,
-        filt=config["diffexp"]["TE"]["filter"],
+        filt=config["params"]["diffexp"]["TE"]["filter"],
     conda:
         "../envs/deseq2_TE.yaml"
     log:
@@ -76,7 +76,7 @@ rule pca_TE:
     output:
         report("results/TE_pca.svg", caption = "../report/pca_TE.rst", category = "PCA"),
     params:
-        pca_labels=config["pca"]["labels"],
+        pca_labels=config["params"]["pca"]["labels"],
     conda:
         "../envs/deseq2.yaml"
     log:

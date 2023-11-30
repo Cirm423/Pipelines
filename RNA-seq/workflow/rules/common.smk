@@ -8,12 +8,12 @@ ftp = FTP.RemoteProvider()
 
 validate(config, schema="../schemas/config.schema.yaml")
 
-if config["pca"]["activate"]:
-    assert(config["pca"]["activate"] and config["diffexp"]["activate"]), "Pca cannot be activated without activating diffexp"
-assert(not (config["diffexp"]["activate"] and (config["single"]["activate"] or config["TE_single"]["activate"]))), "Single or TE_single cannot be activated at the same time as diffexp"
+if config["params"]["pca"]["activate"]:
+    assert(config["params"]["pca"]["activate"] and config["params"]["diffexp"]["activate"]), "Pca cannot be activated without activating diffexp"
+assert(not (config["params"]["diffexp"]["activate"] and (config["params"]["single"]["activate"] or config["params"]["TE_single"]["activate"]))), "Single or TE_single cannot be activated at the same time as diffexp"
 
 alternative_types = ["greater","less","two.sided"]
-assert  config["single"]["alternative"] in alternative_types and config["TE_single"]["alternative"] in alternative_types, "The single mode alternative must be either greater, less or two.sided"
+assert  config["params"]["single"]["alternative"] in alternative_types and config["params"]["TE_single"]["alternative"] in alternative_types, "The single mode alternative must be either greater, less or two.sided"
 
 samples = (
     pd.read_csv(config["samples"], sep="\t", dtype={"sample_name": str, "condition": str})
@@ -30,90 +30,12 @@ units = (
 )
 validate(units, schema="../schemas/units.schema.yaml")
 
-assembly = config["ref"]["assembly"]
-assembly_path = config['resources'] + config['ref']['assembly'] + "/"
+assembly = config['resources']["ref"]["assembly"]
+assembly_path = config['resources']['path'] + config['resources']['ref']['assembly'] + "/"
 
-if config["single"]["activate"] or config["TE_single"]["activate"]:
+if config["params"]["single"]["activate"] or config["params"]["TE_single"]["activate"]:
     assert(len(samples.loc[samples["condition"]=="control"])==1), "For single analysis one of the samples has to be called 'control'"
-    assert(config["mergeReads"]["activate"]), "For single analysis, mergeReads must be activated"
-
-
-def get_final_output():
-    if config["diffexp"]["activate"]:
-        final_output = expand(
-            "results/diffexp/{contrast}.diffexp.tsv",
-            contrast=config["diffexp"]["contrasts"],
-        )
-        if config["diffexp"]["TE"]["activate"]:
-            final_output.extend(expand(
-                "results/diffexp/{contrast}.diffexp.TE.tsv",
-                contrast=config["diffexp"]["contrasts"],
-            ))
-        if config["pca"]["activate"]:
-            final_output.append("results/pca.svg")
-            if config["diffexp"]["TE"]["activate"]:
-                final_output.append("results/TE_pca.svg")
-    #elif config["single"]["activate"]:
-    else:
-        if is_activated("2nd_pass"):
-            num = "2"
-        else:
-            num = ""
-        if not is_paired_end(samples["sample_name"][0]):
-            if is_activated("mergeReads"):
-                final_output = expand(
-                    "results/rsem/se{num}/{sample}/mapped.genes.results",
-                    sample=units["sample_name"],num=num
-                )
-                final_output.extend(expand(
-                    "results/rsem/se{num}/{sample}/mapped.isoforms.results",
-                    sample=units["sample_name"],num=num
-                ))
-            else:
-                final_output = expand(
-                    "results/rsem/se{num}/{sample}-{unit}/mapped.genes.results",
-                    sample=units["sample_name"],unit=units["unit_name"], num=num
-                )
-                final_output.extend(expand(
-                    "results/rsem/se{num}/{sample}-{unit}/mapped.isoforms.results",
-                    sample=units["sample_name"],unit=units["unit_name"], num=num
-                ))
-        else:
-            if is_activated("mergeReads"):
-                final_output = expand(
-                    "results/rsem/pe{num}/{sample}/mapped.genes.results",
-                    sample=units["sample_name"], num=num
-                )
-                final_output.extend(expand(
-                    "results/rsem/pe{num}/{sample}/mapped.isoforms.results",
-                    sample=units["sample_name"], num=num
-                ))
-            else:
-                final_output = expand(
-                    "results/rsem/pe{num}/{sample}-{unit}/mapped.genes.results",
-                    sample=units["sample_name"],unit=units["unit_name"], num=num
-                )
-                final_output.extend(expand(
-                    "results/rsem/pe{num}/{sample}-{unit}/mapped.isoforms.results",
-                    sample=units["sample_name"],unit=units["unit_name"], num=num
-                ))
-    if is_activated("mergeReads"):
-        final_output.extend(expand("results/browser/{sample}.str1.bw",sample=units["sample_name"]))
-        if get_strandedness(units)[0] != 0.5:
-            final_output.extend(expand("results/browser/{sample}.str2.bw",sample=units["sample_name"]))
-    else:
-        final_output.extend(expand("results/browser/{sample}-{unit}.str1.bw",sample=units["sample_name"],unit=units["unit_name"]))
-        if get_strandedness(units)[0] != 0.5:
-            final_output.extend(expand("results/browser/{sample}-{unit}.str2.bw",sample=units["sample_name"],unit=units["unit_name"]))
-    if is_activated("single"):
-        final_output.extend(expand("results/single/{sample}_vs_{control}.tsv",
-        sample=samples.loc[samples["condition"]!="control"]["sample_name"],
-        control=samples.loc[samples["condition"]=="control"]["sample_name"]))
-    if is_activated("TE_single"):
-        final_output.extend(expand("results/TE_single/{sample}_vs_{control}.tsv",
-        sample=samples.loc[samples["condition"]!="control"]["sample_name"],
-        control=samples.loc[samples["condition"]=="control"]["sample_name"]))
-    return list(set(final_output))
+    assert(config["params"]["mergeReads"]["activate"]), "For single analysis, mergeReads must be activated"
 
 genecode = {
     "GRCh38" : {
@@ -139,13 +61,13 @@ genecode = {
 }
 
 genecode_assembly = False
-if config['ref']['assembly'] in genecode.keys():
+if config['resources']['ref']['assembly'] in genecode.keys():
     genecode_assembly = True
 
 def get_assembly_rmsk(wc):
     if genecode_assembly:
-        return genecode[config['ref']['assembly']]["rmsk"]
-    return config['ref']['assembly']
+        return genecode[config['resources']['ref']['assembly']]["rmsk"]
+    return config['resources']['ref']['assembly']
 
 def get_cutadapt_input(wildcards):
     unit = units.loc[wildcards.sample].loc[wildcards.unit]
@@ -243,84 +165,11 @@ def get_individual_trimmed_fastq(wildcards):
         return expand("results/trimmed/{sample}_{unit}_R2.fastq.gz",
                         sample = wildcards.sample, unit = wildcards.unit)
 
-def get_multiqc_input(wildcards):
-    multiqc_input = []
-    for (sample, unit) in units.index:
-        reads = [ "1", "2" ]
-        if not is_sra_pe(sample, unit):
-            if not is_paired_end(sample):
-                reads = [ "0" ]
-        multiqc_input.extend(
-            expand (
-                [
-                    "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
-                    "results/qc/fastqc/{sample}.{unit}.{reads}.html",
-                ],
-                sample = sample,
-                unit = unit,
-                reads = reads
-            )
-        )
-        if is_activated("trimming"):
-            multiqc_input.extend(
-                expand (
-                    [
-                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
-                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html",
-                    ],
-                    sample = sample,
-                    unit = unit,
-                    reads = reads
-                )
-            )
-        if is_activated("rseqc"):
-            rseqc_list = [
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.junctionanno.junction.bed"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.junctionsat.junctionSaturation_plot.pdf"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.infer_experiment.txt"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.stats.txt"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.inner_distance_freq.inner_distance.txt"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.readdistribution.txt"),
-                    unit=units.itertuples(),
-                ))),
-                # list(set(expand(
-                #     path_merged_cond_mqc("results/qc/rseqc/?.readdup.DupRate_plot.pdf"),
-                #     unit=units.itertuples(),
-                # ))),
-                list(set(expand(
-                    path_merged_cond_mqc("results/qc/rseqc/?.readgc.GC_plot.pdf"),
-                    unit=units.itertuples(),
-                ))),
-                list(set(expand(
-                    path_merged_cond_mqc("logs/rseqc/rseqc_junction_annotation/?.log"),
-                    unit=units.itertuples(),
-                )))
-            ]
-            for qc_plot in rseqc_list:
-                multiqc_input.extend(qc_plot)
-    return multiqc_input
-
 # Original from RNA-seq
 
 def get_map_reads_input_R1(wildcards):
-    if not is_activated("mergeReads"):
-        if config["trimming"]["activate"]:
+    if not config["params"]["mergeReads"]["activate"]:
+        if config["params"]["trimming"]["activate"]:
             if is_paired_end(wildcards.sample):
                 return expand(
                     "results/trimmed/{sample}_{unit}_R1.fastq.gz",
@@ -349,7 +198,7 @@ def get_map_reads_input_R1(wildcards):
         if config["single_end"]["activate"]:
             return "results/merged/{sample}_single.fastq.gz"
     ext = units.loc[wildcards.sample]["fq1"][0]
-    if ext.endswith("gz") or config['trimming']['activate']:
+    if ext.endswith("gz") or config["params"]['trimming']['activate']:
         ending = ".gz"
     else:
         ending = ""
@@ -360,8 +209,8 @@ def get_map_reads_input_R1(wildcards):
 
 def get_map_reads_input_R2(wildcards):
     if is_paired_end(wildcards.sample):
-        if not is_activated("mergeReads"):
-            if config["trimming"]["activate"]:
+        if not config["params"]["mergeReads"]["activate"]:
+            if config["params"]["trimming"]["activate"]:
                 return expand(
                     "results/trimmed/{sample}_{unit}_R1.fastq.gz",
                     unit=units.loc[wildcards.sample, "unit_name"],
@@ -382,7 +231,7 @@ def get_map_reads_input_R2(wildcards):
             if config["single_end"]["activate"]:
                 return ""            
         ext = units.loc[wildcards.sample]["fq1"][0]
-        if ext.endswith("gz") or config['trimming']['activate']:
+        if ext.endswith("gz") or config["params"]['trimming']['activate']:
             ending = ".gz"
         else:
             ending = ""
@@ -409,9 +258,9 @@ def get_star_output_all_units(wildcards, fi,orig=False):
             lib = "pe"
         else:
             lib = "se"
-        if is_activated("2nd_pass") and not orig:
+        if config["params"]["2nd_pass"]["activate"] and not orig:
             lib=lib+"2"
-        if is_activated("mergeReads"):
+        if config["params"]["mergeReads"]["activate"]:
             res.append(
                 "results/{}/{}/{}/{}".format(
                     resfold, lib, unit.sample_name, outfile
@@ -431,9 +280,9 @@ def get_star_bam_uns(wildcards, original=False):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass") and original == False:
+    if config["params"]["2nd_pass"]["activate"] and original == False:
         lib = lib + "2"
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         return "results/star/{}/{}/Aligned.out.bam".format(
             lib, wildcards.sample
         )
@@ -448,9 +297,9 @@ def get_star_bam(wildcards, original=False):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass") and not original:
+    if config["params"]["2nd_pass"]["activate"] and not original:
         lib = lib + "2"
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         return "results/star/{}/{}/Aligned.sortedByCoord.out.bam".format(
             lib, wildcards.sample
         )
@@ -464,9 +313,9 @@ def get_star_bam_bai(wildcards, original=False):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass") and original == False:
+    if config["params"]["2nd_pass"]["activate"] and original == False:
         lib = lib + "2"
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         return "results/star/{}/{}/Aligned.sortedByCoord.out.bam.bai".format(
             lib, wildcards.sample
         )
@@ -480,9 +329,9 @@ def get_star_transcript_bam(wildcards):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass"):
+    if config["params"]["2nd_pass"]["activate"]:
         lib = lib + "2"
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         return "results/star/{}/{}/Aligned.toTranscriptome.out.bam".format(
             lib, wildcards.sample
         )
@@ -504,16 +353,8 @@ def get_deseq2_threads(wildcards=None):
     few_coeffs = False if wildcards is None else len(get_contrast(wildcards)) < 10
     return 1 if len(samples) < 100 or few_coeffs else 6
 
-
-def is_activated(xpath):
-    c = config
-    for entry in xpath.split("/"):
-        c = c.get(entry, {})
-    return bool(c.get("activate", False))
-
-
 def get_fastqs_gz(wc):
-    if config["trimming"]["activate"]:
+    if config["params"]["trimming"]["activate"]:
         return expand(
             "results/trimmed/{sample}_{unit}_{read}.fastq.gz",
             unit=units.loc[wc.sample, "unit_name"],
@@ -550,22 +391,22 @@ def get_fastqs(wc):
         return units.loc[wc.sample, fq].tolist()
 
 def get_contrast(wildcards):
-    return config["diffexp"]["contrasts"][wildcards.contrast]
+    return config["params"]["diffexp"]["contrasts"][wildcards.contrast]
 
 #Returns a path with {sample}-{unit} if merge is deactivated, and only {sample} if its activated in place for {}
 def path_merged_cond(path):
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         path = path.replace('?','{sample}')
     else:
         path = path.replace('?','{sample}-{unit}')
-    if is_activated("2nd_pass"):
+    if config["params"]["2nd_pass"]["activate"]:
         path = path.replace('¿',"2")
     else:
         path = path.replace('¿',"")
     return path
 
 def path_merged_cond_mqc(path):
-    if is_activated("mergeReads"):
+    if config["params"]["mergeReads"]["activate"]:
         return path.replace('?','{unit.sample_name}')
     else:
         return path.replace('?','{unit.sample_name}-{unit.unit_name}')
@@ -583,7 +424,7 @@ def get_bg_str1(wc):
 #         lib = "pe"
 #     else:
 #         lib = "se"
-#     if is_activated("2nd_pass"):
+#     if config["params"]["2nd_pass"]["activate"]:
 #         lib=lib+"2"
 #     return "results/{}/{}/{}/{}".format(
 #             resfold, lib, wildcards.sample, outfile
@@ -594,7 +435,7 @@ def get_single_input(wildcards):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass"):
+    if config["params"]["2nd_pass"]["activate"]:
         lib = lib + "2"
     return "results/rsem/{}/{}/mapped.genes.results".format(
         lib, wildcards.sample
@@ -605,7 +446,7 @@ def get_star_log(wildcards):
         lib = "pe"
     else:
         lib = "se"
-    if is_activated("2nd_pass"):
+    if config["params"]["2nd_pass"]["activate"]:
         lib = lib + "2"
     return "results/star/{}/{}/Log.final.out".format(
         lib, wildcards.sample
@@ -616,3 +457,157 @@ def get_deseq2_end(wc):
         if is_paired_end(unit.sample_name):
             return "FALSE"
         return "TRUE"
+
+def get_multiqc_input(wildcards):
+    multiqc_input = []
+    for (sample, unit) in units.index:
+        reads = [ "1", "2" ]
+        if not is_sra_pe(sample, unit):
+            if not is_paired_end(sample):
+                reads = [ "0" ]
+        multiqc_input.extend(
+            expand (
+                [
+                    "results/qc/fastqc/{sample}.{unit}.{reads}_fastqc.zip",
+                    "results/qc/fastqc/{sample}.{unit}.{reads}.html",
+                ],
+                sample = sample,
+                unit = unit,
+                reads = reads
+            )
+        )
+        if config["params"]["trimming"]["activate"]:
+            multiqc_input.extend(
+                expand (
+                    [
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}_fastqc.zip",
+                        "results/qc/fastqc/trimmed_{sample}.{unit}.{reads}.html",
+                    ],
+                    sample = sample,
+                    unit = unit,
+                    reads = reads
+                )
+            )
+        if config["params"]["rseqc"]["activate"]:
+            if config["params"]["mergeReads"]["activate"]:
+                multiqc_input.extend(
+                    expand([
+                            "results/qc/rseqc/{sample}.junctionanno.junction.bed",
+                            "results/qc/rseqc/{sample}.junctionsat.junctionSaturation_plot.pdf"
+                            "results/qc/rseqc/{sample}.infer_experiment.txt",
+                            "results/qc/rseqc/{sample}.stats.txt",
+                            "results/qc/rseqc/{sample}.inner_distance_freq.inner_distance.txt",
+                            "results/qc/rseqc/{sample}.readdistribution.txt",
+                            #"results/qc/rseqc/{sample}.readdup.DupRate_plot.pdf",
+                            "results/qc/rseqc/{sample}.readgc.GC_plot.pdf",
+                            "logs/rseqc/rseqc_junction_annotation/{sample}.log"
+                        ],
+                        sample=sample
+                    ),
+                )
+            else:
+                multiqc_input.extend(
+                    expand([
+                            "results/qc/rseqc/{sample}-{unit}.junctionanno.junction.bed",
+                            "results/qc/rseqc/{sample}-{unit}.junctionsat.junctionSaturation_plot.pdf"
+                            "results/qc/rseqc/{sample}-{unit}.infer_experiment.txt",
+                            "results/qc/rseqc/{sample}-{unit}.stats.txt",
+                            "results/qc/rseqc/{sample}-{unit}.inner_distance_freq.inner_distance.txt",
+                            "results/qc/rseqc/{sample}-{unit}.readdistribution.txt",
+                            #"results/qc/rseqc/{sample}-{unit}.readdup.DupRate_plot.pdf",
+                            "results/qc/rseqc/{sample}-{unit}.readgc.GC_plot.pdf",
+                            "logs/rseqc/rseqc_junction_annotation/{sample}-{unit}.log"
+                        ],
+                        sample=sample,
+                        unit=unit,
+                    ),
+                )
+                
+    return multiqc_input
+
+def all_input(wildcards):
+
+    wanted_input = []
+
+    # QC with fastQC and multiQC
+    wanted_input.extend([
+        "results/qc/multiqc_report.html",
+        f"{assembly_path}{assembly}.annotation.bed"
+    ])
+
+    if config["params"]["diffexp"]["activate"]:
+        wanted_input.extend( expand(
+            "results/diffexp/{contrast}.diffexp.tsv",
+            contrast=config["params"]["diffexp"]["contrasts"],
+        ))
+        if config["params"]["diffexp"]["TE"]["activate"]:
+            wanted_input.extend(expand(
+                "results/diffexp/{contrast}.diffexp.TE.tsv",
+                contrast=config["params"]["diffexp"]["contrasts"],
+            ))
+        if config["params"]["pca"]["activate"]:
+            wanted_input.append("results/pca.svg")
+            if config["params"]["diffexp"]["TE"]["activate"]:
+                wanted_input.append("results/TE_pca.svg")
+    #elif config["single"]["activate"]:
+    else:
+        if config["params"]["2nd_pass"]["activate"]:
+            num = "2"
+        else:
+            num = ""
+        if not is_paired_end(samples["sample_name"][0]):
+            if config["params"]["mergeReads"]["activate"]:
+                wanted_input = expand(
+                    "results/rsem/se{num}/{sample}/mapped.genes.results",
+                    sample=units["sample_name"],num=num
+                )
+                wanted_input.extend(expand(
+                    "results/rsem/se{num}/{sample}/mapped.isoforms.results",
+                    sample=units["sample_name"],num=num
+                ))
+            else:
+                wanted_input = expand(
+                    "results/rsem/se{num}/{sample}-{unit}/mapped.genes.results",
+                    sample=units["sample_name"],unit=units["unit_name"], num=num
+                )
+                wanted_input.extend(expand(
+                    "results/rsem/se{num}/{sample}-{unit}/mapped.isoforms.results",
+                    sample=units["sample_name"],unit=units["unit_name"], num=num
+                ))
+        else:
+            if config["params"]["mergeReads"]["activate"]:
+                wanted_input = expand(
+                    "results/rsem/pe{num}/{sample}/mapped.genes.results",
+                    sample=units["sample_name"], num=num
+                )
+                wanted_input.extend(expand(
+                    "results/rsem/pe{num}/{sample}/mapped.isoforms.results",
+                    sample=units["sample_name"], num=num
+                ))
+            else:
+                wanted_input = expand(
+                    "results/rsem/pe{num}/{sample}-{unit}/mapped.genes.results",
+                    sample=units["sample_name"],unit=units["unit_name"], num=num
+                )
+                wanted_input.extend(expand(
+                    "results/rsem/pe{num}/{sample}-{unit}/mapped.isoforms.results",
+                    sample=units["sample_name"],unit=units["unit_name"], num=num
+                ))
+    if config["params"]["mergeReads"]["activate"]:
+        wanted_input.extend(expand("results/browser/{sample}.str1.bw",sample=units["sample_name"]))
+        if get_strandedness(units)[0] != 0.5:
+            wanted_input.extend(expand("results/browser/{sample}.str2.bw",sample=units["sample_name"]))
+    else:
+        wanted_input.extend(expand("results/browser/{sample}-{unit}.str1.bw",sample=units["sample_name"],unit=units["unit_name"]))
+        if get_strandedness(units)[0] != 0.5:
+            wanted_input.extend(expand("results/browser/{sample}-{unit}.str2.bw",sample=units["sample_name"],unit=units["unit_name"]))
+    if config["params"]["single"]["activate"]:
+        wanted_input.extend(expand("results/single/{sample}_vs_{control}.tsv",
+        sample=samples.loc[samples["condition"]!="control"]["sample_name"],
+        control=samples.loc[samples["condition"]=="control"]["sample_name"]))
+    if config["params"]["TE_single"]["activate"]:
+        wanted_input.extend(expand("results/TE_single/{sample}_vs_{control}.tsv",
+        sample=samples.loc[samples["condition"]!="control"]["sample_name"],
+        control=samples.loc[samples["condition"]=="control"]["sample_name"]))
+
+    return wanted_input

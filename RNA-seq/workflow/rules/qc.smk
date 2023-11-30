@@ -19,10 +19,10 @@ rule rseqc_junction_annotation:
         bed="results/qc/rseqc/annotation.bed",
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.junctionanno.junction.bed"),
+        "results/qc/rseqc/{samples_units}.junctionanno.junction.bed",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_junction_annotation/?.log"),
+        "logs/rseqc/rseqc_junction_annotation/{samples_units}.log",
     params:
         extra=r"-q 255",  # STAR uses 255 as a score for unique mappers
         prefix=lambda w, output: output[0].replace(".junction.bed", ""),
@@ -39,10 +39,10 @@ rule rseqc_junction_saturation:
         bed="results/qc/rseqc/annotation.bed",
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.junctionsat.junctionSaturation_plot.pdf"),
+        "results/qc/rseqc/{samples_units}.junctionsat.junctionSaturation_plot.pdf",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_junction_saturation/?.log"),
+        "logs/rseqc/rseqc_junction_saturation/{samples_units}.log",
     params:
         extra=r"-q 255",
         prefix=lambda w, output: output[0].replace(".junctionSaturation_plot.pdf", ""),
@@ -59,10 +59,10 @@ rule rseqc_stat:
         bam=lambda wc: get_star_bam(wc,original=True),
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.stats.txt"),
+        "results/qc/rseqc/{samples_units}.stats.txt",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_stat/?.log"),
+        "logs/rseqc/rseqc_stat/{samples_units}.log",
     conda:
         "../envs/rseqc2.yaml"
     shell:
@@ -75,10 +75,10 @@ rule rseqc_infer:
         bed="results/qc/rseqc/annotation.bed",
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.infer_experiment.txt"),
+        "results/qc/rseqc/{samples_units}.infer_experiment.txt",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_infer/?.log"),
+        "logs/rseqc/rseqc_infer/{samples_units}.log",
     conda:
         "../envs/rseqc2.yaml"
     shell:
@@ -91,10 +91,10 @@ rule rseqc_innerdis:
         bed="results/qc/rseqc/annotation.bed",
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.inner_distance_freq.inner_distance.txt"),
+        "results/qc/rseqc/{samples_units}.inner_distance_freq.inner_distance.txt",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_innerdis/?.log"),
+        "logs/rseqc/rseqc_innerdis/{samples_units}.log",
     params:
         prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
     conda:
@@ -109,10 +109,10 @@ rule rseqc_readdis:
         bed="results/qc/rseqc/annotation.bed",
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.readdistribution.txt"),
+        "results/qc/rseqc/{samples_units}.readdistribution.txt",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_readdis/?.log"),
+        "logs/rseqc/rseqc_readdis/{samples_units}.log",
     conda:
         "../envs/rseqc3.yaml"
     shell:
@@ -124,10 +124,10 @@ rule rseqc_readdis:
 #         bam=lambda wc: get_star_bam(wc,original=True),
 #         bai=lambda wc: get_star_bam_bai(wc,original=True),
 #     output:
-#         path_merged_cond("results/qc/rseqc/?.readdup.DupRate_plot.pdf"),
+#         "results/qc/rseqc/{samples_units}.readdup.DupRate_plot.pdf",
 #     priority: 1
 #     log:
-#         path_merged_cond("logs/rseqc/rseqc_readdup/?.log"),
+#         "logs/rseqc/rseqc_readdup/{samples_units}.log",
 #     params:
 #         prefix=lambda w, output: output[0].replace(".DupRate_plot.pdf", ""),
 #     conda:
@@ -141,10 +141,10 @@ rule rseqc_readgc:
         bam=lambda wc: get_star_bam(wc,original=True),
         bai=lambda wc: get_star_bam_bai(wc,original=True),
     output:
-        path_merged_cond("results/qc/rseqc/?.readgc.GC_plot.pdf"),
+        "results/qc/rseqc/{samples_units}.readgc.GC_plot.pdf",
     priority: 1
     log:
-        path_merged_cond("logs/rseqc/rseqc_readgc/?.log"),
+        "logs/rseqc/rseqc_readgc/{samples_units}.log",
     params:
         prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
     conda:
