@@ -35,9 +35,5 @@ include: "rules/single_TE.smk"
 
 ##### target rules #####
 
-
 rule all:
-    input:
-        get_final_output(),
-        "results/qc/multiqc_report.html",
-        f"{assembly_path}{assembly}.annotation.bed",
+    input: all_input
