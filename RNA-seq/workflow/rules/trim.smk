@@ -35,10 +35,10 @@ rule fix_sra_se:
 
 rule fix_sra_pe:
     input:
-        read1="sra-se-reads/{accession}_1.fastq.gz",
+        read1="sra-pe-reads/{accession}_1.fastq.gz",
         read2="sra-pe-reads/{accession}_2.fastq.gz"
     output:
-        read1="sra-se-reads/{accession}_1.fixed.fastq.gz",
+        read1="sra-pe-reads/{accession}_1.fixed.fastq.gz",
         read2="sra-pe-reads/{accession}_2.fixed.fastq.gz"
     log:
         "logs/fix-sra-pe/{accession}.log"
