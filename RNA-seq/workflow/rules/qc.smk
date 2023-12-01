@@ -39,10 +39,10 @@ rule rseqc_junction_saturation:
         bed="results/qc/rseqc/annotation.bed",
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.junctionsat.junctionSaturation_plot.pdf",
+        "results/qc/rseqc/{sample}.junctionsat.junctionSaturation_plot.pdf",
     priority: 1
     log:
-        "logs/rseqc/rseqc_junction_saturation/{samples_units}.log",
+        "logs/rseqc/rseqc_junction_saturation/{sample}.log",
     params:
         extra=r"-q 255",
         prefix=lambda w, output: output[0].replace(".junctionSaturation_plot.pdf", ""),
@@ -59,10 +59,10 @@ rule rseqc_stat:
         bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.stats.txt",
+        "results/qc/rseqc/{sample}.stats.txt",
     priority: 1
     log:
-        "logs/rseqc/rseqc_stat/{samples_units}.log",
+        "logs/rseqc/rseqc_stat/{sample}.log",
     conda:
         "../envs/rseqc2.yaml"
     shell:
@@ -75,10 +75,10 @@ rule rseqc_infer:
         bed="results/qc/rseqc/annotation.bed",
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.infer_experiment.txt",
+        "results/qc/rseqc/{sample}.infer_experiment.txt",
     priority: 1
     log:
-        "logs/rseqc/rseqc_infer/{samples_units}.log",
+        "logs/rseqc/rseqc_infer/{sample}.log",
     conda:
         "../envs/rseqc2.yaml"
     shell:
@@ -91,10 +91,10 @@ rule rseqc_innerdis:
         bed="results/qc/rseqc/annotation.bed",
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.inner_distance_freq.inner_distance.txt",
+        "results/qc/rseqc/{sample}.inner_distance_freq.inner_distance.txt",
     priority: 1
     log:
-        "logs/rseqc/rseqc_innerdis/{samples_units}.log",
+        "logs/rseqc/rseqc_innerdis/{sample}.log",
     params:
         prefix=lambda w, output: output[0].replace(".inner_distance.txt", ""),
     conda:
@@ -109,10 +109,10 @@ rule rseqc_readdis:
         bed="results/qc/rseqc/annotation.bed",
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.readdistribution.txt",
+        "results/qc/rseqc/{sample}.readdistribution.txt",
     priority: 1
     log:
-        "logs/rseqc/rseqc_readdis/{samples_units}.log",
+        "logs/rseqc/rseqc_readdis/{sample}.log",
     conda:
         "../envs/rseqc3.yaml"
     shell:
@@ -124,10 +124,10 @@ rule rseqc_readdis:
 #         bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
 #         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
 #     output:
-#         "results/qc/rseqc/{samples_units}.readdup.DupRate_plot.pdf",
+#         "results/qc/rseqc/{sample}.readdup.DupRate_plot.pdf",
 #     priority: 1
 #     log:
-#         "logs/rseqc/rseqc_readdup/{samples_units}.log",
+#         "logs/rseqc/rseqc_readdup/{sample}.log",
 #     params:
 #         prefix=lambda w, output: output[0].replace(".DupRate_plot.pdf", ""),
 #     conda:
@@ -141,10 +141,10 @@ rule rseqc_readgc:
         bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
-        "results/qc/rseqc/{samples_units}.readgc.GC_plot.pdf",
+        "results/qc/rseqc/{sample}.readgc.GC_plot.pdf",
     priority: 1
     log:
-        "logs/rseqc/rseqc_readgc/{samples_units}.log",
+        "logs/rseqc/rseqc_readgc/{sample}.log",
     params:
         prefix=lambda w, output: output[0].replace(".GC_plot.pdf", ""),
     conda:

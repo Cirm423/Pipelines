@@ -28,7 +28,7 @@ rule fix_sra_se:
     output:
         "sra-se-reads/{accession}.fixed.fastq.gz",
     log:
-        "logs/compress-sra/{accession}_{read}.log"
+        "logs/fix-sra-se/{accession}.log"
     threads: 6
     shell:
         "zcat {input} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
@@ -41,7 +41,7 @@ rule fix_sra_pe:
         read1="sra-se-reads/{accession}_1.fixed.fastq.gz",
         read2="sra-pe-reads/{accession}_2.fixed.fastq.gz"
     log:
-        "logs/compress-sra/{accession}_{read}.log"
+        "logs/fix-sra-pe/{accession}.log"
     threads: 6
     run:
         shell("zcat {input.read1} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1}")

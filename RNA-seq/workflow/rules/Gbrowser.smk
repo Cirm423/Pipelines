@@ -39,14 +39,14 @@ rule BamCoverage_str1:
     input:
         expand(["results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam.bai"],
             star_lib=star_lib,
-            sample=sample_name)
+            sample=samples.sample_name)
     output:
         "results/browser/{sample}.str1.bw",
     params:
         norm = config["params"]["bamcoverage"],
         stranded = "--exactScaling" if get_strandedness(units)[0] == 0.5 else "--filterRNAstrand forward --exactScaling"
     log: 
-        path_merged_cond("logs/browser/?.BamCoverage.log")
+        "logs/browser/{sample}.BamCoverage.log"
     conda:
         "../envs/deeptools.yaml"
     threads: 12
@@ -57,14 +57,14 @@ rule BamCoverage_str2:
     input:
         expand(["results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam.bai"],
             star_lib=star_lib,
-            sample=sample_name)
+            sample=samples.sample_name)
     output:
-        "{sample}.str2.bw",
+        "results/browser/{sample}.str2.bw",
     params:
         norm = config["params"]["bamcoverage"],
         stranded = "--filterRNAstrand reverse --exactScaling"
     log: 
-        path_merged_cond("logs/browser/?.BamCoverage.log")
+        "logs/browser/{sample}.BamCoverage.log"
     conda:
         "../envs/deeptools.yaml"
     threads: 12

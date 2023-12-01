@@ -36,6 +36,9 @@ assembly_path = config['resources']['path'] + config['resources']['ref']['assemb
 if config["params"]["single"]["activate"] or config["params"]["TE_single"]["activate"]:
     assert(len(samples.loc[samples["condition"]=="control"])==1), "For single analysis one of the samples has to be called 'control'"
 
+wildcard_constraints:
+    sample = "|".join(samples.index)
+
 #Get the proper star folder name
 if config["single_end"]:
     lib_end = "se"
@@ -328,7 +331,7 @@ def get_multiqc_input(wildcards):
         multiqc_input.extend(
             expand([
                     "results/qc/rseqc/{sample}.junctionanno.junction.bed",
-                    "results/qc/rseqc/{sample}.junctionsat.junctionSaturation_plot.pdf"
+                    "results/qc/rseqc/{sample}.junctionsat.junctionSaturation_plot.pdf",
                     "results/qc/rseqc/{sample}.infer_experiment.txt",
                     "results/qc/rseqc/{sample}.stats.txt",
                     "results/qc/rseqc/{sample}.inner_distance_freq.inner_distance.txt",

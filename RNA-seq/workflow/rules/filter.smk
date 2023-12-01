@@ -36,7 +36,7 @@ rule samtools_view_filter:
     wrapper:
         "v1.3.1/bio/samtools/view"
 
-rule samtools_sort_transcriptome:
+rule samtools_sort_transcriptome_name:
     input:
         "results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByCoord.out.bam"
     output:

@@ -132,14 +132,14 @@ rule rsem:
         isoforms_results="results/rsem/{star_lib}/{sample}/mapped.isoforms.results",
     params:
         # optional, specify if sequencing is paired-end
-        paired_end = not params["single_end"],
+        paired_end = not config["single_end"],
         out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
         rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
         extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
-        "logs/rsem/calculate_expression/{sample}.log",
+        "logs/rsem/calculate_expression/{sample}-{star_lib}.log",
     conda:
         "../envs/rsem.yaml"
     shell:
