@@ -25,10 +25,6 @@ params:
   #in units.tsv
   trimming:
     activate: False
-  #Merge the units in units.tsv of the same sample. If activated, all R1 lanes will
-  #be merged in the same file and the same for R2 of the sample. Usually leave on.
-  mergeReads:
-    activate: True
   #Activate rseqc plots
   rseqc:
     activate: True
@@ -62,25 +58,27 @@ params:
     activate: False
     filter: 10
     #Same as single alternative, but for TEs (Look above for explanation)
-    alternative: greater
-  #Pass additional parameters to certain steps of the pipeline. 
+    alternative: greater 
+  #The maximum offset between two duplicate clusters in order to consider them optical duplicates. 
+  #100 is appropriate for unpatterned versions of the Illumina platform. For the patterned flowcell models, 2500 is more appropriate.
+  optical_distance: 2500
   #Cutadapt is used in adapter trimming.
+  cutadapt-pe: ""
+  cutadapt-se: ""
   #Star is for alignment, recommended parameters are set.
   #The parameters necessary to run the pipeline are coded within the pipeline and
   #cannot be changed. These parameters are:
   #--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted
   #Bams are sorted by using samtools sort independently for star, which is identical to "--outSAMtype SortedByCoordinate" star parameter
+  star: "--outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04
+	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
+	--sjdbScore 1 --limitBAMsortRAM 60000000000 
+  --limitIObufferSize 330000000"
   #Rsem is used for counts, recommended parameters are set.
   #The parameters necessary to run the pipeline are coded within the pipeline and
   #cannot be changed. These parameters are:
   #--bam
   #Rsem seed is set randomly by the system, and strandedness is set from units.tsv file
-  cutadapt-pe: ""
-  cutadapt-se: ""
-  star: "--outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04
-	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
-	--sjdbScore 1 --limitBAMsortRAM 60000000000 
-  --limitIObufferSize 330000000"
   #If rsem has trouble remove --calc-ci and --ci-memory, it seems like an bug with rsem
   rsem: "--estimate-rspd --no-bam-output"
   #You can change the normalization used to generate the bigWig files that will be used in the genome browser

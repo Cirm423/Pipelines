@@ -15,14 +15,14 @@ rule rseqc_gtf2bed:
 
 rule rseqc_junction_annotation:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bed="results/qc/rseqc/annotation.bed",
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end)
     output:
-        "results/qc/rseqc/{samples_units}.junctionanno.junction.bed",
+        "results/qc/rseqc/{sample}.junctionanno.junction.bed",
     priority: 1
     log:
-        "logs/rseqc/rseqc_junction_annotation/{samples_units}.log",
+        "logs/rseqc/rseqc_junction_annotation/{sample}.log",
     params:
         extra=r"-q 255",  # STAR uses 255 as a score for unique mappers
         prefix=lambda w, output: output[0].replace(".junction.bed", ""),
@@ -35,9 +35,9 @@ rule rseqc_junction_annotation:
 
 rule rseqc_junction_saturation:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bed="results/qc/rseqc/annotation.bed",
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.junctionsat.junctionSaturation_plot.pdf",
     priority: 1
@@ -56,8 +56,8 @@ rule rseqc_junction_saturation:
 
 rule rseqc_stat:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.stats.txt",
     priority: 1
@@ -71,9 +71,9 @@ rule rseqc_stat:
 
 rule rseqc_infer:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bed="results/qc/rseqc/annotation.bed",
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.infer_experiment.txt",
     priority: 1
@@ -87,9 +87,9 @@ rule rseqc_infer:
 
 rule rseqc_innerdis:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bed="results/qc/rseqc/annotation.bed",
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.inner_distance_freq.inner_distance.txt",
     priority: 1
@@ -105,9 +105,9 @@ rule rseqc_innerdis:
 
 rule rseqc_readdis:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
         bed="results/qc/rseqc/annotation.bed",
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.readdistribution.txt",
     priority: 1
@@ -121,8 +121,8 @@ rule rseqc_readdis:
 
 # rule rseqc_readdup:
 #     input:
-#         bam=lambda wc: get_star_bam(wc,original=True),
-#         bai=lambda wc: get_star_bam_bai(wc,original=True),
+#         bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
+#         bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
 #     output:
 #         "results/qc/rseqc/{samples_units}.readdup.DupRate_plot.pdf",
 #     priority: 1
@@ -138,8 +138,8 @@ rule rseqc_readdis:
 
 rule rseqc_readgc:
     input:
-        bam=lambda wc: get_star_bam(wc,original=True),
-        bai=lambda wc: get_star_bam_bai(wc,original=True),
+        bam=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam",lib_end=lib_end),
+        bai=expand("results/star/{lib_end}/{{sample}}/Aligned.sortedByCoord.out.bam.bai",lib_end=lib_end),
     output:
         "results/qc/rseqc/{samples_units}.readgc.GC_plot.pdf",
     priority: 1
@@ -183,7 +183,6 @@ rule fastqc_trimmed:
 
 rule multiqc:
     input:
-        lambda wc: get_star_output_all_units(wc, fi="bam", orig =True),
         get_multiqc_input,
     output:
         "results/qc/multiqc_report.html",

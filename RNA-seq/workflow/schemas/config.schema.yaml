@@ -44,14 +44,6 @@ properties:
             type: boolean
         required:
           - activate
-      
-      mergeReads:
-        type: object
-        properties:
-          activate:
-            type: boolean
-        required:
-          - activate
 
       rseqc:
         type: object
@@ -113,6 +105,9 @@ properties:
           - activate
           - filter
 
+      optical_distance:
+        type: integer
+
       cutadapt-pe:
         type: string
       cutadapt-se:
@@ -128,10 +123,10 @@ properties:
       - pca
       - diffexp
       - trimming
-      - mergeReads
       - 2nd_pass
       - single
       - TE_single
+      - optical_distance
       - cutadapt-pe
       - cutadapt-se
       - star

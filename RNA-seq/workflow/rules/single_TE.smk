@@ -2,7 +2,7 @@ import os
 
 rule bamtobed_TE_single:
     input:
-        get_star_bam,
+        expand("results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",lib=star_lib,sample=samples.sample_name),
     output:
         "results/TE_single/{sample}/Aligned.out.bed",
     log:
@@ -18,7 +18,7 @@ rule TE_single_signal:
         bed="results/TE_single/{sample}/Aligned.out.bed",
         fac="results/Factor",
         annot=f"{assembly_path}{assembly}.rmsk.bed",
-        log=get_star_log,
+        log=expand("results/star/{star_lib}/{{sample}}/Log.final.out",star_lib=star_lib),
     output:
         tmp=temp("results/TE_single/{sample}/Aligned.out.bed.sorted"),
         out="results/TE_single/{sample}/uniq-TE-individual.signal",

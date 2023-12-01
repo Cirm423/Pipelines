@@ -2,7 +2,7 @@ import os
 
 rule get_factor:
     input:
-        lambda wc: get_star_output_all_units(wc, fi="log"),
+        expand("results/star/{star_lib}/{sample}/Log.final.out",star_lib=star_lib,sample=samples.sample_name)
     output:
         "results/Factor"
     script:
@@ -21,7 +21,7 @@ rule gene_name:
 
 rule prepare_single:
     input:
-        treat = get_single_input,
+        treat = expand("results/rsem/{star_lib}/{{sample}}/mapped.genes.results",star_lib=star_lib),
         id_name = f"{assembly_path}{assembly}.gtf.gene_name",
         factor = "results/Factor",
     output:

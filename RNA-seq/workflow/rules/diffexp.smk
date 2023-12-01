@@ -1,6 +1,6 @@
 rule deseq2_init:
     input:
-        counts=lambda wc: get_star_output_all_units(wc, fi='rsem'),
+        counts=expand("results/rsem/{star_lib}/{sample}/mapped.genes.results",star_lib=star_lib,sample=samples.sample_name),
     output:
         "results/deseq2/all.rds",
         "results/deseq2/normcounts.tsv",
@@ -52,7 +52,7 @@ rule deseq2:
 
 rule deseq2_init_TE:
     input:
-        bam=lambda wc: get_star_output_all_units(wc, fi='bam'),
+        bam=expand("results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",lib=star_lib,sample=samples.sample_name),
         gtf=f"{assembly_path}{assembly}.rmsk.gtf",
     output:
         "results/deseq2/TE_all.rds",

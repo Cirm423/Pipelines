@@ -1,7 +1,7 @@
 rule get_sra_pe:
     output:
-        "sra-pe-reads/{accession}_1.fastq.gz",
-        "sra-pe-reads/{accession}_2.fastq.gz",
+        temp("sra-pe-reads/{accession}_1.fastq.gz"),
+        temp("sra-pe-reads/{accession}_2.fastq.gz"),
     params:
         extra="--skip-technical",
     log:
@@ -13,7 +13,7 @@ rule get_sra_pe:
 
 rule get_sra_se:
     output:
-        "sra-se-reads/{accession}.fastq.gz",
+        temp("sra-se-reads/{accession}.fastq.gz"),
     params:
         extra="--skip-technical",
     log:
@@ -22,15 +22,30 @@ rule get_sra_se:
     wrapper:
         "v2.6.0/bio/sra-tools/fasterq-dump"
 
-# rule compress_sra:
-#     input:
-#         "sra/{accession}_{read}.fastq",
-#     output:
-#         "sra/{accession}_{read}.fastq.gz",
-#     log:
-#         "logs/compress-sra/{accession}_{read}.log"
-#     shell:
-#         "gzip {input} 2> {log}"
+rule fix_sra_se:
+    input:
+        "sra-se-reads/{accession}.fastq.gz",
+    output:
+        "sra-se-reads/{accession}.fixed.fastq.gz",
+    log:
+        "logs/compress-sra/{accession}_{read}.log"
+    threads: 6
+    shell:
+        "zcat {input} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
+
+rule fix_sra_pe:
+    input:
+        read1="sra-se-reads/{accession}_1.fastq.gz",
+        read2="sra-pe-reads/{accession}_2.fastq.gz"
+    output:
+        read1="sra-se-reads/{accession}_1.fixed.fastq.gz",
+        read2="sra-pe-reads/{accession}_2.fixed.fastq.gz"
+    log:
+        "logs/compress-sra/{accession}_{read}.log"
+    threads: 6
+    run:
+        shell("zcat {input.read1} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1}")
+        shell("zcat {input.read2} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read2}")
 
 rule cutadapt_pipe:
     input:

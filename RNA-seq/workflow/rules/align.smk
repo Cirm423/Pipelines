@@ -7,12 +7,12 @@ rule align_pe:
         fq2=get_map_reads_input_R2,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        "results/star/pe/{samples_units}/Aligned.out.bam",
-        "results/star/pe/{samples_units}/Aligned.toTranscriptome.out.bam",
-        "results/star/pe/{samples_units}/SJ.out.tab",
-        "results/star/pe/{samples_units}/Log.final.out",
+        "results/star/pe/{sample}/Aligned.out.bam",
+        "results/star/pe/{sample}/Aligned.toTranscriptome.out.bam",
+        "results/star/pe/{sample}/SJ.out.tab",
+        "results/star/pe/{sample}/Log.final.out",
     log:
-        "logs/star-pe/{samples_units}.log",
+        "logs/star-pe/{sample}.log",
     params:
         index=lambda wc, input: input.index,
         extra="--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
@@ -28,12 +28,12 @@ rule align_se:
         fq1=get_map_reads_input_R1,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        "results/star/se/{samples_units}/Aligned.out.bam",
-        "results/star/se/{samples_units}/Aligned.toTranscriptome.out.bam",
-        "results/star/se/{samples_units}/SJ.out.tab",
-        "results/star/se/{samples_units}/Log.final.out",
+        "results/star/se/{sample}/Aligned.out.bam",
+        "results/star/se/{sample}/Aligned.toTranscriptome.out.bam",
+        "results/star/se/{sample}/SJ.out.tab",
+        "results/star/se/{sample}/Log.final.out",
     log:
-        "logs/star-se/{samples_units}.log",
+        "logs/star-se/{sample}.log",
     params:
         index=lambda wc, input: input.index,
         extra="--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
@@ -48,13 +48,13 @@ rule align_pe_2pass:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
         index=f"{assembly_path}star_genome_{assembly}",
-        sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
+        sj=expand("results/star/pe/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        "results/star/pe2/{samples_units}/Aligned.out.bam",
-        "results/star/pe2/{samples_units}/Aligned.toTranscriptome.out.bam",
-        "results/star/pe2/{samples_units}/Log.final.out",
+        "results/star/pe2/{sample}/Aligned.out.bam",
+        "results/star/pe2/{sample}/Aligned.toTranscriptome.out.bam",
+        "results/star/pe2/{sample}/Log.final.out",
     log:
-        "logs/star-pe2/{samples_units}.log",
+        "logs/star-pe2/{sample}.log",
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
@@ -69,13 +69,13 @@ rule align_se_2pass:
     input:
         fq1=get_map_reads_input_R1,
         index=f"{assembly_path}star_genome_{assembly}",
-        sj=lambda wc: get_star_output_all_units(wc, fi='SJ',orig=True),
+        sj=expand("results/star/se/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        "results/star/se2/{samples_units}/Aligned.out.bam",
-        "results/star/se2/{samples_units}/Aligned.toTranscriptome.out.bam",
-        "results/star/se2/{samples_units}/Log.final.out",
+        "results/star/se2/{sample}/Aligned.out.bam",
+        "results/star/se2/{sample}/Aligned.toTranscriptome.out.bam",
+        "results/star/se2/{sample}/Log.final.out",
     log:
-        "logs/star-se2/{samples_units}.log",
+        "logs/star-se2/{sample}.log",
     params:
         index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
@@ -85,11 +85,11 @@ rule align_se_2pass:
     wrapper:
         "0.77.0/bio/star/align"
 
-rule samtools_sort_pe:
+rule samtools_sort_star:
     input:
-        lambda wc: get_star_bam_uns(wc,original=True),
+        "results/star/{lib}/{sample}/Aligned.out.bam"
     output:
-        "results/star/pe/{samples_units}/Aligned.sortedByCoord.out.bam",
+        "results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",
     params:
         extra = "",
     threads:  # Samtools takes additional threads through its option -@
@@ -97,52 +97,13 @@ rule samtools_sort_pe:
     wrapper:
         "v2.6.0/bio/samtools/sort"
 
-rule samtools_sort_se:
+rule samtools_index_star:
     input:
-        lambda wc: get_star_bam_uns(wc,original=True),
+        "results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",
     output:
-        "results/star/se/{samples_units}/Aligned.sortedByCoord.out.bam",
-    params:
-        extra = "",
-        tmp_dir = ""
-    threads:  # Samtools takes additional threads through its option -@
-        8     # This value - 1 will be sent to -@.
-    wrapper:
-        "v2.6.0/bio/samtools/sort"
-
-rule samtools_sort_pe_2:
-    input:
-        get_star_bam_uns,
-    output:
-        "results/star/pe2/{samples_units}/Aligned.sortedByCoord.out.bam",
-    params:
-        extra = "",
-        tmp_dir = ""
-    threads:  # Samtools takes additional threads through its option -@
-        8     # This value - 1 will be sent to -@.
-    wrapper:
-        "v2.6.0/bio/samtools/sort"
-
-rule samtools_sort_se_2:
-    input:
-        get_star_bam_uns,
-    output:
-        "results/star/se2/{samples_units}/Aligned.sortedByCoord.out.bam",
-    params:
-        extra = "",
-        tmp_dir = ""
-    threads:  # Samtools takes additional threads through its option -@
-        8     # This value - 1 will be sent to -@.
-    wrapper:
-        "v2.6.0/bio/samtools/sort"
-
-rule samtools_index_pe:
-    input:
-        lambda wc: get_star_bam(wc, original=True)
-    output:
-        "results/star/pe/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
+        "results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam.bai",
     log:
-        "logs/samtools_index/pe/{samples_units}.log",
+        "logs/samtools_index/{lib}/{sample}.log",
     params:
         "" # optional params string
     threads:  # Samtools takes additional threads through its option -@
@@ -150,114 +111,36 @@ rule samtools_index_pe:
     wrapper:
         "v2.6.0/bio/samtools/index"
 
-rule samtools_index_se:
-    input:
-        lambda wc: get_star_bam(wc, original=True)
-    output:
-        "results/star/se/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
-    log:
-        "logs/samtools_index/se/{samples_units}.log",
-    params:
-        "" # optional params string
-    threads:  # Samtools takes additional threads through its option -@
-        4     # This value - 1 will be sent to -@
-    wrapper:
-        "v2.6.0/bio/samtools/index"
-
-rule samtools_index_pe_2:
-    input:
-        get_star_bam
-    output:
-        "results/star/pe2/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
-    log:
-        "logs/samtools_index/pe2/{samples_units}.log"
-    params:
-        "" # optional params string
-    threads:  # Samtools takes additional threads through its option -@
-        4     # This value - 1 will be sent to -@
-    wrapper:
-        "v2.6.0/bio/samtools/index"
-
-rule samtools_index_se_2:
-    input:
-        get_star_bam
-    output:
-        "results/star/se2/{samples_units}/Aligned.sortedByCoord.out.bam.bai",
-    log:
-        "logs/samtools_index/se2/{samples_units}.log"
-    params:
-        "" # optional params string
-    threads:  # Samtools takes additional threads through its option -@
-        4     # This value - 1 will be sent to -@
-    wrapper:
-        "v2.6.0/bio/samtools/index"
-
-rule rsem_pe:
+rule rsem:
     input:
         # input.bam or input.fq_one must be specified (and if input.fq_one, optionally input.fq_two if paired-end)
         # an aligned to transcriptome BAM
-        bam=get_star_transcript_bam,
+        bam="results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByName.out.bam",
         # bam = expand(
         #         "results/star/pe/{sample}-{unit}/Aligned.out.bam",
         #         unit=units["unit_name"],
         #         sample=units["sample_name"],
         #     ),
         # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
-        #bai=get_star_bam_bai,
         reference=f"{assembly_path}rsem_reference/{assembly}.seq",
     output:
         # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
         # this file contains per-gene quantification data for the sample
-        genes_results="results/rsem/pe¿/{samples_units}/mapped.genes.results",
+        genes_results="results/rsem/{star_lib}/{sample}/mapped.genes.results",
         # isoforms_results must end in .isoforms.results and otherwise have the same prefix as genes_results
         # this file contains per-transcript quantification data for the sample
-        isoforms_results="results/rsem/pe¿/{samples_units}/mapped.isoforms.results",
+        isoforms_results="results/rsem/{star_lib}/{sample}/mapped.isoforms.results",
     params:
         # optional, specify if sequencing is paired-end
-        paired_end=True,
+        paired_end = not params["single_end"],
         out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
         rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
         extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
-        "logs/rsem/calculate_expression/{samples_units}.log",
+        "logs/rsem/calculate_expression/{sample}.log",
     conda:
         "../envs/rsem.yaml"
     shell:
         "rsem-calculate-expression --num-threads {threads} {params.extra} --paired-end --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"
-
-rule rsem_se:
-    input:
-        # input.bam or input.fq_one must be specified (and if input.fq_one, optionally input.fq_two if paired-end)
-        # an aligned to transcriptome BAM
-        bam=get_star_transcript_bam,
-        # bam= expand(
-        #         "results/star/se/{sample}-{unit}/Aligned.out.bam",
-        #         unit=units["unit_name"],
-        #         sample=samples["sample_name"],
-        #     ),
-        # one of the index files created by rsem-prepare-reference; the file suffix is stripped and passed on to rsem
-        #bai=get_star_bam_bai,
-        reference=f"{assembly_path}rsem_reference/{assembly}.seq",
-    output:
-        # genes_results must end in .genes.results; this suffix is stripped and passed to rsem as an output name prefix
-        # this file contains per-gene quantification data for the sample
-        genes_results="results/rsem/se¿/{samples_units}/mapped.genes.results",
-        # isoforms_results must end in .isoforms.results and otherwise have the same prefix as genes_results
-        # this file contains per-transcript quantification data for the sample
-        isoforms_results="results/rsem/se¿/{samples_units}/mapped.isoforms.results",
-    params:
-        # optional, specify if sequencing is paired-end
-        paired_end=False,
-        out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
-        rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
-        # additional optional parameters to pass to rsem, for example,
-        extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
-    threads: 24
-    log:
-        "logs/rsem/calculate_expression/{samples_units}.log",
-    conda:
-        "../envs/rsem.yaml"
-    shell: 
-        "rsem-calculate-expression --num-threads {threads} {params.extra} --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"
