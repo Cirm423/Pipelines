@@ -3,3 +3,4 @@ channels:
   - bioconda
 dependencies:
   - gffutils =0.10
+  - python <3.10
