@@ -1,7 +1,7 @@
 rule get_sra_pe:
     output:
-        "sra-pe-reads/{accession}_1.fastq.gz",
-        "sra-pe-reads/{accession}_2.fastq.gz",
+        temp("sra-pe-reads/{accession}_1.fastq.gz"),
+        temp("sra-pe-reads/{accession}_2.fastq.gz"),
     params:
         extra="--skip-technical",
     log:
@@ -13,7 +13,7 @@ rule get_sra_pe:
 
 rule get_sra_se:
     output:
-        "sra-se-reads/{accession}.fastq.gz",
+        temp("sra-se-reads/{accession}.fastq.gz"),
     params:
         extra="--skip-technical",
     log:
@@ -31,7 +31,7 @@ rule fix_sra_se:
         "logs/fix-sra-se/{accession}.log"
     threads: 6
     shell:
-        "zcat {input} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
+        r"zcat {input} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
 
 rule fix_sra_pe:
     input:
@@ -44,7 +44,7 @@ rule fix_sra_pe:
         "logs/fix-sra-pe/{accession}.log"
     threads: 6
     shell:
-        """zcat {input.read1} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1} && \
+        r"""zcat {input.read1} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1} && \
         zcat {input.read2} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read2}"""
 
 rule cutadapt_pipe:
