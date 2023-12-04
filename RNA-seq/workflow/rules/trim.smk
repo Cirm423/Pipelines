@@ -1,7 +1,7 @@
 rule get_sra_pe:
     output:
-        temp("sra-pe-reads/{accession}_1.fastq.gz"),
-        temp("sra-pe-reads/{accession}_2.fastq.gz"),
+        "sra-pe-reads/{accession}_1.fastq.gz",
+        "sra-pe-reads/{accession}_2.fastq.gz",
     params:
         extra="--skip-technical",
     log:
@@ -13,7 +13,7 @@ rule get_sra_pe:
 
 rule get_sra_se:
     output:
-        temp("sra-se-reads/{accession}.fastq.gz"),
+        "sra-se-reads/{accession}.fastq.gz",
     params:
         extra="--skip-technical",
     log:
@@ -31,7 +31,7 @@ rule fix_sra_se:
         "logs/fix-sra-se/{accession}.log"
     threads: 6
     shell:
-        "zcat {input} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
+        "zcat {input} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output}"
 
 rule fix_sra_pe:
     input:
@@ -43,9 +43,9 @@ rule fix_sra_pe:
     log:
         "logs/fix-sra-pe/{accession}.log"
     threads: 6
-    run:
-        shell("zcat {input.read1} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1}")
-        shell("zcat {input.read2} | sed 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read2}")
+    shell:
+        """zcat {input.read1} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read1} && \
+        zcat {input.read2} | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > {output.read2}"""
 
 rule cutadapt_pipe:
     input:
@@ -70,8 +70,8 @@ rule cutadapt_pe:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        extra=config["params"]["cutadapt-pe"],
-        adapters=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
+        extra=config["params"]["cutadapt-others"],
+        adapters=config["params"]["cutadapt-pe"],
     threads: 8
     wrapper:
         "v2.6.0/bio/cutadapt/pe"
@@ -86,8 +86,8 @@ rule cutadapt_se:
     log:
         "logs/cutadapt/{sample}-{unit}.log",
     params:
-        extra=config["params"]["cutadapt-se"],
-        adapters_r1=lambda w: str(units.loc[w.sample].loc[w.unit, "adapters"]),
+        extra=config["params"]["cutadapt-others"],
+        adapters_r1=config["params"]["cutadapt-se"],
     threads: 8
     wrapper:
         "v2.6.0/bio/cutadapt/se"

@@ -17,9 +17,6 @@ properties:
   sra:
     type: string
     description: SRA id for automatic download of unit
-  adapters:
-    type: string
-    description: adapter trimming settings to use (for cutadapt)
   strandedness:
     type: number
     description: one of the values 0.5 (not stranded), 1.0 (forward stranded) or 0.0 (reverse stranded) according to protocol strandedness
