@@ -115,7 +115,7 @@ rule rsem:
     input:
         # input.bam or input.fq_one must be specified (and if input.fq_one, optionally input.fq_two if paired-end)
         # an aligned to transcriptome BAM
-        bam="results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByName.out.bam",
+        bam="results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.fixed.out.bam",
         # bam = expand(
         #         "results/star/pe/{sample}-{unit}/Aligned.out.bam",
         #         unit=units["unit_name"],
@@ -136,7 +136,7 @@ rule rsem:
         out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
         rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
-        extra=f"--bam --seed {random.randint(0,100000)} --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
+        extra=f"--bam --forward-prob {float(get_strandedness(units)[0])} {config['params']['rsem']}",
     threads: 24
     log:
         "logs/rsem/calculate_expression/{sample}-{star_lib}.log",

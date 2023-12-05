@@ -21,7 +21,7 @@ if (snakemake@threads > 1) {
 Samples <- read.table(snakemake@params[["samples"]], header=TRUE, row.names="sample_name", check.names=FALSE)
 filepaths <- snakemake@input[["bam"]]
 
-names(filepaths) <- basename(dirname(filepaths))
+names(filepaths) <- gsub(".filtered.sortedByCoord.out.bam","",basename(filepaths))
 filepaths <- filepaths[order(match(names(filepaths),row.names(Samples)))]
 
 bamfiles <- BamFileList(filepaths)

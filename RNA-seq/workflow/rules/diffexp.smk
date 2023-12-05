@@ -52,7 +52,7 @@ rule deseq2:
 
 rule deseq2_init_TE:
     input:
-        bam=expand("results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",lib=star_lib,sample=samples.sample_name),
+        bam=expand("results/filtered/{star_lib}/{sample}.filtered.sortedByCoord.out.bam",star_lib=star_lib,sample=samples.sample_name),
         gtf=f"{assembly_path}{assembly}.rmsk.gtf",
     output:
         "results/deseq2/TE_all.rds",

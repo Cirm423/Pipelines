@@ -2,7 +2,7 @@ import os
 
 rule bamtobed_TE_single:
     input:
-        expand("results/star/{lib}/{sample}/Aligned.sortedByCoord.out.bam",lib=star_lib,sample=samples.sample_name),
+        expand("results/filtered/{star_lib}/{sample}.filtered.sortedByCoord.out.bam",star_lib=star_lib,sample=samples.sample_name),
     output:
         "results/TE_single/{sample}/Aligned.out.bed",
     log:
