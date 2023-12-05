@@ -93,9 +93,9 @@ params:
   #The parameters necessary to run the pipeline are coded within the pipeline and
   #cannot be changed. These parameters are:
   #--bam
-  #Rsem seed is set randomly by the system, and strandedness is set from units.tsv file
+  #You can change rsem seed here, strandedness is set from units.tsv file
   #If rsem has trouble remove --calc-ci and --ci-memory, it seems like an bug with rsem
-  rsem: "--estimate-rspd --no-bam-output"
+  rsem: "--seed 1234 --estimate-rspd --no-bam-output"
   #You can change the normalization used to generate the bigWig files that will be used in the genome browser
   #Options for --normalizeUsing are:
   #RPKM = Reads Per Kilobase per Million mapped reads; 
