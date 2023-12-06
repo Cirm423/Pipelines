@@ -37,9 +37,8 @@ if genecode_assembly:
 
 rule BamCoverage_str1:
     input:
-        expand(["results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam.bai"],
-            star_lib=star_lib,
-            sample=samples.sample_name)
+        expand(["results/star/{star_lib}/{{sample}}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{{sample}}/Aligned.sortedByCoord.out.bam.bai"],
+            star_lib=star_lib)
     output:
         "results/browser/{sample}.str1.bw",
     params:
@@ -55,9 +54,8 @@ rule BamCoverage_str1:
 
 rule BamCoverage_str2:
     input:
-        expand(["results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam.bai"],
-            star_lib=star_lib,
-            sample=samples.sample_name)
+        expand(["results/star/{star_lib}/{{sample}}/Aligned.sortedByCoord.out.bam","results/star/{star_lib}/{{sample}}/Aligned.sortedByCoord.out.bam.bai"],
+            star_lib=star_lib)
     output:
         "results/browser/{sample}.str2.bw",
     params:
