@@ -55,7 +55,7 @@ rule convert_bam_for_rsem:
 
 rule remove_optical_duplicates_TE:
     input:
-        bams=expand("results/star/{lib}/{{sample}}/Aligned.sortedByCoord.out.bam",lib=star_lib)
+        bams="results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam"
     output:
         #bam=temp("results/filtered/{star_lib}/{sample}.toTranscriptome.sortedByCoord.out.bam"),
         bam="results/filtered/{star_lib}/{sample}.filtered.sortedByCoord.out.bam",
