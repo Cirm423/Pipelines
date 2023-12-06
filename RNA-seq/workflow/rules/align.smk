@@ -1,4 +1,3 @@
-import random
 import os
 
 rule align_pe:
@@ -132,7 +131,7 @@ rule rsem:
         isoforms_results="results/rsem/{star_lib}/{sample}/mapped.isoforms.results",
     params:
         # optional, specify if sequencing is paired-end
-        paired_end = not config["single_end"],
+        paired_end = "--paired-end" if not config["single_end"] else "",
         out_path = lambda wildcards, output: os.path.dirname(output.genes_results) + "/" + "mapped",
         rsem_ref= lambda wildcards, input: os.path.splitext(input.reference)[0],
         # additional optional parameters to pass to rsem, for example,
@@ -143,4 +142,4 @@ rule rsem:
     conda:
         "../envs/rsem.yaml"
     shell:
-        "rsem-calculate-expression --num-threads {threads} {params.extra} --paired-end --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"
+        "rsem-calculate-expression --num-threads {threads} {params.extra} {params.paired_end} --alignments {input.bam} {params.rsem_ref} {params.out_path} > {log} 2>&1"
