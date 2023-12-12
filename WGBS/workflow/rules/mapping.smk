@@ -76,10 +76,10 @@ rule mark_merged_duplicates:
     log:
         "logs/picard/picard_dedup/{sample}.log",
     params:
-        f"REMOVE_DUPLICATES=false ASSUME_SORTED=true VALIDATION_STRINGENCY=LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE={config['params']['methyldackel']['optical_distance']}",
+        extra=f"--REMOVE_DUPLICATES false --ASSUME_SORTED true --VALIDATION_STRINGENCY LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE {config['params']['methyldackel']['optical_distance']}",
     threads: 24
     wrapper:
-        "v0.87.0/bio/picard/markduplicates"
+        "v3.0.2/bio/picard/markduplicates"
 
 
 rule bismark_map_pe:
