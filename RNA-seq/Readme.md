@@ -13,6 +13,7 @@
 - [Running Snakemake](#running-snakemake)
 - [Output](#output)
 - [Troubleshooting](#troubleshooting)
+  - [Fixing read names for optical duplicates](#fixing-read-names-for-optical-duplicates)
   - [Pipeline not starting](#pipeline-not-starting)
   - [Some step in the pipeline fails](#some-step-in-the-pipeline-fails)
 - [Acknowledgements](#acknowledgements)
@@ -66,16 +67,16 @@ If you need to analyze more conditions in Deseq2, you can add more columns to th
 
 The next file that needs to be modified is *units.tsv*, where you indicate the location of your fastq.gz files. The unit_name columns refer to technical replicates of a sample, e.g. lanes in sequencing. Different units from the same sample will be merged together (eg. Sample A1 lane1 and lane2 fq files will be merged). If your samples don't have technical replicates, give the same unit_name to all samples. This file looks like this:
 
-> | sample_name |	unit_name | fq1 | fq2 | sra | adapters | strandedness |
-> ------------|---------------|-----|-----|-----|----------|--------------|
-> | A1  | lane1 | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | | 1 |
-> | A1  | lane2 | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | | 1 |
-> | B1	| lane1 | B1.lane1.R1... | B1.lane1.R2...| | | 1 |
-> | B1	| lane2 | ... | ... | | | 1 |
-> | A2	| lane1 | ... | ... | | | 1 |
-> | A2	| lane2 | ... | ... | | | 1 |
-> | B2	| lane1 | ... | ... | | | 1 |
-> | B2	| lane2 | ... | ... | | | 1 |
+> | sample_name |	unit_name | fq1 | fq2 | sra | strandedness |
+> ------------|---------------|-----|---|----------|--------------|
+> | A1  | lane1 | A1.lane1.R1.fastq.gz | A1.lane1.R2.fastq.gz | | 1 |
+> | A1  | lane2 | A1.lane2.R1.fastq.gz | A1.lane2.R2.fastq.gz | | 1 |
+> | B1	| lane1 | B1.lane1.R1... | B1.lane1.R2...| | 1 |
+> | B1	| lane2 | ... | ... | | 1 |
+> | A2	| lane1 | ... | ... | | 1 |
+> | A2	| lane2 | ... | ... | | 1 |
+> | B2	| lane1 | ... | ... | | 1 |
+> | B2	| lane2 | ... | ... | | 1 |
 
 You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:
 
@@ -87,7 +88,7 @@ or a relative path from where snakemake is run, which is the directory where the
 
 This last approach is the preferred one.
 
-**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting has no effect on local samples. If both SRA and fastq.gz are present, snakemake will use the fastq.**
+**If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the *single_end* setting activation in *config.yaml*. This setting must still be set appropriately for local samples, as a few steps in the pipeline require it. If both SRA and fastq.gz are present, snakemake will use the fastq.**
 
 The last necessary column is strandedness, which **needs to be equal for all units**. The number equivalences can be found here:  
 
@@ -97,9 +98,6 @@ The last necessary column is strandedness, which **needs to be equal for all uni
 > 0.5 | Unstranded |
 > 0 | Reverse Stranded* |
 > *Only used in Illumina TruSeq protocol  
-
-             
-The adapters column is only used for trimming and can be left empty. However if you need to trim an adapter you have to input the sequence of  the adapter in this column for each unit.
 
 Lastly, the *config.yaml* file sets what analyses snakemake will do. This file has been commented to briefly explain what each setting does, so modify the settings to your needs. 
 
@@ -197,6 +195,33 @@ Additionally logs for each step will be stored in the logs folder.
 
 # Troubleshooting
 
+## Fixing read names for optical duplicates
+
+In order for picard to pick up reads that are duplicated in close positions, read names need to include coordinates from the sequencer. 
+
+These coordinates look like this (last part of the name):
+
+> VL00299:10:AAC522NM5:1:1101:27415:1133
+
+So reads that come from our lab should already be ok, however for public data SRA changes the naming format to the following:
+
+> @SRR25205388.1 VL00299:10:AAC522NM5:1:1101:27415:1133 length=76
+
+As STAR removes anything from the read name after the first whitespace, you need to fix your reads to remove the first whitespace so they look like this:
+
+> @SRR25205388.1_VL00299:10:AAC522NM5:1:1101:27415:1133 length=76
+
+SRA reads downloaded from the pipeline are automatically corrected, however if you downloaded your reads on your own you need to fix their name. To do this you can use the following command:
+
+>Fastq.gz: \
+> zcat <Your fastq.gz> | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' | gzip > \<Fixed fastq.gz> 
+> 
+> Fastq: \
+> cat \<Your fastq> | sed -e 's/^\(@[^[:blank:]]*\)[[:blank:]]\+/\1_/' -e 's/^\(+[^[:blank:]]*\)[[:blank:]]\+/\1_/' > \<Fixed fastq> 
+
+If the fastq file is missing these coordinates on the read names then optical duplicates cannot be removed.
+The picard report for duplicate detection is included in `report.html` file, so you can check if optical duplicates were correctly removed or not.
+
 ## Pipeline not starting
 
 Most of these issues have to do with the formatting of units.tsv or samples.tsv, but you may have also activated incompatible config settings.
@@ -226,6 +251,8 @@ If snakemake complains that the directory is locked, it means that either snakem
 The only step that I've found that can fail that is not my fault (ehem) is rsem. There seems to be a bug where rsem is failing to calculate the confidence intervals (ci), seems to happen more with sra samples. If this is the case, deactivate ci for rsem in `config.yaml`, there are further instructions in the file.
 
 Another step that can fail with a not useful log is Deseq2 init (thanks R), which usually has to do with problems with the model. You can try to run with only `~condition` as a model to check that it works.
+
+You should also double check that the `single` setting in the config is set correctly, as some steps in the pipe will fail if set for paired end when reading single end files.
 
 If any other step is failing for you, please tell me so I can fix it.
 

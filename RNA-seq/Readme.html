@@ -62,6 +62,7 @@
 <li><a href="#output">Output</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a>
 <ul>
+<li><a href="#fixing-read-names-for-optical-duplicates">Fixing read names for optical duplicates</a></li>
 <li><a href="#pipeline-not-starting">Pipeline not starting</a></li>
 <li><a href="#some-step-in-the-pipeline-fails">Some step in the pipeline fails</a></li>
 </ul>
@@ -133,7 +134,6 @@ biocrfhpc2:<br>
 <th>fq1</th>
 <th>fq2</th>
 <th>sra</th>
-<th>adapters</th>
 <th>strandedness</th>
 </tr>
 </thead>
@@ -144,7 +144,6 @@ biocrfhpc2:<br>
 <td>A1.lane1.R1.fastq.gz</td>
 <td>A1.lane1.R2.fastq.gz</td>
 <td></td>
-<td></td>
 <td>1</td>
 </tr>
 <tr>
@@ -152,7 +151,6 @@ biocrfhpc2:<br>
 <td>lane2</td>
 <td>A1.lane2.R1.fastq.gz</td>
 <td>A1.lane2.R2.fastq.gz</td>
-<td></td>
 <td></td>
 <td>1</td>
 </tr>
@@ -162,7 +160,6 @@ biocrfhpc2:<br>
 <td>B1.lane1.R1...</td>
 <td>B1.lane1.R2...</td>
 <td></td>
-<td></td>
 <td>1</td>
 </tr>
 <tr>
@@ -171,7 +168,6 @@ biocrfhpc2:<br>
 <td>...</td>
 <td>...</td>
 <td></td>
-<td></td>
 <td>1</td>
 </tr>
 <tr>
@@ -179,7 +175,6 @@ biocrfhpc2:<br>
 <td>lane1</td>
 <td>...</td>
 <td>...</td>
-<td></td>
 <td></td>
 <td>1</td>
 </tr>
@@ -189,7 +184,6 @@ biocrfhpc2:<br>
 <td>...</td>
 <td>...</td>
 <td></td>
-<td></td>
 <td>1</td>
 </tr>
 <tr>
@@ -198,7 +192,6 @@ biocrfhpc2:<br>
 <td>...</td>
 <td>...</td>
 <td></td>
-<td></td>
 <td>1</td>
 </tr>
 <tr>
@@ -206,7 +199,6 @@ biocrfhpc2:<br>
 <td>lane2</td>
 <td>...</td>
 <td>...</td>
-<td></td>
 <td></td>
 <td>1</td>
 </tr>
@@ -222,7 +214,7 @@ biocrfhpc2:<br>
 <p>samples/sample_1/sample_1_R1.fastq.gz</p>
 </blockquote>
 <p>This last approach is the preferred one.</p>
-<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. This setting has no effect on local samples. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
+<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. This setting must still be set appropriately for local samples, as a few steps in the pipeline require it. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
 <p>The last necessary column is strandedness, which <strong>needs to be equal for all units</strong>. The number equivalences can be found here:</p>
 <blockquote>
 <table>
@@ -252,7 +244,6 @@ biocrfhpc2:<br>
 </tbody>
 </table>
 </blockquote>
-<p>The adapters column is only used for trimming and can be left empty. However if you need to trim an adapter you have to input the sequence of  the adapter in this column for each unit.</p>
 <p>Lastly, the <em>config.yaml</em> file sets what analyses snakemake will do. This file has been commented to briefly explain what each setting does, so modify the settings to your needs.</p>
 <p>However, some options require further explanation that can be seen bellow.</p>
 <h2 id="assembly">Assembly</h2>
@@ -338,6 +329,29 @@ biocrfhpc2:<br>
 <p>For single and TE_single modes, the pipeline will create the single and TE_single folders in results respectively, where files named {sample}_vs_{control}.tsv will be placed, comparing all the samples in <code>samples.tsv</code> against the sample marked as control. These files contain the differential expression between each sample and the control. You can rerun the pipeline with a different sample marked as control, which will run only the last step to compare samples against a new control and therefore will be much quicker.</p>
 <p>Additionally logs for each step will be stored in the logs folder.</p>
 <h1 id="troubleshooting">Troubleshooting</h1>
+<h2 id="fixing-read-names-for-optical-duplicates">Fixing read names for optical duplicates</h2>
+<p>In order for picard to pick up reads that are duplicated in close positions, read names need to include coordinates from the sequencer.</p>
+<p>These coordinates look like this (last part of the name):</p>
+<blockquote>
+<p>VL00299:10:AAC522NM5:1:1101:27415:1133</p>
+</blockquote>
+<p>So reads that come from our lab should already be ok, however for public data SRA changes the naming format to the following:</p>
+<blockquote>
+<p>@SRR25205388.1 VL00299:10:AAC522NM5:1:1101:27415:1133 length=76</p>
+</blockquote>
+<p>As STAR removes anything from the read name after the first whitespace, you need to fix your reads to remove the first whitespace so they look like this:</p>
+<blockquote>
+<p>@SRR25205388.1_VL00299:10:AAC522NM5:1:1101:27415:1133 length=76</p>
+</blockquote>
+<p>SRA reads downloaded from the pipeline are automatically corrected, however if you downloaded your reads on your own you need to fix their name. To do this you can use the following command:</p>
+<blockquote>
+<p>Fastq.gz: <br>
+zcat <Your fastq.gz> | sed -e 's/^(@[^[:blank:]]<em>)[[:blank:]]+/\1_/' -e 's/^(+[^[:blank:]]</em>)[[:blank:]]+/\1_/' | gzip &gt; &lt;Fixed fastq.gz&gt;</p>
+<p>Fastq: <br>
+cat &lt;Your fastq&gt; | sed -e 's/^(@[^[:blank:]]<em>)[[:blank:]]+/\1_/' -e 's/^(+[^[:blank:]]</em>)[[:blank:]]+/\1_/' &gt; &lt;Fixed fastq&gt;</p>
+</blockquote>
+<p>If the fastq file is missing these coordinates on the read names then optical duplicates cannot be removed.
+The picard report for duplicate detection is included in <code>report.html</code> file, so you can check if optical duplicates were correctly removed or not.</p>
 <h2 id="pipeline-not-starting">Pipeline not starting</h2>
 <p>Most of these issues have to do with the formatting of units.tsv or samples.tsv, but you may have also activated incompatible config settings.</p>
 <ul>
@@ -362,6 +376,7 @@ biocrfhpc2:<br>
 <h2 id="some-step-in-the-pipeline-fails">Some step in the pipeline fails</h2>
 <p>The only step that I've found that can fail that is not my fault (ehem) is rsem. There seems to be a bug where rsem is failing to calculate the confidence intervals (ci), seems to happen more with sra samples. If this is the case, deactivate ci for rsem in <code>config.yaml</code>, there are further instructions in the file.</p>
 <p>Another step that can fail with a not useful log is Deseq2 init (thanks R), which usually has to do with problems with the model. You can try to run with only <code>~condition</code> as a model to check that it works.</p>
+<p>You should also double check that the <code>single</code> setting in the config is set correctly, as some steps in the pipe will fail if set for paired end when reading single end files.</p>
 <p>If any other step is failing for you, please tell me so I can fix it.</p>
 <h1 id="acknowledgements">Acknowledgements</h1>
 <p>This pipeline is based on the pipeline made by jafors:</p>
