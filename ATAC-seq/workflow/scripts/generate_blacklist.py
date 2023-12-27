@@ -42,3 +42,5 @@ if blacklist:
     copy_blacklist(igenomes, blacklist_path)
 else:
     get_blacklist_from_igenomes(igenomes, blacklist_path)
+
+os.chmod(blacklist_path,0o664)
