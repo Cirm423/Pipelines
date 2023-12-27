@@ -92,7 +92,7 @@ rule samtools_sort_mapped:
 
 rule mark_merged_duplicates:
     input:
-        "results/mapped/{sample}.sorted.bam"
+        bams="results/mapped/{sample}.sorted.bam"
     output:
         bam=temp("results/picard_dedup/{sample}.sorted.bam"),
         metrics="results/picard_dedup/{sample}.sorted.metrics.txt"

@@ -33,7 +33,7 @@ rule merge_bams:
 
 rule mark_merged_duplicates:
     input:
-        "results/merged/{sample}.bam"
+        bams="results/merged/{sample}.bam"
     output:
         bam=temp("results/picard_dedup/{sample}.bam"),
         metrics="results/picard_dedup/{sample}.metrics.txt"

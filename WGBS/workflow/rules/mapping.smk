@@ -69,7 +69,7 @@ rule samtools_sort_mapped:
 
 rule mark_merged_duplicates:
     input:
-        "results/mapped/{sample}.bam",
+        bams="results/mapped/{sample}.bam",
     output:
         bam="results/picard_dedup/{sample}.bam",
         metrics="results/picard_dedup/{sample}.metrics.txt",
