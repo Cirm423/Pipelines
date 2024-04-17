@@ -355,7 +355,7 @@ def all_input(wildcards):
         "results/qc/multiqc_report.html",
         f"{assembly_path}{assembly}.annotation.bed"
     ])
-
+    
     if config["params"]["diffexp"]["activate"]:
         wanted_input.extend( expand(
             "results/diffexp/{contrast}.diffexp.tsv",
@@ -371,10 +371,10 @@ def all_input(wildcards):
             if config["params"]["diffexp"]["TE"]["activate"]:
                 wanted_input.append("results/TE_pca.svg")
     else:
-        wanted_input = expand(
+        wanted_input.extend(expand(
             "results/rsem/{star_lib}/{sample}/mapped.genes.results",
             sample=units["sample_name"],star_lib=star_lib
-        )
+        ))
         wanted_input.extend(expand(
             "results/rsem/{star_lib}/{sample}/mapped.isoforms.results",
             sample=units["sample_name"],star_lib=star_lib
