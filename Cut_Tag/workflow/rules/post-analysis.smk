@@ -87,31 +87,31 @@ rule collect_multiple_metrics:
 #     wrapper:
 #         "v1.3.1/bio/bedtools/genomecov"
 
-# rule sort_genomecov:
-#     input:
-#         f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else '.cpm'}.bedgraph"
-#     output:
-#         "results/bed_graph/{sample}_normalized.sorted.bedgraph"
-#     log:
-#         "logs/sort_genomecov/{sample}.log"
-#     threads: 8
-#     conda:
-#         "../envs/bedsort.yaml"
-#     shell:
-#         "bedSort {input} {output} 2> {log}"
+rule sort_genomecov:
+    input:
+        f"results/bed_graph/{{sample}}{'_normalized' if config['params']['callpeak']['spike'] else '.cpm'}.bedgraph"
+    output:
+        "results/bed_graph/{sample}_normalized.sorted.bedgraph"
+    log:
+        "logs/sort_genomecov/{sample}.log"
+    threads: 8
+    conda:
+        "../envs/bedsort.yaml"
+    shell:
+        "bedSort {input} {output} 2> {log}"
 
-# rule bedGraphToBigWig:
-#     input:
-#         bedGraph="results/bed_graph/{sample}_normalized.sorted.bedgraph",
-#         chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
-#     output:
-#         "results/big_wig/{sample}.bigWig"
-#     log:
-#         "logs/big_wig/{sample}.log"
-#     params:
-#         ""
-#     wrapper:
-#         "v1.3.1/bio/ucsc/bedGraphToBigWig"
+rule bedGraphToBigWig:
+    input:
+        bedGraph="results/bed_graph/{sample}_normalized.sorted.bedgraph",
+        chromsizes=f"{assembly_path}{assembly}.chrom.sizes"
+    output:
+        "results/big_wig/{sample}.bigWig"
+    log:
+        "logs/big_wig/{sample}.log"
+    params:
+        ""
+    wrapper:
+        "v1.3.1/bio/ucsc/bedGraphToBigWig"
 
 rule bamCompare:
     input:
