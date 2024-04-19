@@ -41,7 +41,7 @@ rule prep_seacr:
     conda:
         "../envs/seacr.yaml"
     shell:
-        "ln $(which SEACR_1.3.R) ./SEACR_1.3.R"
+        "ln -s $(which SEACR_1.3.R) ./SEACR_1.3.R"
 
 rule seacr_callpeak_stringent:
     input:
