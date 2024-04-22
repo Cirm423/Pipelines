@@ -484,7 +484,7 @@ def all_input(wildcards):
                                 )
                     if do_consensus_peak:
                         for antibody in antibodies:
-                            if exists_multiple_groups(antibody) or exists_replicates(antibody):
+                            if exists_multiple_groups(antibody) and exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [
