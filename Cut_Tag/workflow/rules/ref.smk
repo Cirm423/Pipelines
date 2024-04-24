@@ -218,6 +218,7 @@ rule generate_igenomes:
         igenomes_release = config["resources"]["ref"]["igenomes_release"]
     log:
         "logs/ref/igenomes.log"
+    cache: True
     conda:
         ""
     script:
@@ -282,6 +283,7 @@ rule bedtools_complement_blacklist:
         f"{assembly_path}{assembly}.blacklist.sorted.complement"
     params:
         extra=""
+    cache: True
     log:
         "logs/ref/blacklist.sorted.complement.log"
     wrapper:
@@ -297,6 +299,7 @@ checkpoint get_gsize:
         build=assembly
     log:
         "logs/ref/gsize.log"
+    cache: True
     conda:
         ""
     script:
