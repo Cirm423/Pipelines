@@ -40,7 +40,9 @@ rule mark_merged_duplicates:
     log:
         "logs/picard/picard_dedup/{sample}.log"
     params:
-        extra=f"--REMOVE_DUPLICATES false --ASSUME_SORTED true --VALIDATION_STRINGENCY LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE {config['params']['optical_distance']}",
+        extra=f"""--REMOVE_DUPLICATES false --ASSUME_SORTED true --VALIDATION_STRINGENCY LENIENT {f"--OPTICAL_DUPLICATE_PIXEL_DISTANCE {config['params']['optical_distance']}" if config['params']['optical_distance'] > 0 else ''}""",
+    resources:
+        mem_mb=16384,
     threads: 4
     wrapper:
         "v3.0.2/bio/picard/markduplicates"
