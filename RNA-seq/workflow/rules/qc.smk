@@ -164,6 +164,8 @@ rule fastqc:
     log:
         "logs/fastqc/{sample}.{unit}.{read}.log"
     threads: 6
+    resources:
+        mem_mb = 2048
     wrapper:
         "v2.6.0/bio/fastqc"
 
@@ -178,6 +180,8 @@ rule fastqc_trimmed:
     log:
         "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
     threads: 6
+    resources:
+        mem_mb = 2048
     wrapper:
         "v2.6.0/bio/fastqc"
 
