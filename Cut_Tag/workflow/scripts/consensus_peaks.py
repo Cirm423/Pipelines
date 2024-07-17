@@ -74,9 +74,9 @@ for i in list(range(len(summary_peak_df_list))):
     peak_counts = upsetplot.from_memberships(cat_list, data = df_i['count'])
     try:
         upsetplot.plot(peak_counts, show_counts=True, sort_by="cardinality")
-        plt.show()
+        #plt.show()
         plt.savefig(os.path.join(args.outpath, file_name))
     except:
         upsetplot.plot(peak_counts, show_counts=True, sort_by="cardinality", min_subset_size=max(df_i["count"])/100)
-        plt.show()
+        #plt.show()
         plt.savefig(os.path.join(args.outpath, file_name))        
