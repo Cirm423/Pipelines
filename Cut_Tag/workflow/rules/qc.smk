@@ -9,8 +9,10 @@ rule fastqc:
     log:
         "logs/fastqc/{sample}.{unit}.{read}.log"
     threads: 6
+    resources:
+        mem_mb = 2048
     wrapper:
-        "v1.3.1/bio/fastqc"
+        "v2.6.0/bio/fastqc"
 
 rule fastqc_trimmed:
     input:
@@ -23,8 +25,10 @@ rule fastqc_trimmed:
     log:
         "logs/fastqc/trimmed_{sample}.{unit}.{read}.log"
     threads: 6
+    resources:
+        mem_mb = 2048
     wrapper:
-        "v1.3.1/bio/fastqc"
+        "v2.6.0/bio/fastqc"
 
 rule multiqc:
     input:
