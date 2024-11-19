@@ -23,6 +23,8 @@ rule remove_optical_duplicates:
     params:
         extra=f"--REMOVE_DUPLICATES false --ASSUME_SORTED true --VALIDATION_STRINGENCY LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE {config['params']['optical_distance']} --REMOVE_SEQUENCING_DUPLICATES true",
     threads: 4
+    resources:
+        mem_mb = 5000
     wrapper:
         "v3.0.2/bio/picard/markduplicates"
 
@@ -65,5 +67,7 @@ rule remove_optical_duplicates_TE:
     params:
         extra=f"--REMOVE_DUPLICATES false --ASSUME_SORTED true --VALIDATION_STRINGENCY LENIENT --OPTICAL_DUPLICATE_PIXEL_DISTANCE {config['params']['optical_distance']} --REMOVE_SEQUENCING_DUPLICATES true",
     threads: 4
+    resources:
+        mem_mb = 5000
     wrapper:
         "v3.0.2/bio/picard/markduplicates"
