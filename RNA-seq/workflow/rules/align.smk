@@ -6,8 +6,8 @@ rule align_pe:
         fq2=get_map_reads_input_R2,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        "results/star/pe/{sample}/Aligned.out.bam",
-        "results/star/pe/{sample}/Aligned.toTranscriptome.out.bam",
+        temp("results/star/pe/{sample}/Aligned.out.bam"),
+        temp("results/star/pe/{sample}/Aligned.toTranscriptome.out.bam"),
         "results/star/pe/{sample}/SJ.out.tab",
         "results/star/pe/{sample}/Log.final.out",
     log:
@@ -29,8 +29,8 @@ rule align_se:
         fq1=get_map_reads_input_R1,
         index=f"{assembly_path}star_genome_{assembly}",
     output:
-        "results/star/se/{sample}/Aligned.out.bam",
-        "results/star/se/{sample}/Aligned.toTranscriptome.out.bam",
+        temp("results/star/se/{sample}/Aligned.out.bam"),
+        temp("results/star/se/{sample}/Aligned.toTranscriptome.out.bam"),
         "results/star/se/{sample}/SJ.out.tab",
         "results/star/se/{sample}/Log.final.out",
     log:
@@ -53,8 +53,8 @@ rule align_pe_2pass:
         index=f"{assembly_path}star_genome_{assembly}",
         sj=expand("results/star/pe/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        "results/star/pe2/{sample}/Aligned.out.bam",
-        "results/star/pe2/{sample}/Aligned.toTranscriptome.out.bam",
+        temp("results/star/pe2/{sample}/Aligned.out.bam"),
+        temp("results/star/pe2/{sample}/Aligned.toTranscriptome.out.bam"),
         "results/star/pe2/{sample}/Log.final.out",
     log:
         "logs/star-pe2/{sample}.log",
@@ -74,8 +74,8 @@ rule align_se_2pass:
         index=f"{assembly_path}star_genome_{assembly}",
         sj=expand("results/star/se/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        "results/star/se2/{sample}/Aligned.out.bam",
-        "results/star/se2/{sample}/Aligned.toTranscriptome.out.bam",
+        temp("results/star/se2/{sample}/Aligned.out.bam"),
+        temp("results/star/se2/{sample}/Aligned.toTranscriptome.out.bam"),
         "results/star/se2/{sample}/Log.final.out",
     log:
         "logs/star-se2/{sample}.log",
