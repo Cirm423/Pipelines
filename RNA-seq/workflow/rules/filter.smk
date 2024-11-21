@@ -16,7 +16,7 @@ rule remove_optical_duplicates:
         bams="results/filtered/{star_lib}/{sample}.toTranscriptome.sortedByCoord.out.bam"
     output:
         #bam=temp("results/filtered/{star_lib}/{sample}.toTranscriptome.sortedByCoord.out.bam"),
-        bam="results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByCoord.out.bam",
+        bam=temp("results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByCoord.out.bam"),
         metrics=report("results/filtered/{star_lib}/{sample}.toTranscriptome.metrics.txt",category="Optical replicates")
     log:
         "logs/picard/filtered/{sample}_{star_lib}.log"
@@ -44,7 +44,7 @@ rule convert_bam_for_rsem:
     input:
         "results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.sortedByCoord.out.bam"
     output:
-        "results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.fixed.out.bam",
+        temp("results/filtered/{star_lib}/{sample}.toTranscriptome.filtered.fixed.out.bam"),
     params:
         out_file = lambda wildcards, output: os.path.splitext(output[0])[0],
     threads:  # Samtools takes additional threads through its option -@
@@ -60,7 +60,7 @@ rule remove_optical_duplicates_TE:
         bams="results/star/{star_lib}/{sample}/Aligned.sortedByCoord.out.bam"
     output:
         #bam=temp("results/filtered/{star_lib}/{sample}.toTranscriptome.sortedByCoord.out.bam"),
-        bam="results/filtered/{star_lib}/{sample}.filtered.sortedByCoord.out.bam",
+        bam=temp("results/filtered/{star_lib}/{sample}.filtered.sortedByCoord.out.bam"),
         metrics=report("results/filtered/{star_lib}/{sample}.metrics.txt",category="Optical replicates")
     log:
         "logs/picard/filtered/{sample}_{star_lib}.log"
