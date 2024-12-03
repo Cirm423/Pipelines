@@ -64,6 +64,8 @@ rule align_pe_2pass:
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
     threads: 24
+    resources:
+        mem_mb = 5000
     wrapper:
         "0.77.0/bio/star/align"
 
@@ -85,6 +87,8 @@ rule align_se_2pass:
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
     threads: 24
+    resources:
+        mem_mb = 5000
     wrapper:
         "0.77.0/bio/star/align"
 
