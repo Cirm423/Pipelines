@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-enhancedvolcano=1.24.0
+  - r-glue=1.8.0

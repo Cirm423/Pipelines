@@ -1,0 +1,6 @@
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - bioconductor-biomart =2.62.0
+  - r-dplyr =1.2.0

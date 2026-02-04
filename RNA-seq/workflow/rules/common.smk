@@ -355,18 +355,18 @@ def all_input(wildcards):
     
     if config["params"]["diffexp"]["activate"]:
         wanted_input.extend( expand(
-            "results/diffexp/{contrast}.diffexp.tsv",
+            "results/plots/{contrast}.volcano_plot.svg",
             contrast=config["params"]["diffexp"]["contrasts"],
         ))
         if config["params"]["diffexp"]["TE"]["activate"]:
             wanted_input.extend(expand(
-                "results/diffexp/{contrast}.diffexp.TE.tsv",
+                "results/plots/{contrast}.volcano_plot.TE.svg",
                 contrast=config["params"]["diffexp"]["contrasts"],
             ))
         if config["params"]["pca"]["activate"]:
-            wanted_input.append("results/pca.svg")
+            wanted_input.append("results/plots/pca.svg")
             if config["params"]["diffexp"]["TE"]["activate"]:
-                wanted_input.append("results/TE_pca.svg")
+                wanted_input.append("results/plots/TE_pca.svg")
     else:
         wanted_input.extend(expand(
             "results/rsem/{star_lib}/{sample}/mapped.genes.results",
