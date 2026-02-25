@@ -354,11 +354,13 @@ def all_input(wildcards):
     ])
     
     if config["params"]["diffexp"]["activate"]:
+        wanted_input.extend(["results/deseq2/normcounts_symbol.tsv"])
         wanted_input.extend( expand(
             "results/plots/{contrast}.volcano_plot.svg",
             contrast=config["params"]["diffexp"]["contrasts"],
         ))
         if config["params"]["diffexp"]["TE"]["activate"]:
+            wanted_input.expand(["results/deseq2/TE_normcounts_symbol.tsv"])
             wanted_input.extend(expand(
                 "results/plots/{contrast}.volcano_plot.TE.svg",
                 contrast=config["params"]["diffexp"]["contrasts"],

@@ -64,6 +64,19 @@ rule deseq2_convert:
     script:
         "../scripts/DESeq2_convertID.R"
 
+rule deseq2_convert_all:
+    input:
+        "results/deseq2/normcounts.tsv",
+    output:
+        "results/deseq2/normcounts_symbol.tsv"
+    conda:
+        "../envs/deseq2_ID_conv.yaml"
+    log:
+        "logs/deseq2/all.ID_conversion.log",
+    threads: 2
+    script:
+        "../scripts/DESeq2_convertID.R"
+
 rule enhanced_volcano:
     input:
         "results/diffexp/{contrast}.diffexp.gene_symbol.tsv",
@@ -145,6 +158,19 @@ rule deseq2_convert_TE:
         "../envs/deseq2_ID_conv.yaml"
     log:
         "logs/deseq2/{contrast}.ID_conversion.TE.log",
+    threads: 2
+    script:
+        "../scripts/DESeq2_convertID.R"
+
+rule deseq2_convert_all_TE:
+    input:
+        "results/deseq2/TE_normcounts.tsv",
+    output:
+        "results/deseq2/TE_normcounts_symbol.tsv"
+    conda:
+        "../envs/deseq2_ID_conv.yaml"
+    log:
+        "logs/deseq2/TE_all.ID_conversion.log",
     threads: 2
     script:
         "../scripts/DESeq2_convertID.R"
