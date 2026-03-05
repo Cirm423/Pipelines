@@ -29,8 +29,6 @@ params:
     activate: True
   # choose "narrow" or "broad" for macs2 callpeak analysis, for documentation and source code please see https://github.com/macs3-project/MACS
   peak-analysis: "broad"
-  # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
-  min-reps-consensus: 1
   callpeak:
     p-value: 0.05
     q-value:
@@ -44,9 +42,6 @@ params:
   picard_metrics:
     # Produces alignment metrics
     activate: True
-  deseq2:
-    # optional to run vst transform instead of rlog
-    vst: False
   peak-annotation-analysis:
     activate: True
   peak-qc:
@@ -54,6 +49,13 @@ params:
   consensus-peak-analysis:
     # Should not be run unless there are at least 2 samples per control (not counting control) otherwise will not work.
     activate: True
+    # Number of biological replicates required from a given condition for a peak to contribute to a consensus peak
+    min-reps-consensus: 1
+    deseq2:
+      #in consensus do differential peak analysis
+      activate: True
+      # optional to run vst transform instead of rlog
+      vst: False
   # samtools view parameters:
   #The maximum offset between two duplicate clusters in order to consider them optical duplicates. 
   #100 is appropriate for unpatterned versions of the Illumina platform. For the patterned flowcell models, 2500 is more appropriate.

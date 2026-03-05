@@ -326,6 +326,7 @@ def all_input(wildcards):
     do_annot = config["params"]["peak-annotation-analysis"]["activate"]
     do_peak_qc = config["params"]["peak-qc"]["activate"]
     do_consensus_peak = config["params"]["consensus-peak-analysis"]["activate"]
+    do_deseq2 = config["params"]["consensus-peak-analysis"]["deseq2"]["activate"]
 
     wanted_input = []
 
@@ -426,7 +427,7 @@ def all_input(wildcards):
                             )
                     if do_consensus_peak:
                         for antibody in samples["antibody"]:
-                            if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
+                            if exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [
@@ -444,32 +445,42 @@ def all_input(wildcards):
                                             [
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt",
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.boolean.annotatePeaks.txt",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.summary",
-                                                "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.jcounts",
-                                                "results/deseq2/dss_rld/{antibody}.consensus_{peak}-peaks.dds.rld.RData",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.pca_plot.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.heatmap_plot.pdf",
-                                                "results/deseq2/pca_vals/{antibody}.consensus_{peak}-peaks.pca.vals.txt",
-                                                "results/deseq2/dists/{antibody}.consensus_{peak}-peaks.sample.dists.txt",
-                                                "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.RData",
-                                                "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.sizeFactor.txt",
-                                                "results/deseq2/results/{antibody}.consensus_{peak}-peaks.deseq2_results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.txt",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.bed",
-                                                "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.bed",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_MA_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_MA_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_volcano_plot.pdf",
-                                                "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_volcano_plot.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_sample_corr_heatmap.pdf",
-                                                "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_scatter_plots.pdf"
-                                            ],
-                                            peak = config["params"]["peak-analysis"],
-                                            antibody = antibody
+                                                ],
+                                                peak = config["params"]["peak-analysis"],
+                                                antibody = antibody
+                                            )
                                         )
-                                    )
+                                if do_deseq2:
+                                    if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
+                                        wanted_input.extend(
+                                            expand(
+                                                [                        
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts",
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.summary",
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.jcounts",
+                                                    "results/deseq2/dss_rld/{antibody}.consensus_{peak}-peaks.dds.rld.RData",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.pca_plot.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.heatmap_plot.pdf",
+                                                    "results/deseq2/pca_vals/{antibody}.consensus_{peak}-peaks.pca.vals.txt",
+                                                    "results/deseq2/dists/{antibody}.consensus_{peak}-peaks.sample.dists.txt",
+                                                    "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.RData",
+                                                    "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.sizeFactor.txt",
+                                                    "results/deseq2/results/{antibody}.consensus_{peak}-peaks.deseq2_results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.bed",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.bed",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_MA_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_MA_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_volcano_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_volcano_plot.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_sample_corr_heatmap.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_scatter_plots.pdf"
+                                                ],
+                                                peak = config["params"]["peak-analysis"],
+                                                antibody = antibody
+                                            )
+                                        )
             wanted_input.extend(
                 expand(
                     [

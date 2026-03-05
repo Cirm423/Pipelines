@@ -43,7 +43,7 @@ rule macs2_merged_expand:
         bool_intersect="results/seacr_merged/{antibody}.consensus_peaks.boolean.intersect.txt"
     params:
         sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab_nop(wildcards.antibody),
-        min_reps_consensus=config["params"]["min-reps-consensus"]
+        min_reps_consensus=config["params"]["consensus-peak-analysis"]["min-reps-consensus"]
     log:
         "logs/seacr_merged/{antibody}.consensus_peaks.boolean.log"
     script:
@@ -55,7 +55,7 @@ rule macs2_merged_expand:
 #     output:
 #         "results/seacr_merged/{antibody}.consensus_peaks.filtered.txt"
 #     params:
-#         f"' $10 >= {config['params']['min-reps-consensus']} {{print $0}}'"
+#         f"' $10 >= {config["params"]["consensus-peak-analysis"]["min-reps-consensus"]} {{print $0}}'"
 #     log:
 #         "logs/seacr_merged/{antibody}.consensus_peaks.filter.log"
 #     shell:
@@ -222,7 +222,7 @@ rule featurecounts_deseq2:
     threads:
         2
     params:
-        vst = config["params"]["deseq2"]["vst"]
+        vst = config["params"]["consensus-peak-analysis"]["deseq2"]["vst"]
     log:
         "logs/deseq2/{antibody}.consensus_peaks.featureCounts.log"
     conda:

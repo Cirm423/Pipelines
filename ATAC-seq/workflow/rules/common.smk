@@ -365,6 +365,7 @@ def all_input(wildcards):
     do_annot = config["params"]["peak-annotation-analysis"]["activate"]
     do_peak_qc = config["params"]["peak-qc"]["activate"]
     do_consensus_peak = config["params"]["consensus-peak-analysis"]["activate"]
+    do_deseq2 = config["params"]["consensus-peak-analysis"]["deseq2"]["activate"]
 
     wanted_input = []
 
@@ -406,6 +407,11 @@ def all_input(wildcards):
                             [
                                 "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.annotatePeaks.txt",
                                 "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.boolean.annotatePeaks.txt",
+                            ]
+                        )                    
+                    if do_deseq2:
+                        wanted_input.extend(
+                            [
                                 "results/feature_counts/consensus_narrow-peaks.featureCounts",
                                 "results/feature_counts/consensus_narrow-peaks.featureCounts.summary",
                                 "results/feature_counts/consensus_narrow-peaks.featureCounts.jcounts",

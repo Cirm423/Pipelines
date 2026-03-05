@@ -33,7 +33,7 @@ rule macs2_merged_expand:
     params:
         sample_control_peak=lambda wildcards: get_sample_control_peak_combinations_list_ab_nop(wildcards.antibody),
         narrow_param="--is_narrow_peak" if config["params"]["peak-analysis"] == "narrow" else "",
-        min_reps_consensus=config["params"]["min-reps-consensus"]
+        min_reps_consensus=config["params"]["consensus-peak-analysis"]["min-reps-consensus"]
     log:
         "logs/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.log"
     script:
@@ -198,7 +198,7 @@ rule featurecounts_deseq2:
     threads:
         2
     params:
-        vst = config["params"]["deseq2"]["vst"]
+        vst = config["params"]["consensus-peak-analysis"]["deseq2"]["vst"]
     log:
         "logs/deseq2/{antibody}.consensus_{peak}-peaks.featureCounts.log"
     conda:

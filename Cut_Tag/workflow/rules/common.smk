@@ -391,6 +391,7 @@ def all_input(wildcards):
     do_annot = config["params"]["peak-annotation-analysis"]["activate"]
     do_peak_qc = config["params"]["peak-qc"]["activate"]
     do_consensus_peak = config["params"]["consensus-peak-analysis"]["activate"]
+    do_deseq2 = config["params"]["consensus-peak-analysis"]["deseq2"]["activate"]
 
     wanted_input = []
 
@@ -484,7 +485,7 @@ def all_input(wildcards):
                                 )
                     if do_consensus_peak:
                         for antibody in antibodies:
-                            if exists_multiple_groups(antibody) and exists_replicates(antibody):
+                            if exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
                                         [
@@ -501,6 +502,16 @@ def all_input(wildcards):
                                             [
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.annotatePeaks.txt",
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_peaks.boolean.annotatePeaks.txt",
+                                            ],
+                                            antibody = antibody
+                                        )
+                                    )
+
+                                if do_deseq2:
+                                    if exists_multiple_groups(antibody): 
+                                        wanted_input.extend(
+                                            expand(
+                                                [                            
                                                 "results/feature_counts/{antibody}.consensus_peaks.featureCounts",
                                                 "results/feature_counts/{antibody}.consensus_peaks.featureCounts.summary",
                                                 "results/feature_counts/{antibody}.consensus_peaks.featureCounts.jcounts",
@@ -526,6 +537,7 @@ def all_input(wildcards):
                                             antibody = antibody
                                         )
                                     )
+
             wanted_input.extend(
                 expand(
                     [

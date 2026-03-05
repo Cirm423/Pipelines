@@ -30,7 +30,7 @@ rule genrich_merged_expand:
     params:
         sample_control_peak=expand("{group}.narrow", group = groups),
         narrow_param="--is_narrow_peak",
-        min_reps_consensus=1
+        min_reps_consensus=config["params"]["consensus-peak-analysis"]["min-reps-consensus"]
     log:
         "logs/genrich_merged_expand/consensus_narrow-peaks.boolean.log"
     script:
@@ -194,7 +194,7 @@ rule featurecounts_deseq2:
     threads:
         2
     params:
-        vst = config["params"]["deseq2"]["vst"]
+        vst = config["params"]["consensus-peak-analysis"]["deseq2"]["vst"]
     log:
         "logs/deseq2/consensus_narrow-peaks.featureCounts.log"
     conda:
