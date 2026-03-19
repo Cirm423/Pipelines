@@ -173,6 +173,24 @@ rule create_igv_peaks:
     shell:
         " find {input} -type f -name '*_peaks.{wildcards.peak}Peak' -exec echo -e 'results/IGV/macs2_callpeak/{wildcards.peak}/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
 
+rule homer_motifs:
+    input:
+        peaks="results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",
+        genome=f"{assembly_path}{assembly}.fa"
+    output:
+        motifs="results/homer/motifs/{sample}-{control}.{peak}_peaks/homerMotifs.all.motifs"
+    threads:
+        2
+    params:
+        folder = subpath(output.motifs, parent=True),
+        size = config["params"]["peak-annotation-analysis"]["motif_bp"]
+    log:
+        "logs/homer/motifs/{sample}-{control}.{peak}.log"
+    conda:
+        "../envs/homer.yaml"
+    shell:
+        "findMotifsGenome.pl {input.peaks} {input.genome} {params.folder} -size {params.size} -mask -p {threads}"
+
 rule homer_annotatepeaks:
     input:
         peaks="results/macs2_callpeak/{sample}-{control}.{peak}_peaks.{peak}Peak",

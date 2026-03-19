@@ -44,6 +44,9 @@ params:
     activate: True
   peak-annotation-analysis:
     activate: True
+    #Recommend 50 bp for establishing the primary motif bound by a given transcription factor and 200 bp for finding both primary and "co-enriched" motifs for a transcription factor.
+    #When looking at histone marked regions, 500-1000 bp is probably a good idea
+    motif_bp: 200
   peak-qc:
     activate: True
   consensus-peak-analysis:

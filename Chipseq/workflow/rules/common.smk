@@ -408,7 +408,8 @@ def all_input(wildcards):
                         wanted_input.extend(
                             expand(
                                 [
-                                    "results/homer/annotate_peaks/{sample}-{control}.{peak}_peaks.annotatePeaks.txt"
+                                    "results/homer/annotate_peaks/{sample}-{control}.{peak}_peaks.annotatePeaks.txt",
+                                    "results/homer/motifs/{sample}-{control}.{peak}_peaks/homerMotifs.all.motifs"
                                 ],
                                 sample = sample,
                                 control = samples.loc[sample]["control"],
@@ -445,6 +446,7 @@ def all_input(wildcards):
                                             [
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt",
                                                 "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.boolean.annotatePeaks.txt",
+                                                "results/homer/motifs_consensus/{antibody}.consensus_{peak}-peaks/homerMotifs.all.motifs",                                              
                                                 ],
                                                 peak = config["params"]["peak-analysis"],
                                                 antibody = antibody

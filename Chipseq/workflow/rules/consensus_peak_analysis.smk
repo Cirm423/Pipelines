@@ -87,6 +87,24 @@ rule create_consensus_igv:
     shell:
         "find {input} -type f -name '*.consensus_{wildcards.peak}-peaks.boolean.bed' -exec echo -e 'results/IGV/consensus/{wildcards.antibody}/\"{{}}\"\t0,0,0' \; > {output} 2> {log}"
 
+rule homer_consensus_motifs:
+    input:
+        peaks="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.bed",
+        genome=f"{assembly_path}{assembly}.fa"
+    output:
+        motifs="results/homer/motifs_consensus/{antibody}.consensus_{peak}-peaks/homerMotifs.all.motifs"
+    threads:
+        2
+    params:
+        folder = subpath(output.motifs, parent=True),
+        size = config["params"]["peak-annotation-analysis"]["motif_bp"]
+    log:
+        "logs/homer/motifs_consensus/{antibody}.consensus_{peak}-peaks_motifs.log"
+    conda:
+        "../envs/homer.yaml"
+    shell:
+        "findMotifsGenome.pl {input.peaks} {input.genome} {params.folder} -size {params.size} -mask -p {threads}"
+
 rule homer_consensus_annotatepeaks:
     input:
         peaks="results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.bed",
