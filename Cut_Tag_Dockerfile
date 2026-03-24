@@ -278,7 +278,7 @@ COPY workflow/envs/consensus_plot.yaml /conda-envs/f6e43dd5b80d5a3d6a3edaa7f9c73
 #     - conda-forge
 #     - bioconda
 #   dependencies:
-#     - deeptools =3.5.1
+#     - deeptools =3.5.6
 RUN mkdir -p /conda-envs/672d293dafd21f0b2800c51483e3e484
 COPY workflow/envs/deeptools.yaml /conda-envs/672d293dafd21f0b2800c51483e3e484/environment.yaml
 

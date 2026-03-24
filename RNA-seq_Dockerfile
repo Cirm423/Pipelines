@@ -128,7 +128,7 @@ COPY workflow/envs/bedtools.yaml /conda-envs/1a42ee4cb5e5e884f10c5b00535c8840/en
 #     - conda-forge
 #     - bioconda
 #   dependencies:
-#     - deeptools =3.5.1
+#     - deeptools =3.5.6
 RUN mkdir -p /conda-envs/672d293dafd21f0b2800c51483e3e484
 COPY workflow/envs/deeptools.yaml /conda-envs/672d293dafd21f0b2800c51483e3e484/environment.yaml
 
