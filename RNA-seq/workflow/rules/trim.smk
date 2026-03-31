@@ -8,7 +8,7 @@ rule get_sra_pe:
         "logs/get-sra/{accession}.log",
     threads: 6 
     wrapper:
-        "v2.6.0/bio/sra-tools/fasterq-dump"
+        "v7.6.0/bio/sra-tools/fasterq-dump"
 
 
 rule get_sra_se:
@@ -20,7 +20,7 @@ rule get_sra_se:
         "logs/get-sra/{accession}.log",
     threads: 6 
     wrapper:
-        "v2.6.0/bio/sra-tools/fasterq-dump"
+        "v7.6.0/bio/sra-tools/fasterq-dump"
 
 rule fix_sra_se:
     input:

@@ -162,7 +162,7 @@ RUN mkdir -p /conda-envs/d9c813a8da591f3c7fb1c11c631af04c
 ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/index/environment.yaml /conda-envs/d9c813a8da591f3c7fb1c11c631af04c/environment.yaml
 
 # Conda environment:
-#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/sra-tools/fasterq-dump/environment.yaml
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v7.6.0/bio/sra-tools/fasterq-dump/environment.yaml
 #   prefix: /conda-envs/75d073ef3cf1192693231395707deb44
 #   channels:
 #     - bioconda
@@ -173,7 +173,7 @@ ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/samtools/inde
 #     - pbzip2 >=1.1
 #     - snakemake-wrapper-utils =0.3
 RUN mkdir -p /conda-envs/75d073ef3cf1192693231395707deb44
-ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/sra-tools/fasterq-dump/environment.yaml /conda-envs/75d073ef3cf1192693231395707deb44/environment.yaml
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v7.6.0/bio/sra-tools/fasterq-dump/environment.yaml /conda-envs/75d073ef3cf1192693231395707deb44/environment.yaml
 
 # Conda environment:
 #   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/ucsc/bedGraphToBigWig/environment.yaml
