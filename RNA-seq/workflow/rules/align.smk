@@ -4,16 +4,16 @@ rule align_pe:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        index=f"{assembly_path}star_genome_{assembly}",
+        idx=f"{assembly_path}star_genome_{assembly}",
     output:
-        temp("results/star/pe/{sample}/Aligned.out.bam"),
-        temp("results/star/pe/{sample}/Aligned.toTranscriptome.out.bam"),
-        "results/star/pe/{sample}/SJ.out.tab",
-        "results/star/pe/{sample}/Log.final.out",
+        aln=temp("results/star/pe/{sample}/Aligned.out.bam"),
+        aln_trans=temp("results/star/pe/{sample}/Aligned.toTranscriptome.out.bam"),
+        sj="results/star/pe/{sample}/SJ.out.tab",
+        log="results/star/pe/{sample}/Log.out",
+        log_final="results/star/pe/{sample}/Log.final.out",
     log:
         "logs/star-pe/{sample}.log",
     params:
-        index=lambda wc, input: input.index,
         extra="--outSAMunmapped Within KeepPairs --quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
@@ -21,22 +21,22 @@ rule align_pe:
     resources:
         mem_mb = 5000
     wrapper:
-        "0.77.0/bio/star/align"
+        "v3.3.7/bio/star/align"
 
 
 rule align_se:
     input:
         fq1=get_map_reads_input_R1,
-        index=f"{assembly_path}star_genome_{assembly}",
+        idx=f"{assembly_path}star_genome_{assembly}",
     output:
-        temp("results/star/se/{sample}/Aligned.out.bam"),
-        temp("results/star/se/{sample}/Aligned.toTranscriptome.out.bam"),
-        "results/star/se/{sample}/SJ.out.tab",
-        "results/star/se/{sample}/Log.final.out",
+        aln=temp("results/star/se/{sample}/Aligned.out.bam"),
+        aln_trans=temp("results/star/se/{sample}/Aligned.toTranscriptome.out.bam"),
+        sj="results/star/se/{sample}/SJ.out.tab",
+        log="results/star/se/{sample}/Log.out",
+        log_final="results/star/se/{sample}/Log.final.out",
     log:
         "logs/star-se/{sample}.log",
     params:
-        index=lambda wc, input: input.index,
         extra="--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", config["params"]["star"]
         ),
@@ -44,22 +44,22 @@ rule align_se:
     resources:
         mem_mb = 5000
     wrapper:
-        "0.77.0/bio/star/align"
+        "v3.3.7/bio/star/align"
 
 rule align_pe_2pass:
     input:
         fq1=get_map_reads_input_R1,
         fq2=get_map_reads_input_R2,
-        index=f"{assembly_path}star_genome_{assembly}",
+        idx=f"{assembly_path}star_genome_{assembly}",
         sj=expand("results/star/pe/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        temp("results/star/pe2/{sample}/Aligned.out.bam"),
-        temp("results/star/pe2/{sample}/Aligned.toTranscriptome.out.bam"),
-        "results/star/pe2/{sample}/Log.final.out",
+        aln=temp("results/star/pe2/{sample}/Aligned.out.bam"),
+        aln_trans=temp("results/star/pe2/{sample}/Aligned.toTranscriptome.out.bam"),
+        log="results/star/pe2/{sample}/Log.out",
+        log_final="results/star/pe2/{sample}/Log.final.out",
     log:
         "logs/star-pe2/{sample}.log",
     params:
-        index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
@@ -67,22 +67,22 @@ rule align_pe_2pass:
     resources:
         mem_mb = 5000
     wrapper:
-        "0.77.0/bio/star/align"
+        "v3.3.7/bio/star/align"
 
 
 rule align_se_2pass:
     input:
         fq1=get_map_reads_input_R1,
-        index=f"{assembly_path}star_genome_{assembly}",
+        idx=f"{assembly_path}star_genome_{assembly}",
         sj=expand("results/star/se/{sample}/SJ.out.tab",sample=samples.sample_name)
     output:
-        temp("results/star/se2/{sample}/Aligned.out.bam"),
-        temp("results/star/se2/{sample}/Aligned.toTranscriptome.out.bam"),
-        "results/star/se2/{sample}/Log.final.out",
+        aln=temp("results/star/se2/{sample}/Aligned.out.bam"),
+        aln_trans=temp("results/star/se2/{sample}/Aligned.toTranscriptome.out.bam"),
+        log="results/star/se2/{sample}/Log.out",
+        log_final="results/star/se2/{sample}/Log.final.out",
     log:
         "logs/star-se2/{sample}.log",
     params:
-        index=lambda wc, input: input.index,
         extra=lambda wc, input:"--quantMode TranscriptomeSAM --outSAMtype BAM Unsorted --sjdbGTFfile {} --sjdbFileChrStartEnd {} {}".format(
             f"{assembly_path}{assembly}.annotation.gtf", input.sj, config["params"]["star"]
         ),
@@ -90,7 +90,7 @@ rule align_se_2pass:
     resources:
         mem_mb = 5000
     wrapper:
-        "0.77.0/bio/star/align"
+        "v3.3.7/bio/star/align"
 
 rule samtools_sort_star:
     input:

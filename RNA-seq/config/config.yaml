@@ -87,8 +87,7 @@ params:
   #Bams are sorted by using samtools sort independently for star, which is identical to "--outSAMtype SortedByCoordinate" star parameter
   star: "--outFilterMultimapNmax 1 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04
 	--alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000
-	--sjdbScore 1 --limitBAMsortRAM 60000000000 
-  --limitIObufferSize 330000000"
+	--sjdbScore 1 --limitBAMsortRAM 60000000000"
   #Rsem is used for counts, recommended parameters are set.
   #The parameters necessary to run the pipeline are coded within the pipeline and
   #cannot be changed. These parameters are:
