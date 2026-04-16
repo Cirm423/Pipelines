@@ -63,7 +63,7 @@ rule macs2_callpeak_broad:
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
             bam_format="BAM" if config["single_end"] else "BAMPE")
     wrapper:
-        "v1.3.1/bio/macs2/callpeak"
+        "v2.9.1/bio/macs2/callpeak"
 
 rule macs2_callpeak_narrow:
     input:
@@ -92,7 +92,7 @@ rule macs2_callpeak_narrow:
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
             bam_format="BAM" if config["single_end"] else "BAMPE")
     wrapper:
-        "v1.3.1/bio/macs2/callpeak"
+        "v2.9.1/bio/macs2/callpeak"
 
 rule peaks_count:
     input:
