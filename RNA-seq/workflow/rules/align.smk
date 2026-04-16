@@ -20,8 +20,10 @@ rule align_pe:
     threads: 24
     resources:
         mem_mb = 5000
-    wrapper:
-        "v3.3.7/bio/star/align"
+    conda:
+        "../envs/star.yaml"
+    script:
+        "../scripts/start.py"
 
 
 rule align_se:
@@ -43,8 +45,10 @@ rule align_se:
     threads: 24
     resources:
         mem_mb = 5000
-    wrapper:
-        "v3.3.7/bio/star/align"
+    conda:
+        "../envs/star.yaml"
+    script:
+        "../scripts/start.py"
 
 rule align_pe_2pass:
     input:
@@ -66,8 +70,10 @@ rule align_pe_2pass:
     threads: 24
     resources:
         mem_mb = 5000
-    wrapper:
-        "v3.3.7/bio/star/align"
+    conda:
+        "../envs/star.yaml"
+    script:
+        "../scripts/start.py"
 
 
 rule align_se_2pass:
@@ -89,8 +95,10 @@ rule align_se_2pass:
     threads: 24
     resources:
         mem_mb = 5000
-    wrapper:
-        "v3.3.7/bio/star/align"
+    conda:
+        "../envs/star.yaml"
+    script:
+        "../scripts/start.py"
 
 rule samtools_sort_star:
     input:
