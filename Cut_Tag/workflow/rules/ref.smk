@@ -198,7 +198,7 @@ rule sra_get_fastq_pe:
     log:
         "logs/ref/sra-pe-reads/{accession}.log"
     wrapper:
-        "v7.6.0/bio/sra-tools/fasterq-dump"
+        "v9.4.2/bio/sra-tools/fasterq-dump"
 
 rule sra_get_fastq_se:
     output:
@@ -209,7 +209,7 @@ rule sra_get_fastq_se:
     log:
         "logs/ref/sra-pe-reads/{accession}.log"
     wrapper:
-        "v7.6.0/bio/sra-tools/fasterq-dump"
+        "v9.4.2/bio/sra-tools/fasterq-dump"
 
 rule generate_igenomes:
     output:
