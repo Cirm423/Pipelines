@@ -131,7 +131,7 @@ rule merge_bool_and_annotatepeaks:
 rule feature_counts:
     input:
         sam=expand("results/bamtools_filtered/{sample}.sorted.bam",
-            sample = samples.index),
+            sample = get_samples_of_all),
         annotation="results/genrich_merged_expand/consensus_narrow-peaks.boolean.saf"
     output:
         multiext("results/feature_counts/consensus_narrow-peaks",

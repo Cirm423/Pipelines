@@ -254,6 +254,11 @@ def get_samples_of_group(group):
             sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
         )
 
+def get_samples_of_all():
+    groups = samples["group"]
+    treated = samples[pd.notnull(samples["control"])]
+    return treated[treated["group"].index.isin(list(groups.index))]["sample"]
+
 def get_genrich_input(wildcards):
     gr_input = []
     gr_input.extend(get_samples_of_group(wildcards.group))
