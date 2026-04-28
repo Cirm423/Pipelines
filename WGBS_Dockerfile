@@ -18,7 +18,7 @@ RUN mkdir -p /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537
 ADD https://github.com/snakemake/snakemake-wrappers/raw/v0.87.0/bio/picard/markduplicates/environment.yaml /conda-envs/b2d213b3f556bd74f6dbb226a0f9d537/environment.yaml
 
 # Conda environment:
-#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v9.4.2/bio/cutadapt/pe/environment.yaml
 #   prefix: /conda-envs/1af413f13966c4e46ba99bd1cae299a6
 #   channels:
 #     - bioconda
@@ -27,7 +27,7 @@ ADD https://github.com/snakemake/snakemake-wrappers/raw/v0.87.0/bio/picard/markd
 #   dependencies:
 #     - cutadapt ==3.4
 RUN mkdir -p /conda-envs/1af413f13966c4e46ba99bd1cae299a6
-ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v9.4.2/bio/cutadapt/pe/environment.yaml /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml
 
 # Conda environment:
 #   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/fastqc/environment.yaml

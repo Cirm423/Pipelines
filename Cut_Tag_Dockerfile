@@ -77,7 +77,7 @@ RUN mkdir -p /conda-envs/c1d23725315571632c6ca02ead65922b
 ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/intersect/environment.yaml /conda-envs/c1d23725315571632c6ca02ead65922b/environment.yaml
 
 # Conda environment:
-#   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml
+#   source: https://github.com/snakemake/snakemake-wrappers/raw/v9.4.2/bio/cutadapt/pe/environment.yaml
 #   prefix: /conda-envs/1af413f13966c4e46ba99bd1cae299a6
 #   channels:
 #     - bioconda
@@ -86,7 +86,7 @@ ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/bedtools/inte
 #   dependencies:
 #     - cutadapt ==3.4
 RUN mkdir -p /conda-envs/1af413f13966c4e46ba99bd1cae299a6
-ADD https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/cutadapt/pe/environment.yaml /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml
+ADD https://github.com/snakemake/snakemake-wrappers/raw/v9.4.2/bio/cutadapt/pe/environment.yaml /conda-envs/1af413f13966c4e46ba99bd1cae299a6/environment.yaml
 
 # Conda environment:
 #   source: https://github.com/snakemake/snakemake-wrappers/raw/v1.3.1/bio/fastqc/environment.yaml

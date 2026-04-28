@@ -12,7 +12,7 @@ rule cutadapt_pe:
     log:
         "logs/cutadapt/{sample}-{unit}.pe.log"
     wrapper:
-        "v1.3.1/bio/cutadapt/pe"
+        "v9.4.2/bio/cutadapt/pe"
 
 
 rule cutadapt_se:
@@ -31,4 +31,4 @@ rule cutadapt_se:
     log:
         "logs/cutadapt/{sample}-{unit}.se.log"
     wrapper:
-        "v1.3.1/bio/cutadapt/se"
+        "v9.4.2/bio/cutadapt/se"
