@@ -32,6 +32,9 @@ params:
   callpeak:
     p-value: 0.05
     q-value:
+  phantompeaks:
+  #Activate the phantompeaksqualtools plot for qc, usually they don't take much time. Suggested to only deactivate in case of problems.
+    activate: True
   deeptools-plots:
     # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
     # May crash due to high memory usage, not recommended unless you do a more exhaustive filtering.

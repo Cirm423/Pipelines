@@ -33,6 +33,9 @@ params:
   #Activate or deactivate spike-in normalization. If deactivated, SEACR will normalize the samples.
   callpeak:
     spike: False
+  phantompeaks:
+  #Activate the phantompeaksqualtools plot for qc, usually they don't take much time. Suggested to only deactivate in case of problems.
+    activate: True
   deeptools-plots:
     # when activated the plot profile and heatmap plot are generated, this involves a matrix calculation that requires a lot of working memory.
     # May crash due to high memory usage, not recommended unless you do a more exhaustive filtering.

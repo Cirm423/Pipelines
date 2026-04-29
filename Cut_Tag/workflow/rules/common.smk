@@ -329,14 +329,23 @@ def get_multiqc_input(wildcards):
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.flagstat",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.idxstats",
                     "results/bamtools_filtered/{sample}.sorted.bamtools_filtered.stats.txt",
-                    "results/phantompeakqualtools/{sample}.phantompeak.spp.out",
-                    "results/phantompeakqualtools/{sample}.spp_correlation_mqc.tsv",
-                    "results/phantompeakqualtools/{sample}.spp_nsc_mqc.tsv",
-                    "results/phantompeakqualtools/{sample}.spp_rsc_mqc.tsv"
                 ],
                 sample = sample
             )
         )
+        if config["params"]["phantompeaks"]["activate"]:
+            multiqc_input.extend(
+                expand(
+                    [
+                    "results/phantompeakqualtools/{sample}.phantompeak.spp.out",
+                    "results/phantompeakqualtools/{sample}.spp_correlation_mqc.tsv",
+                    "results/phantompeakqualtools/{sample}.spp_nsc_mqc.tsv",
+                    "results/phantompeakqualtools/{sample}.spp_rsc_mqc.tsv"
+                    ],
+                    sample = sample
+                )
+            )
+
         if config["params"]["deeptools-plots"]["activate"]:
             multiqc_input.extend(
                 expand(
@@ -397,7 +406,8 @@ def all_input(wildcards):
 
     # QC with fastQC and multiQC
     wanted_input.extend([
-        "results/qc/multiqc/multiqc.html"
+        "results/qc/multiqc/multiqc.html",
+        "results/IGV/big_wig/merged_library.bigWig.igv.txt"
     ])
 
     # trimming reads
@@ -440,16 +450,15 @@ def all_input(wildcards):
 
     # mapping, merging and filtering bam-files
     for sample in samples.index:
-        wanted_input.extend(
-            expand (
-                [
-                    "results/IGV/big_wig/merged_library.bigWig.igv.txt",
-                    "results/phantompeakqualtools/{sample}.phantompeak.pdf"
-                ],
-                sample = sample
+        if config["params"]["phantompeaks"]["activate"]:
+            wanted_input.extend(
+                expand (
+                    [
+                        "results/phantompeakqualtools/{sample}.phantompeak.pdf"
+                    ],
+                    sample = sample
+                )
             )
-        )
-
         if config["params"]["deeptools-plots"]["activate"]:
             wanted_input.extend(
                 expand(
