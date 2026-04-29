@@ -170,8 +170,9 @@ def get_samtools_view_filter_input(wildcards):
 def exists_multiple_groups(antibody):
     return len(samples[samples["antibody"] == antibody]["group"].unique()) > 1
 
+#Changed this to consider inputs having the same antibody as their samples not counting for consensus
 def exists_replicates(antibody):
-    return len(samples[samples["antibody"] == antibody]["sample"].unique()) > 1
+    return sum([not is_control(sample) for sample in samples[samples["antibody"] == antibody]["sample"].unique()]) > 1
 
 def not_all_control(antibody):
     return not all([is_control(sample) for sample in samples[samples["antibody"] == antibody]["sample"].unique()])
