@@ -258,6 +258,8 @@ if (file.exists(ResultsFile) == FALSE) {
 
     deseq2_results_list <- list()
     comparisons <- combn(unique(groups),2)
+    #This is to add BvsA to comparisons, not only AvsB
+    comparisons <- cbind(comparisons, comparisons[c(2,1),])
     for (idx in 1:ncol(comparisons)) {
 
         control.group <- comparisons[1,idx]
