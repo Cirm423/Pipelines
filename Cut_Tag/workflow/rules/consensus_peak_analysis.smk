@@ -71,7 +71,7 @@ rule create_consensus_bed:
     log:
         "logs/seacr_merged/{antibody}.consensus_peaks.boolean.bed.log"
     shell:
-        "gawk -v FS='\t' -v OFS='\t' 'FNR  > 1 {{ print $1, $2, $3, $4 \"0\", \"+\"}}' {input} > {output} 2> {log}"
+        "gawk -v FS='\t' -v OFS='\t' 'FNR  > 1 {{ print $1, $2, $3, $4, \"0\", \"+\"}}' {input} > {output} 2> {log}"
 
 rule create_consensus_saf:
     input:
