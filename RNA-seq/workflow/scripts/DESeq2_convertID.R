@@ -10,9 +10,10 @@ res <- read.table(snakemake@input[[1]], sep='\t', header=1, )
 #Remove version from ensembl IDs
 res$gene <- sub('\\.[0-9]*$', '', res$gene)
 
-human_mart <- useMart(
+human_mart <- useEnsembl(
   biomart = "ensembl",
-  dataset = "hsapiens_gene_ensembl"  # Human dataset
+  dataset = "hsapiens_gene_ensembl",  # Human dataset
+  mirror = "www"
 )
 
 gene_symbols <- getBM(
