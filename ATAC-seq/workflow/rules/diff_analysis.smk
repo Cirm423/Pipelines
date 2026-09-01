@@ -28,7 +28,7 @@ rule genrich_merged_expand:
         bool_txt="results/genrich_merged_expand/consensus_narrow-peaks.boolean.txt",
         bool_intersect="results/genrich_merged_expand/consensus_narrow-peaks.boolean.intersect.txt"
     params:
-        sample_control_peak=expand("{group}.narrow", group = groups),
+        sample_control_peak=expand("{group}", group = groups),
         narrow_param="--is_narrow_peak",
         min_reps_consensus=config["params"]["consensus-peak-analysis"]["min-reps-consensus"]
     log:
