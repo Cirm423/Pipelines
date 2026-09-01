@@ -241,23 +241,39 @@ def get_controls_of_group(group):
             control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
             )
 
-def get_samples_of_group(group):
-    #Accounting for groups with no control and groups with controls
-    sample_g = samples[samples['group'] == group]
-    if pd.isnull(sample_g["control"]).all():
-        return expand(["results/genrich/{sample}.sorted.bam"],
-            sample = sample_g["sample"].index
-        )
-    else:
-        treated = samples[pd.notnull(samples["control"])]
-        return expand(["results/genrich/{sample}.sorted.bam"],
-            sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
-        )
+def get_samples_of_all(wildcards):
+    groups = samples["group"].unique()
+    groups_final = []
+    for group in groups:
+        sample_g = samples[samples['group'] == group]
+        if pd.isnull(sample_g["control"]).all():
+            groups_final.extend(expand(["{sample}"],
+                sample = sample_g["sample"].index
+            ))
+        else:
+            treated = samples[pd.notnull(samples["control"])]
+            groups_final.extend(expand(["{sample}"],
+                sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+            ))
+
+    return groups_final
 
 def get_samples_of_all(wildcards):
     groups = samples["group"]
-    treated = samples[pd.notnull(samples["control"])]
-    return treated[treated["group"].index.isin(list(groups.index))]["sample"]
+    groups_final = []
+    for group in groups:
+        sample_g = samples[samples['group'] == group]
+        if pd.isnull(sample_g["control"]).all():
+            groups_final.extend(expand(["results/genrich/{sample}.sorted.bam"],
+                sample = sample_g["sample"].index
+            ))
+        else:
+            treated = samples[pd.notnull(samples["control"])]
+            groups_final.extend(expand(["results/genrich/{sample}.sorted.bam"],
+                sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+            ))
+
+    return groups_final
 
 def get_genrich_input(wildcards):
     gr_input = []
