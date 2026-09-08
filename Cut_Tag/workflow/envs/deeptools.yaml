@@ -2,5 +2,4 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - deeptools =3.5.6
-  - matplotlib =3.7.3
+  - deeptools =4.0.0
