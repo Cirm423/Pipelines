@@ -43,7 +43,7 @@ rule BamCoverage_str1:
         "results/browser/{sample}.str1.bw",
     params:
         norm = config["params"]["bamcoverage"],
-        stranded = "--exactScaling" if get_strandedness(units)[0] == 0.5 else "--filterRNAstrand forward --exactScaling"
+        stranded = "" if get_strandedness(units)[0] == 0.5 else "--filterRNAstrand forward"
     log: 
         "logs/browser/{sample}.BamCoverage.log"
     conda:
@@ -60,7 +60,7 @@ rule BamCoverage_str2:
         "results/browser/{sample}.str2.bw",
     params:
         norm = config["params"]["bamcoverage"],
-        stranded = "--filterRNAstrand reverse --exactScaling"
+        stranded = "--filterRNAstrand reverse"
     log: 
         "logs/browser/{sample}.BamCoverage.log"
     conda:
