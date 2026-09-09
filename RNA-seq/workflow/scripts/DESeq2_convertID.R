@@ -2,37 +2,43 @@ log <- file(snakemake@log[[1]], open="wt")
 sink(log)
 sink(log, type="message")
 
-library(biomaRt)
+library(readr)
 library(dplyr)
 
-res <- read.table(snakemake@input[[1]], sep='\t', header=1, )
+res <- read.table(snakemake@input[["res"]], sep='\t', header=1, )
 
 #Remove version from ensembl IDs
 res$gene <- sub('\\.[0-9]*$', '', res$gene)
 
-human_mart <- useEnsembl(
-  biomart = "ensembl",
-  dataset = "hsapiens_gene_ensembl",  # Human dataset
-  mirror = "www"
+gtf <- readr::read_tsv(snakemake@input[["gtf"]], col_names=FALSE, comment="#", show_col_types=FALSE)
+
+# Keep only gene features
+genes <- gtf[gtf[[3]] == "gene", ]
+
+# Extract attribute values from the 9th column
+extract_attr <- function(x, key) {
+  pat <- paste0(key, " \"([^\"]+)\"")
+  m <- regmatches(x, regexec(pat, x))
+  vapply(m, function(y) if (length(y) >= 2) y[2] else NA_character_, character(1))
+}
+
+gene_map <- data.frame(
+  ensembl_gene_id = sub("\\.[0-9]+$", "", extract_attr(genes[[9]], "gene_id")),
+  hgnc_symbol     = extract_attr(genes[[9]], "gene_name"),
+  stringsAsFactors = FALSE
 )
 
-gene_symbols <- getBM(
-  attributes = c("ensembl_gene_id", "hgnc_symbol"),
-  filters = "ensembl_gene_id",
-  values = res$gene,
-  mart = human_mart,
-  uniqueRows=TRUE
-)
-
-gene_symbols_unique <- gene_symbols %>%
+# Keep one symbol per Ensembl ID and drop empty symbols
+gene_map <- gene_map %>%
+  filter(!is.na(hgnc_symbol), hgnc_symbol != "") %>%
   distinct(ensembl_gene_id, .keep_all = TRUE)
 
-res_complete <- left_join(res, gene_symbols_unique, by=join_by(gene == ensembl_gene_id))
+res_complete <- left_join(res, gene_map, by = join_by(gene == ensembl_gene_id))
 
-#Remove IDs that are empty strings
-res_complete <- res_complete %>% mutate_if(is.character, list(~na_if(.,""))) 
+# Convert empty strings to NA
+res_complete <- res_complete %>% mutate_if(is.character, list(~na_if(.,"")))
 
-#Paste EnsemblIDs on missing symbols
+# Fall back to Ensembl ID when symbol is missing
 res_complete$hgnc_symbol[is.na(res_complete$hgnc_symbol)] <- res_complete$gene[is.na(res_complete$hgnc_symbol)]
 
 res$gene <- res_complete$hgnc_symbol

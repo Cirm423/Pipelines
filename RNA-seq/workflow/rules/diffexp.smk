@@ -49,7 +49,8 @@ rule deseq2:
 
 rule deseq2_convert:
     input:
-        "results/diffexp/{contrast}.diffexp.tsv",
+        res="results/diffexp/{contrast}.diffexp.tsv",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf"
     output:
         report(
             "results/diffexp/{contrast}.diffexp.gene_symbol.tsv", caption = "../report/diffexp.rst", category = "Differential Expression tables"
@@ -66,7 +67,8 @@ rule deseq2_convert:
 
 rule deseq2_convert_all:
     input:
-        "results/deseq2/normcounts.tsv",
+        res="results/deseq2/normcounts.tsv",
+        gtf=f"{assembly_path}{assembly}.annotation.gtf"
     output:
         "results/deseq2/normcounts_symbol.tsv"
     conda:

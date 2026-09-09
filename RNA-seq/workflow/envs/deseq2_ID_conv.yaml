@@ -2,5 +2,5 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - bioconductor-biomart =2.62.0
+  - r-readr
   - r-dplyr =1.2.0
