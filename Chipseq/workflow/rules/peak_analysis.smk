@@ -206,7 +206,7 @@ rule homer_annotatepeaks:
     log:
         "logs/homer/annotate_peaks/{sample}-{control}.{peak}.log"
     wrapper:
-        "v1.3.1/bio/homer/annotatePeaks"
+        "v5.5.2/bio/homer/annotatePeaks"
 
 rule plot_macs_qc:
     input:

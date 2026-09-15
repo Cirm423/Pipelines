@@ -101,7 +101,7 @@ rule homer_consensus_annotatepeaks:
     log:
         "logs/homer/annotate_consensus_peaks/consensus_narrow-peaks.annotatePeaks.log"
     wrapper:
-        "v1.3.1/bio/homer/annotatePeaks"
+        "v5.5.2/bio/homer/annotatePeaks"
 
 rule trim_homer_consensus_annotatepeaks:
     input:

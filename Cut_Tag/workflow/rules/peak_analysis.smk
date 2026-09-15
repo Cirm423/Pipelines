@@ -173,7 +173,7 @@ rule homer_annotatepeaks:
     log:
         "logs/homer/annotate_peaks/{sample}-{control}.log"
     wrapper:
-        "v1.3.1/bio/homer/annotatePeaks"
+        "v5.5.2/bio/homer/annotatePeaks"
 
 rule plot_homer_annotatepeaks:
     input:
