@@ -11,8 +11,8 @@ STAR = 2.7.8a
 
 BWA-mem = 0.7.17 \
 DEseq2 = 1.20 \
-Deeptools = 3.5.1 \
-Homer = 4.11 \
+Deeptools = 4.0.0 \
+Homer = 5.1 \
 Macs2 = 2.2.7.1 \
 Picard = 2.26.3 \
 phantompeakqualtools = 1.2.2 \
@@ -21,8 +21,8 @@ subread featurecounts = 2.0
 ## Cut&Tag
 
 DEseq2 = 1.20 \
-Deeptools = 3.5.1 \
-Homer = 4.11 \
+Deeptools = 4.0.0 \
+Homer = 5.1 \
 Picard = 2.26.3 \
 SEACR = 1.3 \
 bowtie2 = 2.4 \
