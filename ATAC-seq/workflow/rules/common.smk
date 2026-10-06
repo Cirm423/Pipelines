@@ -241,22 +241,18 @@ def get_controls_of_group(group):
             control = list(pd.unique(treated[treated["group"].index.isin(list(sample_g.index))]["control"]))
             )
 
-def get_samples_of_all(wildcards):
-    groups = samples["group"].unique()
-    groups_final = []
-    for group in groups:
-        sample_g = samples[samples['group'] == group]
-        if pd.isnull(sample_g["control"]).all():
-            groups_final.extend(expand(["{sample}"],
-                sample = sample_g["sample"].index
-            ))
-        else:
-            treated = samples[pd.notnull(samples["control"])]
-            groups_final.extend(expand(["{sample}"],
-                sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
-            ))
-
-    return groups_final
+def get_samples_of_group(group):
+    #Accounting for groups with no control and groups with controls
+    sample_g = samples[samples['group'] == group]
+    if pd.isnull(sample_g["control"]).all():
+        return expand(["results/genrich/{sample}.sorted.bam"],
+            sample = sample_g["sample"].index
+        )
+    else:
+        treated = samples[pd.notnull(samples["control"])]
+        return expand(["results/genrich/{sample}.sorted.bam"],
+            sample = treated[treated["group"].index.isin(list(sample_g.index))]["sample"]
+        )
 
 def get_samples_of_all(wildcards):
     groups = samples["group"]
@@ -428,6 +424,7 @@ def all_input(wildcards):
                             [
                                 "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.annotatePeaks.txt",
                                 "results/homer/annotate_consensus_peaks/consensus_narrow-peaks.boolean.annotatePeaks.txt",
+                                "results/homer/motifs_consensus/homerMotifs.all.motifs"
                             ]
                         )                    
                     if do_deseq2:
@@ -535,7 +532,8 @@ def all_input(wildcards):
         if do_annot:
             wanted_input.extend(expand(
                 [
-                    "results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt"
+                    "results/homer/annotate_peaks/{group}.narrow_peaks.annotatePeaks.txt",
+                    "results/homer/motifs/{group}.narrow_peaks/homerMotifs.all.motifs"
                 ],
                 group = group
             )

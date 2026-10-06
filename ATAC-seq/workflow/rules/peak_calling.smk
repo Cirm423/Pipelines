@@ -123,6 +123,24 @@ rule create_igv_peaks:
     shell:
         " find {input} -type f -name '*.narrowPeak' -exec echo -e 'results/IGV/genrich_peaks/narrow/\"{{}}\"\t0,0,178' \; > {output} 2> {log}"
 
+rule homer_motifs:
+    input:
+        peaks="results/genrich/{group}.narrowPeak",
+        genome=f"{assembly_path}{assembly}.fa"
+    output:
+        motifs="results/homer/motifs/{group}.narrow_peaks/homerMotifs.all.motifs"
+    threads:
+        2
+    params:
+        folder = subpath(output.motifs, parent=True),
+        size = config["params"]["peak-annotation-analysis"]["motif_bp"]
+    log:
+        "logs/homer/motifs/{group}.narrow_peaks.log"
+    conda:
+        "../envs/homer.yaml"
+    shell:
+        "findMotifsGenome.pl {input.peaks} {input.genome} {params.folder} -size {params.size} -mask -p {threads}"
+
 rule homer_annotatepeaks:
     input:
         peaks="results/genrich/{group}.narrowPeak",
