@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Table of contents</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="table-of-contents">Table of contents</h1>
+<ul>
+<li><a href="#table-of-contents">Table of contents</a></li>
+<li><a href="#starting">Starting</a></li>
+<li><a href="#configuring-snakemake">Configuring Snakemake</a>
+<ul>
+<li><a href="#input-dataset">Input dataset</a></li>
+<li><a href="#assembly">Assembly</a></li>
+</ul>
+</li>
+<li><a href="#running-snakemake">Running Snakemake</a></li>
+<li><a href="#output">Output</a>
+<ul>
+<li><a href="#plot-explanations">Plot explanations</a>
+<ul>
+<li><a href="#phantompeaks">Phantompeaks</a></li>
+<li><a href="#deeptools">Deeptools</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+<h1 id="starting">Starting</h1>
+<p>This readme provides instructions on how to run the snakemake ChIP-seq pipeline on a cluster.</p>
+<p>To begin you will need to grab a copy of the pipeline from the shared folder in the cluster:</p>
+<blockquote>
+<p>hpc2:<br>
+/home/share/dcyleung/snakemake/ChIP-seq/<br>
+biocrfhpc1:<br>
+/home4/share/dcyleung/snakemake/ChIP-seq/<br>
+biocrfhpc2:<br>
+/data1/share/dcyleung/Pipeline/snakemake/ChIP-seq/</p>
+</blockquote>
+<p>and place it in your own folder, preferentially in its own folder since snakemake will create many new files.</p>
+<p>You will see 2 folders, one named workflow (which includes the code and scripts, please <em><strong>do not</strong></em> modify anything in this folder) and a config folder; and the run_snk.sh script that will be used to send the pipeline to slurm.</p>
+<p>The config folder includes the following files:</p>
+<ul>
+<li>config.yaml</li>
+<li>samples.tsv</li>
+<li>units.tsv</li>
+<li>pe_bamtools_filtering_rules.json</li>
+<li>se_bamtools_filtering_rules.json</li>
+</ul>
+<p>Due to the difference in the folder structure in the clusters, the config file of the pipeline is configured for a specific cluster and cannot be used with the other one. Specifically, config.yaml and run_snk.sh are specific to the cluster, while samples.tsv, units.tsv and the files in workflow folder can be used in any cluster.</p>
+<h1 id="configuring-snakemake">Configuring Snakemake</h1>
+<h2 id="input-dataset">Input dataset</h2>
+<p>The previously mentioned <em>samples.tsv</em> has to be modified according to your own samples. It is recommended to modify the tsv files in Excel or similar programs since a misplaced tabulation will cause snakemake to improperly reading the config file and probably stop it from working. If you use Excel, please <strong>make sure you save the file as a csv or tsv file</strong> and not as an Excel file, otherwise the pipeline cannot read the file.</p>
+<p>The first file you need to modify is <em>samples.tsv</em>. It is a tab separated file that looks like this:</p>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>sample_name</th>
+<th>group</th>
+<th>batch_effect</th>
+<th>control</th>
+<th>antibody</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A_R1</td>
+<td>treated</td>
+<td>batch1</td>
+<td>input</td>
+<td>H3K9me3</td>
+</tr>
+<tr>
+<td>B_R1</td>
+<td>untreated</td>
+<td>batch1</td>
+<td>input</td>
+<td>H3K9me3</td>
+</tr>
+<tr>
+<td>A_R2</td>
+<td>treated</td>
+<td>batch2</td>
+<td>input</td>
+<td>H3K9me3</td>
+</tr>
+<tr>
+<td>B_R2</td>
+<td>untreated</td>
+<td>batch2</td>
+<td>input</td>
+<td>H3K9me3</td>
+</tr>
+<tr>
+<td>input</td>
+<td>input</td>
+<td>batch1</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>You need to modify this file to include any samples you want to analyze in the pipeline, along with their group (the condition that will be used in Deseq2 model), batch, control samples and antibodies. Note that <strong>samples without control will be considered as controls in the pipeline.</strong> These are usually the inputs that will be used for peak calling. The rest of the fields should be specified for every sample, including controls.</p>
+<p><strong>It is also advisable to avoid special characters (like - or _) in the name of the samples as some of them are used by the pipeline to process results, but the pipeline should still work with them.</strong></p>
+<p><strong>Naming for consensus analysis:</strong> If you want to run consensus peak analysis you need to name your samples (excluding controls) in an specific way so the pipe can recognize biological replicates and group them. The way to name them is:</p>
+<p><code>&lt;sample&gt;_R&lt;replicate&gt;</code></p>
+<p>where <code>&lt;sample&gt;</code> is the the shared name between the biological replicates and <code>&lt;replicate&gt;</code> is the specific replicate identifier (usually a number, but can be anything). If you look in the table above, the samples are <code>A</code> and <code>B</code>, each having two replicates <code>1</code> and <code>2</code>.</p>
+<p>The next file that needs to be modified is <em>units.tsv</em>, where you indicate the location of your fastq.gz files. The unit column refer to technical replicates of a sample, e.g. lanes in sequencing. This file looks like this:</p>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>sample_name</th>
+<th>unit</th>
+<th>fragment_len_mean</th>
+<th>fragment_len_sd</th>
+<th>fq1</th>
+<th>fq2</th>
+<th>sra</th>
+<th>platform</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>input</td>
+<td>lane1</td>
+<td></td>
+<td></td>
+<td>input.lane1.R1.fastq.gz</td>
+<td>input.lane1.R2.fastq.gz</td>
+<td></td>
+<td>ILLUMINA</td>
+</tr>
+<tr>
+<td>input</td>
+<td>lane2</td>
+<td></td>
+<td></td>
+<td>input.lane2.R1.fastq.gz</td>
+<td>input.lane2.R2.fastq.gz</td>
+<td></td>
+<td>ILLUMINA</td>
+</tr>
+<tr>
+<td>A_R1</td>
+<td>lane1</td>
+<td></td>
+<td></td>
+<td>A1.lane1.R1.fastq.gz</td>
+<td>A1.lane1.R2.fastq.gz</td>
+<td></td>
+<td>ILLUMINA</td>
+</tr>
+<tr>
+<td>A_R1</td>
+<td>lane2</td>
+<td></td>
+<td></td>
+<td>A1.lane2.R1.fastq.gz</td>
+<td>A1.lane2.R2.fastq.gz</td>
+<td></td>
+<td>ILLUMINA</td>
+</tr>
+<tr>
+<td>B_R1</td>
+<td>lane1</td>
+<td></td>
+<td></td>
+<td>B1.lane1.R1...</td>
+<td>B1.lane1.R2...</td>
+<td></td>
+<td>ILLUMINA</td>
+</tr>
+<tr>
+<td>B_R1</td>
+<td>lane2</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+<tr>
+<td>A_R2</td>
+<td>lane1</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+<tr>
+<td>A_R2</td>
+<td>lane2</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+<tr>
+<td>B_R2</td>
+<td>lane1</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+<tr>
+<td>B_R2</td>
+<td>lane2</td>
+<td></td>
+<td></td>
+<td>...</td>
+<td>...</td>
+<td></td>
+<td>...</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>You will need to fill this file with either the location of your fastq.gz files or an sra ID for public samples. The path to your files can be the full path to your files, i.e:</p>
+<blockquote>
+<p>/root/user/snakemake/samples/sample_1/sample_1_R1.fastq.gz</p>
+</blockquote>
+<p>or a relative path from where snakemake is run, which is the directory where the folders <em>workflow</em> and <em>config</em> lie, i.e:</p>
+<blockquote>
+<p>samples/sample_1/sample_1_R1.fastq.gz</p>
+</blockquote>
+<p>This last approach is the preferred one.</p>
+<p><strong>If only the column fq1 is filled, snakemake will run the pipeline as single end. If both fq1 and fq2 are filled, snakemake will run the pipeline as paired end. Whether SRA accession samples are considered paired or single end is determined by the <em>single_end</em> setting activation in <em>config.yaml</em>. If both SRA and fastq.gz are present, snakemake will use the fastq.</strong></p>
+<p>The fragment_len_mean and fragment_len_sd refer to the sequencing fragments mean and standard deviation, they can be put in the pipeline if known but are not necessary and the pipeline still doesn't consider them.</p>
+<p>Lastly, the <em>config.yaml</em> file sets what analyses snakemake will do. This file has been commented to explain what each setting does, so modify the settings to your needs.</p>
+<p>However, some options require further explanation that can be seen bellow.</p>
+<h2 id="assembly">Assembly</h2>
+<p>To indicate which genome assembly you want to use for the reference genome you have to modify the assembly field in <em>config.yaml</em>. Currently the pipeline supports UCSC and Genecode assemblies. To use a Genecode assembly you have to provide the Genecode reference to the assembly field.</p>
+<p>Four Genecode assemblies are supported:</p>
+<blockquote>
+<table>
+<thead>
+<tr>
+<th>Organism</th>
+<th>assembly</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Human</td>
+<td>GRCh38</td>
+</tr>
+<tr>
+<td>Human</td>
+<td>GRCh37</td>
+</tr>
+<tr>
+<td>Mouse</td>
+<td>GRCm39</td>
+</tr>
+<tr>
+<td>Mouse</td>
+<td>GRCm38</td>
+</tr>
+</tbody>
+</table>
+</blockquote>
+<p>If you indicate any assembly name that does not appear in the table, the pipeline will try to download an UCSC reference genome. For example, if you want to use the reference mouse genome from UCSC, you can indicate mm39 instead of GCRm39 in the assembly field.</p>
+<p>For organisms other than human or mouse simply indicate the assembly name present in UCSC browser.</p>
+<h1 id="running-snakemake">Running Snakemake</h1>
+<p>To run the pipeline simply send the run_snk.sh script to slurm by doing:</p>
+<pre><code>sbatch run_snk.sh
+</code></pre>
+<p>from the directory where the folders you copied, config and workflow, are located. If run_snk.sh is run from another directory snakemake will not detect the pipeline and it will not work.</p>
+<p>Inside <em>run_snk.sh</em> you can modify the partition to which snakemake will send the jobs by changing the line <code>#SBATCH -p q1</code> and the option <code>-p q1</code> in the <code>snakemake</code> line if its present (in hpc2 and biocrfhpc1). snakemake will run on a default profile settings in every cluster, if you want to use the another partition, comment (using #) the snakemake line with the profile and uncomment the longer snakemake line (by removing #). Then set your partition by changing or adding <code>-p &lt;partition&gt;</code> after the <code>sbatch</code> command present in the line (within the single quotes).</p>
+<p>Additionally, snakemake is configured to run up to 5 simultaneous jobs by default, but if you're using the pipeline in a cluster with number of jobs restrictions you may want to reduce it to 2 or 1 jobs by changing the <code>-j</code> parameter in the <code>snakemake</code> line. Snakemake will take at least 2 job spots, one for the pipeline manager and another for the actual jobs, when <code>-j</code> is set to 1. In hpc2, <code>-j</code> is set to 1 by default since its the cluster with the most restrictions. Therefore if you use the pipeline in the biocrfhpc clusters it will be faster.</p>
+<h1 id="output">Output</h1>
+<p>Snakemake will store all the output files in a directory called results. The outputs are organized by steps in the pipeline and samples, so you will se folders like star, rsem, etc; with sample folders within them. For example:</p>
+<pre><code>results/rsem/pe/sample1/star_output_files
+</code></pre>
+<p>In results, the qc folder will contain the files <code>multiqc_report_data</code> and <code>multiqc_report.html</code>, which includes fastqc and rseqc. You can download these files and view in a browser.</p>
+<p>In the deseq2 results folder you can find <code>dds_rld</code> folder which contains a Deseq object called dds of all your data. You can load it in R in case you want to further explore the data with Deseq2. The pipeline will also produce some plots like the pca (if activated) so you can initially asses your data.</p>
+<p>Additionally logs for each step will be stored in the logs folder.</p>
+<h2 id="plot-explanations">Plot explanations</h2>
+<p>Most figures and scores have explanations within their files on how to interpret them, here are some graphs for additional help.</p>
+<h3 id="phantompeaks">Phantompeaks</h3>
+<p>To get strand cross-correlation scores, as good quality ChIP-seq should produce clusters of enriched DNA sequence tags around sites of interest.</p>
+<p>The important scores are nsc and rsc, both explained in output files. The higher, the better. Very good if both are &gt; 1. These scores are present in the 3rd and 2nd from the last columns in <em>sample</em>.phantompeak.spp.out respectively, as well as in their individual files. The last column is a quality score based on rsc, which ranges between -2 and 2, lower score meaning worse quality.</p>
+<h3 id="deeptools">Deeptools</h3>
+<p>For measuring cumulative enrichment, determines how well a ChIP-seq sample can be distinguished from its control sample (meaning that we can separate ChIP signal from the noise).</p>
+<ul>
+<li>Fingerprint plot</li>
+</ul>
+<p><img src="file:Images/fingerprint.png" alt="image">
+From Deeptools manual</p>
+<h1 id="acknowledgements">Acknowledgements</h1>
+<p>This pipeline is based on the pipeline made by jafors:</p>
+<p><a href="https://doi.org/10.5281/zenodo.5245549"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.5245549.svg" alt="DOI"></a> <a href="https://github.com/snakemake-workflows/rna-seq-star-deseq2">Snakemake workflow: rna-seq-star-deseq2</a></p>
+
+        
+        
+    </body>
+    </html>

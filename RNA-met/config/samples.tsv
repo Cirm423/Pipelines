@@ -1,0 +1,5 @@
+sample	group	batch_effect	control	antibody
+A549_ACE2_mock_1	untreated	batch1		H3K27ac
+A549_ACE2_mock_2	untreated	batch2	A549_ACE2_mock_1	H3K27ac
+A549_ACE2_cov_1	treated	batch1	A549_ACE2_mock_1	H3K27ac
+A549_ACE2_cov_2	treated	batch2	A549_ACE2_mock_1	H3K27ac
