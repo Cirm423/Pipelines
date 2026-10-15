@@ -579,85 +579,88 @@ def all_input(wildcards):
 
         if sample in treatment_samples:
             label = peak_label(sample)
-            if do_annot:
-                wanted_input.extend(
-                    expand(
-                        [
-                            "results/homer/annotate_peaks/{label}.{peak}_peaks.annotatePeaks.txt",
-                            "results/homer/motifs/{label}.{peak}_peaks/homerMotifs.all.motifs"
-                        ],
-                        sample = sample,
-                        label = label,
-                        peak = config["params"]["peak-analysis"]
-                    )
-                )
-                if do_peak_qc:
-                    wanted_input.extend(
-                        expand(
-                            [
-                                "results/homer/plots/plot_{peak}_annotatepeaks_summary.txt",
-                                "results/homer/plots/plot_{peak}_annotatepeaks_summary.pdf"
-                            ],
-                            peak = config["params"]["peak-analysis"]
-                        )
-                    )
-            if do_consensus_peak:
-                for antibody in samples["antibody"]:
-                    if exists_replicates(antibody):
+            with checkpoints.get_gsize.get().output[0].open() as f:
+                # only produce the following files, if a gsize is specified
+                if f.read().strip() != "":
+                    if do_annot:
                         wanted_input.extend(
                             expand(
                                 [
-                                    "results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.saf",
-                                    "results/macs2_merged_expand/plots/{antibody}.consensus_{peak}-peaks.boolean.intersect.plot.pdf",
-                                    "results/IGV/consensus/merged_library.{antibody}.consensus_{peak}-peaks.igv.txt"
+                                    "results/homer/annotate_peaks/{label}.{peak}_peaks.annotatePeaks.txt",
+                                    "results/homer/motifs/{label}.{peak}_peaks/homerMotifs.all.motifs"
                                 ],
-                                peak = config["params"]["peak-analysis"],
-                                antibody = antibody
+                                sample = sample,
+                                label = label,
+                                peak = config["params"]["peak-analysis"]
                             )
                         )
-                        if do_annot:
+                        if do_peak_qc:
                             wanted_input.extend(
                                 expand(
                                     [
-                                        "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt",
-                                        "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.boolean.annotatePeaks.txt",
-                                        "results/homer/motifs_consensus/{antibody}.consensus_{peak}-peaks/homerMotifs.all.motifs",                                              
-                                        ],
-                                        peak = config["params"]["peak-analysis"],
-                                        antibody = antibody
-                                    )
+                                        "results/homer/plots/plot_{peak}_annotatepeaks_summary.txt",
+                                        "results/homer/plots/plot_{peak}_annotatepeaks_summary.pdf"
+                                    ],
+                                    peak = config["params"]["peak-analysis"]
                                 )
-                        if do_deseq2:
-                            if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
+                            )
+                    if do_consensus_peak:
+                        for antibody in samples["antibody"]:
+                            if exists_replicates(antibody):
                                 wanted_input.extend(
                                     expand(
-                                        [                        
-                                            "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts",
-                                            "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.summary",
-                                            "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.jcounts",
-                                            "results/deseq2/dss_rld/{antibody}.consensus_{peak}-peaks.dds.rld.RData",
-                                            "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.pca_plot.pdf",
-                                            "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.heatmap_plot.pdf",
-                                            "results/deseq2/pca_vals/{antibody}.consensus_{peak}-peaks.pca.vals.txt",
-                                            "results/deseq2/dists/{antibody}.consensus_{peak}-peaks.sample.dists.txt",
-                                            "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.RData",
-                                            "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.sizeFactor.txt",
-                                            "results/deseq2/results/{antibody}.consensus_{peak}-peaks.deseq2_results.txt",
-                                            "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.txt",
-                                            "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.txt",
-                                            "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.bed",
-                                            "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.bed",
-                                            "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_MA_plot.pdf",
-                                            "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_MA_plot.pdf",
-                                            "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_volcano_plot.pdf",
-                                            "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_volcano_plot.pdf",
-                                            "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_sample_corr_heatmap.pdf",
-                                            "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_scatter_plots.pdf"
+                                        [
+                                            "results/macs2_merged_expand/{antibody}.consensus_{peak}-peaks.boolean.saf",
+                                            "results/macs2_merged_expand/plots/{antibody}.consensus_{peak}-peaks.boolean.intersect.plot.pdf",
+                                            "results/IGV/consensus/merged_library.{antibody}.consensus_{peak}-peaks.igv.txt"
                                         ],
                                         peak = config["params"]["peak-analysis"],
                                         antibody = antibody
                                     )
                                 )
+                                if do_annot:
+                                    wanted_input.extend(
+                                        expand(
+                                            [
+                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.annotatePeaks.txt",
+                                                "results/homer/annotate_consensus_peaks/{antibody}.consensus_{peak}-peaks.boolean.annotatePeaks.txt",
+                                                "results/homer/motifs_consensus/{antibody}.consensus_{peak}-peaks/homerMotifs.all.motifs",                                              
+                                                ],
+                                                peak = config["params"]["peak-analysis"],
+                                                antibody = antibody
+                                            )
+                                        )
+                                if do_deseq2:
+                                    if (exists_multiple_groups(antibody) or exists_replicates(antibody)) and not_all_control(antibody):
+                                        wanted_input.extend(
+                                            expand(
+                                                [                        
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts",
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.summary",
+                                                    "results/feature_counts/{antibody}.consensus_{peak}-peaks.featureCounts.jcounts",
+                                                    "results/deseq2/dss_rld/{antibody}.consensus_{peak}-peaks.dds.rld.RData",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.pca_plot.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks.heatmap_plot.pdf",
+                                                    "results/deseq2/pca_vals/{antibody}.consensus_{peak}-peaks.pca.vals.txt",
+                                                    "results/deseq2/dists/{antibody}.consensus_{peak}-peaks.sample.dists.txt",
+                                                    "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.RData",
+                                                    "results/deseq2/sizeFactors/{antibody}.consensus_{peak}-peaks.sizeFactors.sizeFactor.txt",
+                                                    "results/deseq2/results/{antibody}.consensus_{peak}-peaks.deseq2_results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.txt",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.01.results.bed",
+                                                    "results/deseq2/FDR/{antibody}.consensus_{peak}-peaks.deseq2.FDR_0.05.results.bed",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_MA_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_MA_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.01_volcano_plot.pdf",
+                                                    "results/deseq2/plots/FDR/{antibody}.consensus_{peak}-peaks_FDR_0.05_volcano_plot.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_sample_corr_heatmap.pdf",
+                                                    "results/deseq2/plots/{antibody}.consensus_{peak}-peaks_scatter_plots.pdf"
+                                                ],
+                                                peak = config["params"]["peak-analysis"],
+                                                antibody = antibody
+                                            )
+                                        )
             wanted_input.extend(
                 expand(
                     [

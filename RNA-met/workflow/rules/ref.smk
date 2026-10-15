@@ -174,3 +174,19 @@ rule rmsk_bed2gtf:
         "../envs/ucscutils.yaml"
     shell:
         "bedToGenePred {input} stdout | genePredToGtf file stdin {output}"
+
+checkpoint get_gsize:
+    input:
+        f"{config['resources']['path']}igenomes.yaml"
+    output:
+        f"{assembly_path}{assembly}.gsize.txt"
+    params:
+        extra=config["resources"]["ref"]["macs-gsize"],
+        build=assembly
+    log:
+        "logs/ref/gsize.log"
+    cache: True
+    conda:
+        ""
+    script:
+        "../scripts/get_gsize.py"

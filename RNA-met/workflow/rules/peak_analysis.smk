@@ -24,7 +24,7 @@ rule macs2_callpeak_broad:
             gsize="{}".format(open(input.gsizepath).read().strip()),
             pvalue="-p {}".format(config["params"]["callpeak"]["p-value"]) if config["params"]["callpeak"]["p-value"] else "",
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
-            bam_format="BAM" if config["single_end"] else "BAMPE")
+            bam_format="BAM")
     wrapper:
         "v2.9.1/bio/macs2/callpeak"
 
@@ -49,11 +49,12 @@ rule macs2_callpeak_narrow:
     log:
         "logs/macs2/callpeak.{sample}-{control}.narrow.log"
     params:
+        #BAMPE mode breaks MeRIP
         lambda w, input: "-f {bam_format} {gsize} -B --SPMR --keep-dup all {pvalue} {qvalue}".format(
             gsize="{}".format(open(input.gsizepath).read().strip()),
             pvalue="-p {}".format(config["params"]["callpeak"]["p-value"]) if config["params"]["callpeak"]["p-value"] else "",
             qvalue="-q {}".format(config["params"]["callpeak"]["q-value"]) if config["params"]["callpeak"]["q-value"] else "",
-            bam_format="BAM" if config["single_end"] else "BAMPE")
+            bam_format="BAM")
     wrapper:
         "v2.9.1/bio/macs2/callpeak"
 
